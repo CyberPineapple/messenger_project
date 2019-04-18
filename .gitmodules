@@ -1,6 +1,3 @@
 [submodule "messenger-project/client"]
 	path = messenger-project/client
 	url = https://github.com/CyberPineapple/client.git
-[submodule "backend"]
-	path = backend
-	url = git@github.com:xyzxyz1337/Vector.git
