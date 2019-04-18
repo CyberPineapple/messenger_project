@@ -18,15 +18,24 @@ class Database:
                       (login text, password text)".format(
                       table=self.tablename))
 
-    async def insert_db(self, login, password):
-        '''
-        Note: Duplicate!!
-        '''
+    async def exists(self, login):
         async with aiosqlite.connect(self.dbname) as db:
-            await db.execute(
-                "INSERT INTO {table} VALUES('{login}', '{password}')".format(
-                    login=login, password=password, table=self.tablename))
-            await db.commit()
+            async with  db.execute(
+                "SELECT login FROM {table} \
+                 WHERE login='{login}'".format(
+                     table=self.tablename, login=login)) as cur:
+                if await cur.fetchone():
+                    return True
+                return False
+
+    async def insert_db(self, login, password):
+        async with aiosqlite.connect(self.dbname) as db:
+            if not await self.exists(login):
+                print("Not exist")
+                await db.execute(
+                    "INSERT INTO {table} VALUES('{login}', '{password}')".format(
+                        login=login, password=password, table=self.tablename))
+                await db.commit()
 
     async def extract_db_by_login(self, login):
         async with aiosqlite.connect(self.dbname) as db:
@@ -64,7 +73,7 @@ async def do_login(request):
     data = await request.post()
     login = data['login']
     password = data['password']
-    await database.insert_db(login, password)
+    await database.insert_db(login, password) # if exists not warnings
     data = await database.extract_db_by_login(login)
     return web.Response(
         text="Hello world, {}, you password is {}".format(*data))
