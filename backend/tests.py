@@ -1,10 +1,17 @@
-import aiohttp
-import asyncio
+from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
+from aiohttp import web
 
-async def main():
-    async with aiohttp.ClientSession() as session:
-        resp = await session.get('http://localhost:8080/')
-        assert resp.status == 200
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+class MessengerTestCase(AioHTTPTestCase):
+
+    @unittest_run_loop
+    async def test_connection(self):
+        responce = await self.client.request("GET", "/")
+        assert responce.status == 200
+        text = await responce.text()
+        assert "You in root page" in text
+
+
+
+test = MessengerTestCase()
+test.test_connection()
