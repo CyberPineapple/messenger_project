@@ -9,7 +9,7 @@ class Database:
     def __init__(self, dbname, tablename):
         self.dbname = dbname
         self.tablename = tablename
-        if not path.isfile(dbname):
+        if not path.isfile(self.dbname):
             self.create_table()
 
     def create_table(self):
@@ -31,7 +31,6 @@ class Database:
     async def insert_db(self, login, password):
         async with aiosqlite.connect(self.dbname) as db:
             if not await self.exists(login):
-                print("Not exist")
                 await db.execute(
                     "INSERT INTO {table} VALUES('{login}', '{password}')".format(
                         login=login, password=password, table=self.tablename))
