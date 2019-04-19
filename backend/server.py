@@ -1,7 +1,9 @@
-from aiohttp import web
-import aiosqlite
-import sqlite3
 from os import path
+
+from aiohttp import web
+
+import aiosqlite
+import json
 
 
 class Database:
@@ -10,34 +12,39 @@ class Database:
         self.dbname = dbname
         self.tablename = tablename
         if not path.isfile(self.dbname):
-            self.create_table()
+            self._create_table()
 
-    def create_table(self):
+    def _create_table(self):
+        import sqlite3
         with sqlite3.connect(self.dbname) as db:
             db.execute(f"CREATE TABLE {self.tablename} \
-                      (login text, password text)")
+                      (Login text, Password text)")
 
-    async def exists(self, login):
+    async def _exists(self, Login):
         async with aiosqlite.connect(self.dbname) as db:
             async with db.execute(
-                f"SELECT login FROM {self.tablename} \
-                 WHERE login='{login}'") as cur:
+                f"SELECT Login FROM {self.tablename} \
+                  WHERE  Login='{Login}'") as cur:
                 if await cur.fetchone():
                     return True
                 return False
 
-    async def insert_db(self, login, password):
+    async def insert_db(self, **kwarg):
+        Login = kwarg['Login']
+        Password = kwarg['Password']
+        # Type = kwarg['Type'] for update password
         async with aiosqlite.connect(self.dbname) as db:
-            if not await self.exists(login):
+            if not await self._exists(Login):
                 await db.execute(
                     f"INSERT INTO {self.tablename} \
-                      VALUES('{login}', '{password}')")
+                      VALUES('{Login}', '{Password}')")
                 await db.commit()
 
-    async def extract_db_by_login(self, login):
+    async def extract_db_by_login(self, Login):
         async with aiosqlite.connect(self.dbname) as db:
-            async with db.execute(f"SELECT login, password FROM {self.tablename} \
-                                   WHERE login='{login}' ") as cur:
+            async with db.execute(f"SELECT Login, Password \
+                                    FROM {self.tablename} \
+                                    WHERE Login='{Login}' ") as cur:
                 async for row in cur:
                     return row
 
@@ -45,41 +52,50 @@ class Database:
 routes = web.RouteTableDef()
 
 
-@routes.get("/ws")
-async def websocket_handler(request):
+async def is_json(myjson):
+    try:
+        json.loads(myjson)
+    except ValueError:
+        return False
+    return True
 
+
+@routes.get("/")
+async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT:
-            if msg.data == 'close':
-                await ws.close()
-                print('websocket connection closed')
-            else:
-                await ws.send_str(msg.data + '/answer')
+            if await is_json(msg.data):
+                jdata = json.loads(msg.data)
+                if jdata["Type"] == "close":
+                    await ws.send_json({"Status": "close"})
+                    await ws.close()
+                elif jdata["Type"] == "reg":
+                    await database.insert_db(**jdata)
+                    await ws.send_json({"Status": "success"})
+                else:
+                    await ws.send_json({"Status": "error in json file"})
+
         elif msg.type == web.WSMsgType.ERROR:
-            print('ws connection closed with exception %s' %
+            print("Connection closed with exception %s" %
                   ws.exception())
+
     return ws
 
 
-@routes.post('/login')
-async def do_login(request):
-    data = await request.post()
-    login = data['login']
-    password = data['password']
-    await database.insert_db(login, password)  # if exists not warnings
-    data = await database.extract_db_by_login(login)
-    return web.Response(
-        text="Hello world, {}, you password is {}".format(*data))
+# @routes.post("/login")
+# async def do_Login(request):
+#     data = await request.post()
+#     Login = data["Login"]
+#     Password = data["Password"]
+#     await database.insert_db(Login, Password)  # if login exist not warnings
+#     data = await database.extract_db_by_login(Login)
+    # return web.Response(
+    #    text="Hello world, {}, you Password is {}".format(*data))
 
-
-@routes.get('/')
-async def root_page(request):
-    return web.Response(text="You on root page")
-
-database = Database('mydatabase.db', 'credentials')
+database = Database("mydatabase.db", "credentials")
 app = web.Application()
 app.add_routes(routes)
 
