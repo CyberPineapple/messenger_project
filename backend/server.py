@@ -72,9 +72,15 @@ async def websocket_handler(request):
                 if jdata["Type"] == "close":
                     await ws.send_json({"Status": "close"})
                     await ws.close()
-                elif jdata["Type"] == "reg":
+                elif jdata["Type"] == "registration":
                     await database.insert_db(**jdata)
-                    await ws.send_json({"Status": "success"})
+                    await ws.send_json({"Status": "success"}) # send cookie
+                elif jdata["Type"] == "login":
+                    credentials = await database.extract_db_by_login(jdata["Login"])
+                    if credentials and jdata["Password"] == credentials[1]:
+                        await ws.send_json({"Status": "success"}) # send cookie
+                    else:
+                        await ws.send_json({"Status": "error"})
                 else:
                     await ws.send_json({"Status": "error in json file"})
 
