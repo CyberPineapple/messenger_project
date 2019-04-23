@@ -5,29 +5,24 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from './store/configureStore'
 import { socket } from './websockets/websocket'
-import { setLogin } from './actions/actions';
+import { setPage } from './actions/actions';
 
 socket.onopen = () =>{
-  console.log('connect');
-  let data = {
-    Type: "reg",
-    Login: "login",
-    Password: "password"
-  }
-  data = JSON.stringify(data);
-  socket.send(data);
+  store.dispatch(setPage('authentification'));
 }
-
-store.dispatch(setLogin("hello"));
 
 socket.onclose = () =>{
   console.log('disconnect');
+  store.dispatch(setPage('loading'));
 }
 
 socket.onmessage = (data) =>{
   console.log(data.data);
 }
 
+socket.onerror= (error) => {
+  console.log("error: ", error);
+}
 
 ReactDOM.render(
   <Provider store={store}>

@@ -22,13 +22,12 @@ export const setPassword = value => {
 
 export const removeLogin = () => {
     return{
-        type: 'REMOVE_LOGIN',
+        type: 'REMOVE_LOGIN'
     }
 }
 
-export const removePassword = value => {
+export const removePassword = () => {
     return{
-        type: 'SET_PASSWORD',
-        password: ''
+        type: 'REMOVE_PASSWORD',
     }
 }
