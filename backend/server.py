@@ -85,16 +85,6 @@ async def websocket_handler(request):
     return ws
 
 
-# @routes.post("/login")
-# async def do_Login(request):
-#     data = await request.post()
-#     Login = data["Login"]
-#     Password = data["Password"]
-#     await database.insert_db(Login, Password)  # if login exist not warnings
-#     data = await database.extract_db_by_login(Login)
-    # return web.Response(
-    #    text="Hello world, {}, you Password is {}".format(*data))
-
 database = Database("mydatabase.db", "credentials")
 app = web.Application()
 app.add_routes(routes)
