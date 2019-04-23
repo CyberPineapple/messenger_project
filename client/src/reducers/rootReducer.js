@@ -1,12 +1,8 @@
-import { setPage } from "../actions/actions";
-import { connect } from 'react-redux';
-import { bindActionCreators } from "redux";
-
 
 export const initialState = {
     page: 'authentification',
-    login: '',
-    password: ''
+    login: 'login',
+    password: 'password'
 }
 
 export function rootReducer(state = initialState, action){
@@ -19,30 +15,3 @@ export function rootReducer(state = initialState, action){
         default: return state;
     }
 }
-
-
-
-let socket = new WebSocket("ws://localhost:8080/ws");
-
-socket.onopen = () =>{
-  console.log('connect');
-  socket.send("hentai");
-}
-
-socket.onclose = () =>{
-  console.log('disconnect');
-}
-
-
-
-
-socket.onmessage = (data, props) =>{
-  console.log(data);
-  this.props.setPage('main')
-}
-
-const mapDispatchToProps = dispatch => {
-    return bindActionCreators({setPage: setPage}, dispatch);
-}
-
-connect(mapDispatchToProps);
