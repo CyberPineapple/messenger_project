@@ -91,6 +91,7 @@ async def websocket_handler(request):
 
 
 database = Database("mydatabase.db", "credentials")
+
 app = web.Application()
 app.add_routes(routes)
 
