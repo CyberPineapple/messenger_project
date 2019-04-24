@@ -3,9 +3,11 @@ import websockets
 import json
 
 
+async def ws_connect():
+    return websockets.connect('ws://host-94-103-84-32.hosted-by-vdsina.ru:8080')
+
 async def test_success_registration():
-    async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+        websocket = ws_connect()
 
         correct_creds = {
                 "Type": "registration",
@@ -18,12 +20,12 @@ async def test_success_registration():
 
         answer = await websocket.recv()
         print(f"< {answer}")
+        websocket.close()
         assert json.loads(answer) == {"Status": "success"}
-
 
 async def test_success_login():
     async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+            'ws://host-94-103-84-32.hosted-by-vdsina.ru:8080') as websocket:
 
         correct_creds = {
                 "Type": "login",
@@ -41,7 +43,7 @@ async def test_success_login():
 
 async def test_failture_login():
     async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+            'ws://host-94-103-84-32.hosted-by-vdsina.ru:8080') as websocket:
 
         correct_creds = {
                 "Type": "login",
@@ -59,7 +61,7 @@ async def test_failture_login():
 
 async def test_failture_password():
     async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+            'ws://host-94-103-84-32.hosted-by-vdsina.ru:8080') as websocket:
 
         correct_creds = {
                 "Type": "login",
