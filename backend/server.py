@@ -1,6 +1,5 @@
 from os import path
 
-
 from aiohttp import web
 import aiosqlite
 import json
