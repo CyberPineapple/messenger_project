@@ -5,7 +5,7 @@ import json
 
 async def test_success_registration():
     async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+            'ws://host-94-103-84-32.hosted-by-vdsina.ru:8080') as websocket:
 
         correct_creds = {
                 "Type": "registration",
