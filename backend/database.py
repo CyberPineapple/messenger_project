@@ -1,22 +1,11 @@
-from datetime import datetime
-import asyncio
-
 import peewee
-from peewee_async import Manager, PostgresqlDatabase
+
+from datetime import datetime
+from peewee_async import PostgresqlDatabase
 
 
-DATABASE = {
-    "database": "Messenger",
-    "password": "sl+@lM!93nd3_===",
-    "user": "user",
-    "host": "localhost"
-}
 
 database = PostgresqlDatabase(None)
-database.init(**DATABASE)
-loop = asyncio.get_event_loop()
-objects = Manager(database, loop=loop)
-
 
 class User(peewee.Model):
     """ Base model for users """
@@ -46,18 +35,19 @@ class Message(peewee.Model):
     date_send = peewee.DateTimeField(default=datetime.now())
 
 
-async def insert_db_user(**kwargs):
+async def insert_db_user(objects,**kwargs):
     await objects.create_or_get(User, username=kwargs["Login"],
                                 password=kwargs["Password"])
 
 
-async def extract_db_user(**kwargs):
+async def extract_db_user(objects,**kwargs):
     try:
         user = await objects.get(User, username=kwargs["Login"])
         return user.username, user.password
     except:
         return False
 
-with objects.allow_sync():
+if __name__ == "__main__":
+
     User.create_table(True)
     Message.create_table(True)
