@@ -18,16 +18,23 @@ class User(peewee.Model):
     username = peewee.CharField(max_length=40, unique=True)
     # password = sha-1(name+password)
     password = peewee.CharField(max_length=44)  # len for sha-1
+    online = peewee.BooleanField(default=True)
 
     date_register = peewee.DateTimeField(default=datetime.now())
     date_last_online = peewee.DateTimeField(default=datetime.now())
 
 
-class Message(peewee.Model):
+# class Chat(peewee.Model):
+#     class Meta:
+#         database = database
+#         db_table = "messages"
+#
+#     name_chat = peewee.CharField(max_lenght=100)
+
+class Message(peewee.Model):#, Chat):
     """ Base model for messages """
     class Meta:
         database = database
-        db_table = "messages"
         order_by = ("date_send",)
 
     user_from = peewee.CharField(max_length=40)
@@ -46,8 +53,3 @@ async def extract_db_user(objects,**kwargs):
         return user.username, user.password
     except:
         return False
-
-if __name__ == "__main__":
-
-    User.create_table(True)
-    Message.create_table(True)
