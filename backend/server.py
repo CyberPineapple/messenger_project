@@ -1,5 +1,4 @@
 from peewee_async import Manager
-from json import loads
 from aioredis import create_pool
 from asyncio import get_event_loop
 from aiohttp import web
@@ -7,15 +6,12 @@ from aiohttp_session import session_middleware
 from aiohttp_session.redis_storage import RedisStorage
 import logging
 
-from database import database, insert_db_user, extract_db_user
-from database import User, Message
-
-async def is_json(myjson):
-    try:
-        loads(myjson)
-    except ValueError:
-        return False
-    return True
+from tools.models import database
+from tools.json_validator import loads, is_json
+from tools.actions_db import insert_db_user, extract_db_user
+from tools.sessions import request_user_middleware
+from accounts.models import User
+from chat.models import Chat, Message
 
 
 async def websocket_handler(request):
@@ -50,14 +46,11 @@ async def websocket_handler(request):
     return ws
 
 
-async def request_user_middleware(app,handler):
-    pass
-
 
 async def create_app(loop):
     redis_pool = await create_pool(("localhost", 6379), loop=loop)
-    # middleware = [session_middleware(RedisStorage(redis_pool)),request_user_middleware] # add check user
-    app = web.Application()#middlewares=middleware)
+    middleware = [session_middleware(RedisStorage(redis_pool)),request_user_middleware] # add check user
+    app = web.Application(middlewares=middleware)
     app.redis_pool = redis_pool
     app.add_routes([web.get("/", websocket_handler)])
 
@@ -84,6 +77,7 @@ if __name__ == "__main__":
 
     with app.objects.allow_sync():
         User.create_table(True)
+        Chat.create_table(True)
         Message.create_table(True)
 
     logging.basicConfig(level=logging.DEBUG)
