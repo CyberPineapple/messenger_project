@@ -31,3 +31,18 @@ export const removePassword = () => {
         type: 'REMOVE_PASSWORD',
     }
 }
+
+export const authentification = (value) => {
+    return {
+        type: 'AUTHENTIFICATION',
+        authentification: value
+    }
+}
+
+
+export const connect = (value) => {
+    return {
+        type: 'CONNECT',
+        connect: value
+    }
+}

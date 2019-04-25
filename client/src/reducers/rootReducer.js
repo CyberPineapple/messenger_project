@@ -3,7 +3,8 @@ export const initialState = {
     page: 'loading',
     login: 'login',
     password: 'password',
-    connect: false,
+    authentification: false,
+    connect: false
 }
 
 export function rootReducer(state = initialState, action){
@@ -13,6 +14,8 @@ export function rootReducer(state = initialState, action){
         case 'SET_PASSWORD': return {...state, password: action.password};
         case 'REMOVE_LOGIN': return {...state, login: ''};
         case 'REMOVE_PASSWORD': return {...state, password: ''};
+        case 'AUTHENTIFICATION': return {...state, authentification: action.authentification};
+        case 'CONNECT': return{...state, connect: action.connect}
         default: return state;
     }
 }

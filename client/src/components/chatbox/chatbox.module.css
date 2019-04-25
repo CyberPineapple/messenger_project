@@ -1,0 +1,48 @@
+.block{
+    position: relative;
+    left: 200px;
+    top: 0;
+    height: 100%;
+    width: calc(100% - 200px);
+    padding-top: 20px;
+    box-sizing: border-box;
+}
+
+.output{
+    margin: auto;
+    height: 80%;
+    width: 90%;
+    border: 2px solid #3afd95;
+    margin-bottom: 25px;
+}
+
+.input{
+    margin: auto;
+    width: 90%;
+    background-color: #b7a5d1;
+    height: 15%;
+    display: flex;
+}
+
+.input textarea{
+    box-sizing: border-box;
+    width: 70%;
+    height: 100%;
+    outline: none;
+    resize: none;
+    border: 2px solid #3afd95;
+    border-right: none;
+}
+
+.button{
+    flex: 1 1 auto;
+    border: 2px solid #3afd95;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button:hover{
+    border: 2px solid #b7a5d1;
+}

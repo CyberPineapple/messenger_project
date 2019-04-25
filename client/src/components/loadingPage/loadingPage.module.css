@@ -15,11 +15,11 @@
 
 .line1{
     position: absolute;
-    width: 100px;
-    height: 100px;
+    width: 99px;
+    height: 99px;
     border: 12px solid red;
     border-radius: 50%;
-    border-top-color: white;
+    border-top-color: transparent;
     animation: spin 4s linear infinite;
 }
 
@@ -29,17 +29,17 @@
     height: 75px;
     border: 12px solid aqua;
     border-radius: 50%;
-    border-top-color: white;
+    border-top-color: transparent;
     animation: spin 3s linear infinite;
 }
 
 .line3{
     position: absolute;
-    width: 50px;
-    height: 50px;
+    width: 51px;
+    height: 51px;
     border: 12px solid yellow;
     border-radius: 50%;
-    border-top-color: white;
+    border-top-color: transparent;
     animation: spin 2s linear infinite;
 }
 

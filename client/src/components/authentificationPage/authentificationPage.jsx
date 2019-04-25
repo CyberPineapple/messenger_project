@@ -4,6 +4,8 @@ import { Animated } from "react-animated-css";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { setPage, setLogin, setPassword, removeLogin, removePassword } from "../../actions/actions.js";
+import { socket } from '../../websockets/websocket'
+
 
 class AuthentificationPage extends React.Component {
   render() {
@@ -40,7 +42,7 @@ class AuthentificationPage extends React.Component {
             </div>
             <div
               className={style.button}
-              onClick={() => console.log('Хочу зарегаться')}
+              onClick={() => this.registration()}
             >
               Регистрация
             </div>
@@ -52,9 +54,26 @@ class AuthentificationPage extends React.Component {
 
   goToPage = () =>{
     if (this.props.login !== '' && this.props.password !== ''){
-      this.props.setPage("main")
+      let data = {
+        Type: "login",
+        Login: this.props.login,
+        Password: this.props.password
+      }
+      data = JSON.stringify(data);
+      socket.send(data);
     }
+  }
 
+  registration = () =>{
+    if (this.props.login !== '' && this.props.password !== ''){
+      let data = {
+        Type: "registration",
+        Login: this.props.login,
+        Password: this.props.password
+      }
+      data = JSON.stringify(data);
+      socket.send(data);
+    }
   }
 }
 
@@ -62,7 +81,7 @@ class AuthentificationPage extends React.Component {
 const mapStateToProps = store =>{
   return {
     login: store.login,
-    password: store.password
+    password: store.password,
   }
 }
 
