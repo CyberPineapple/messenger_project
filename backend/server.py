@@ -7,7 +7,7 @@ from aiohttp_session import session_middleware
 from aiohttp_session.redis_storage import RedisStorage
 
 from database import database, insert_db_user, extract_db_user
-
+from database import User, Message
 
 async def is_json(myjson):
     try:
@@ -72,6 +72,10 @@ async def create_app(loop):
     app.database = database
     app.database.set_allow_sync(False)
     app.objects = Manager(app.database)
+
+    with app.objects.allow_sync():
+        User.create_table(True)
+        Message.create_table(True)
 
     return app
 
