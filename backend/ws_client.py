@@ -13,8 +13,8 @@ async def test_success_registration():
 
         correct_creds = {
                 "Type": "registration",
-                "Login": "us3r",
-                "Password": "p@$$word"
+                "Login": "user",
+                "Password": "password"
         }
 
         await websocket.send(json.dumps(correct_creds))
