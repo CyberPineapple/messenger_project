@@ -11,8 +11,8 @@ from tools.json_validator import loads, is_json
 from tools.actions_db import insert_db_user, extract_db_user
 from tools.sessions import request_user_middleware
 from accounts.models import User
+from accounts.views import Register, LogIn
 from chat.models import Chat, Message
-
 
 async def websocket_handler(request):
     ws = web.WebSocketResponse()
@@ -22,17 +22,19 @@ async def websocket_handler(request):
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
             logging.debug(msg.data)
             jdata = loads(msg.data)
+
             if jdata["Type"] == "close":
                 await ws.send_json({"Status": "close"})
                 await ws.close()
+
             elif jdata["Type"] == "registration":
-                await insert_db_user(app.objects,**jdata)
-                # send cookie
-                await ws.send_json({"Type": "registration", "Status": "success"})
+                if await Register(request).create_user(**jdata):
+                    await ws.send_json({"Type": "registration", "Status": "success"})
+                else:
+                    await ws.send_json({"Type": "registration", "Status": "user exist"})
+
             elif jdata["Type"] == "login":
-                credentials = await extract_db_user(app.objects,**jdata)
-                if credentials and jdata["Password"] == credentials[1]:
-                    # send cookie
+                if await LogIn(request).loginning(**jdata):
                     await ws.send_json({"Type": "login", "Status": "success"})
                 else:
                     await ws.send_json({"Type": "login", "Status": "error"})

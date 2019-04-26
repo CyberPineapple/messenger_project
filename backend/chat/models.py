@@ -8,9 +8,11 @@ from tools.models import BaseModel
 
 class Chat(BaseModel):
     class Meta:
-        db_table = "messages"
+        db_table = "chats"
+        order_by = ("last_send",)
 
     name = peewee.CharField(max_length=32, unique=True, null=False, index=True)
+    last_send = peewee.DateTimeField(default=datetime.now())
 
     @classmethod
     async def all_chats(cls, objects):
@@ -24,6 +26,7 @@ class Chat(BaseModel):
 class Message(BaseModel):
     """ Base model for messages """
     class Meta:
+        db_table = "messages"
         order_by = ("date_send",)
 
     user_from = peewee.ForeignKeyField(User, null=True)

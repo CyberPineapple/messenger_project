@@ -26,6 +26,24 @@ async def test_success_registration():
              "Type": "registration",
             "Status": "success"}
 
+async def test_exists_registration():
+    async with websockets.connect(
+            host) as websocket:
+
+        correct_creds = {
+                "Type": "registration",
+                "Login": "user",
+                "Password": "password"
+        }
+
+        await websocket.send(json.dumps(correct_creds))
+        print(f"> {correct_creds}")
+
+        answer = await websocket.recv()
+        print(f"< {answer}")
+        assert json.loads(answer) == {
+             "Type": "registration",
+            "Status": "user exist"}
 
 async def test_success_sign_in():
     async with websockets.connect(
@@ -83,10 +101,11 @@ async def test_failture_password():
 loop = asyncio.get_event_loop()
 loop.run_until_complete(
     asyncio.gather(
-        test_success_registration(),
-        test_success_sign_in(),
-        test_failture_sign_in(),
-        test_failture_password(),
+       # test_success_registration(),
+       test_exists_registration(),
+       test_success_sign_in(),
+       test_failture_sign_in(),
+       test_failture_password(),
     ))
 
 # loop.run_until_complete(asyncio.gather(*[test_login() for _ in range(100)]))

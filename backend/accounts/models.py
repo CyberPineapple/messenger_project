@@ -13,8 +13,8 @@ class User(models.BaseModel):
 
     id = peewee.AutoField(null=False)
     username = peewee.CharField(max_length=20, unique=True)
-    # password = sha-1(name+password)
-    password = peewee.CharField(max_length=64)
+    # password = sha-1(salt + password)
+    password = peewee.CharField(max_length=192)
     online = peewee.BooleanField(default=True)
 
     date_register = peewee.DateTimeField(default=datetime.now())
