@@ -18,7 +18,7 @@ class LogIn(web.View):
         try:
             user = await self.request.app.objects.get(User, User.username ** username)
             if verify_password(user.password, password):
-                #await self.login_user(user)
+                await self.login_user(user)
                 return True
         except User.DoesNotExist:
             return False
@@ -35,7 +35,7 @@ class Register(LogIn):
             return False
         user = await self.request.app.objects.create(User, username=username,
                                                            password=password,)
-        self.login_user(user)
+        await self.login_user(user)
         return True
 
 class LogOut(web.View):

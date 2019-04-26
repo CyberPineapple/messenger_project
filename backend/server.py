@@ -1,10 +1,10 @@
+import logging
 from peewee_async import Manager
 from aioredis import create_pool
 from asyncio import get_event_loop
 from aiohttp import web
 from aiohttp_session import session_middleware
 from aiohttp_session.redis_storage import RedisStorage
-import logging
 
 from tools.models import database
 from tools.json_validator import loads, is_json
@@ -15,6 +15,8 @@ from accounts.views import Register, LogIn
 from chat.models import Chat, Message
 
 async def websocket_handler(request):
+    app = request.app
+    print(app)
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
@@ -28,7 +30,7 @@ async def websocket_handler(request):
                 await ws.close()
 
             elif jdata["Type"] == "registration":
-                if await Register(request).create_user(**jdata):
+                if await app.objects.create_user(**jdata):
                     await ws.send_json({"Type": "registration", "Status": "success"})
                 else:
                     await ws.send_json({"Type": "registration", "Status": "user exist"})
@@ -70,7 +72,6 @@ async def create_app(loop):
     app.objects = Manager(app.database)
 
 
-
     return app
 
 if __name__ == "__main__":
@@ -84,4 +85,4 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG)
     loop.create_task(web.run_app(app))
-    loop.run_forever()
+
