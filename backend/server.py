@@ -1,4 +1,5 @@
 import logging
+from see import see
 from peewee_async import Manager
 from aioredis import create_pool
 from asyncio import get_event_loop
@@ -11,13 +12,14 @@ from tools.json_validator import loads, is_json
 from tools.actions_db import insert_db_user, extract_db_user
 from tools.sessions import request_user_middleware
 from accounts.models import User
-from accounts.views import Register, LogIn
+from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
+
 
 async def websocket_handler(request):
     app = request.app
-    print(app)
     ws = web.WebSocketResponse()
+   #  print(see(app.objects))
     await ws.prepare(request)
 
     async for msg in ws:
@@ -29,8 +31,13 @@ async def websocket_handler(request):
                 await ws.send_json({"Status": "close"})
                 await ws.close()
 
+            elif jdata["Type"] == "logout":
+                await LogOut(request).logout()
+                await ws.send_json({"Type":"logout", "Status": "success"})
+                await ws.close()
+
             elif jdata["Type"] == "registration":
-                if await app.objects.create_user(**jdata):
+                if await Register(request).create_user(**jdata):
                     await ws.send_json({"Type": "registration", "Status": "success"})
                 else:
                     await ws.send_json({"Type": "registration", "Status": "user exist"})
@@ -39,7 +46,7 @@ async def websocket_handler(request):
                 if await LogIn(request).loginning(**jdata):
                     await ws.send_json({"Type": "login", "Status": "success"})
                 else:
-                    await ws.send_json({"Type": "login", "Status": "error"})
+                    await ws.send_json({"Type": "login", "Status": "error"}) # user exist
             else:
                 await ws.send_json({"Status": "error in json file"})
 
@@ -50,14 +57,15 @@ async def websocket_handler(request):
     return ws
 
 
-
 async def create_app(loop):
     redis_pool = await create_pool(("localhost", 6379), loop=loop)
-    middleware = [session_middleware(RedisStorage(redis_pool)),request_user_middleware] # add check user
+    middleware = [
+        session_middleware(
+            RedisStorage(redis_pool)),
+        request_user_middleware]
     app = web.Application(middlewares=middleware)
     app.redis_pool = redis_pool
     app.add_routes([web.get("/", websocket_handler)])
-
 
     DATABASE = {
         "database": "Messenger",
@@ -70,7 +78,6 @@ async def create_app(loop):
     app.database = database
     app.database.set_allow_sync(False)
     app.objects = Manager(app.database)
-
 
     return app
 
@@ -85,4 +92,3 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.DEBUG)
     loop.create_task(web.run_app(app))
-
