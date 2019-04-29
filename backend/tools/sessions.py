@@ -11,7 +11,7 @@ async def request_user_middleware(app, handler):
         request.user = None
         user_id = session.get('user')
         if user_id is not None:
-            request.user = await request.app.objects.get(User, id=user_id)
+            request.user = await request.app.manager.get(User, id=user_id)
         return await handler(request)
     return middleware
 
@@ -20,7 +20,7 @@ def login_required(func):
     """ Allow only auth users """
     async def wrapped(self, *args, **kwargs):
         if self.request.user is None:
-            print("Logout")
+            print("login_required: Logout")
             # redirect(self.request, 'login')
         return await func(self, *args, **kwargs)
     return wrapped

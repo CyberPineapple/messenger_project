@@ -1,5 +1,4 @@
 import logging
-from see import see
 from peewee_async import Manager
 from aioredis import create_pool
 from asyncio import get_event_loop
@@ -19,22 +18,30 @@ from chat.models import Chat, Message
 async def websocket_handler(request):
     app = request.app
     ws = web.WebSocketResponse()
-   #  print(see(app.objects))
     await ws.prepare(request)
+    app.chats_list.append(ws)
 
+    logging.debug(app.chats_list)
+    logging.debug(app.redis_pool)
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
+
             logging.debug(msg.data)
             jdata = loads(msg.data)
 
             if jdata["Type"] == "close":
                 await ws.send_json({"Status": "close"})
+                app.chats_list.remove(ws)
                 await ws.close()
 
             elif jdata["Type"] == "logout":
-                await LogOut(request).logout()
-                await ws.send_json({"Type":"logout", "Status": "success"})
-                await ws.close()
+                if await LogOut(request).logout():
+                    await ws.send_json({"Type":"logout", "Status": "success"})
+                    app.chats_list.remove(ws)
+                    await ws.close()
+                    logging.debug(len(app.chats_list))
+                else:
+                    await ws.send_json({"Type":"logout", "Status":"error"})
 
             elif jdata["Type"] == "registration":
                 if await Register(request).create_user(**jdata):
@@ -47,6 +54,14 @@ async def websocket_handler(request):
                     await ws.send_json({"Type": "login", "Status": "success"})
                 else:
                     await ws.send_json({"Type": "login", "Status": "error"}) # user exist
+            elif jdata["Type"] == "message":
+                message = await app.manager.create(Message, user_from=jdata["From"],
+                                         chat=jdata["Chat"], #"general",
+                                         text=jdata["Text"])
+                for user in request.app.wslist[message.chat].values():
+                    user.send_json(message.as_dict())
+
+
             else:
                 await ws.send_json({"Status": "error in json file"})
 
@@ -66,6 +81,7 @@ async def create_app(loop):
     app = web.Application(middlewares=middleware)
     app.redis_pool = redis_pool
     app.add_routes([web.get("/", websocket_handler)])
+    app.chats_list = []
 
     DATABASE = {
         "database": "Messenger",
@@ -77,18 +93,16 @@ async def create_app(loop):
     database.init(**DATABASE)
     app.database = database
     app.database.set_allow_sync(False)
-    app.objects = Manager(app.database)
+    app.manager = Manager(app.database)
 
     return app
 
 if __name__ == "__main__":
     loop = get_event_loop()
     app = loop.run_until_complete(create_app(loop))
-
-    with app.objects.allow_sync():
+    with app.manager.allow_sync():
         User.create_table(True)
         Chat.create_table(True)
         Message.create_table(True)
-
     logging.basicConfig(level=logging.DEBUG)
     loop.create_task(web.run_app(app))

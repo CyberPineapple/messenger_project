@@ -21,7 +21,7 @@ async def test_success_registration():
 
         answer = await websocket.recv()
         print(f"< {answer}")
-        #assert json.loads(answer) == {
+        # assert json.loads(answer) == {
         #     "Type": "registration",
         #    "Status": "success"}
 
@@ -100,7 +100,7 @@ async def test_failture_password():
         assert json.loads(answer) == {"Type": "login", "Status": "error"}
 
 
-async def test_succsses_logoout():
+async def test_succsses_logout():
     async with websockets.connect(
             host) as websocket:
 
@@ -117,7 +117,6 @@ async def test_succsses_logoout():
         print(f"< {answer}")
         assert json.loads(answer) == {"Type": "login", "Status": "success"}
 
-
         logout_data = {
             "Type": "logout",
             "Login": "user"
@@ -131,15 +130,66 @@ async def test_succsses_logoout():
         assert json.loads(answer) == {"Type": "logout", "Status": "success"}
 
 
+async def test_fault_logout():
+    async with websockets.connect(
+            host) as websocket:
+
+        logout_data = {
+            "Type": "logout",
+            "Login": "user"
+        }
+
+        await websocket.send(json.dumps(logout_data))
+        print(f"> {logout_data}")
+
+        answer = await websocket.recv()
+        print(f"< {answer}")
+        assert json.loads(answer) == {"Type": "logout", "Status": "error"}
+
+
+async def test_succsses_send_message():
+    async with websockets.connect(
+            host) as websocket:
+
+        correct_creds = {
+                "Type": "login",
+                "Login": "user",
+                "Password": "password"
+        }
+
+        await websocket.send(json.dumps(correct_creds))
+        print(f"> {correct_creds}")
+
+        answer = await websocket.recv()
+        print(f"< {answer}")
+        assert json.loads(answer) == {"Type": "login", "Status": "success"}
+
+        message_data = {
+            "Type": "message",
+            "From": "user",
+            "Chat": "general",
+            "Text": "Hey, there is somebody?"
+        }
+
+        await websocket.send(json.dumps(message_data))
+        print(f"> {message_data}")
+
+        answer = await websocket.recv()
+        print(f"< {answer}")
+        #assert json.loads(answer) == {"Type": "logout", "Status": "success"}
+
+
 loop = asyncio.get_event_loop()
 loop.run_until_complete(
     asyncio.gather(
-       test_success_registration(),
-       test_exists_registration(),
-       test_success_sign_in(),
-       test_failture_sign_in(),
-       test_failture_password(),
-       test_succsses_logoout(),
-    ))
+        test_success_registration(),
+        test_exists_registration(),
+        test_success_sign_in(),
+        test_failture_sign_in(),
+        test_failture_password(),
+        test_succsses_logout(),
+        test_fault_logout(),
+       # test_succsses_send_message(),
+        ))
 
 # loop.run_until_complete(asyncio.gather(*[test_login() for _ in range(100)]))

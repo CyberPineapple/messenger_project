@@ -25,7 +25,7 @@ class LogIn(web.View):
         password = kwargs["Password"]
 
         try:
-            user = await self.request.app.objects.get(User, User.username ** username)
+            user = await self.request.app.manager.get(User, User.username ** username)
             if verify_password(user.password, password):
                 await self.login_user(user)
                 return True
@@ -42,9 +42,9 @@ class Register(LogIn):
         username = kwargs["Login"]
         password = hash_password(kwargs["Password"])
 
-        if await self.request.app.objects.count(User.select().where(User.username ** username)):
+        if await self.request.app.manager.count(User.select().where(User.username ** username)):
             return False
-        user = await self.request.app.objects.create(User, username=username,
+        user = await self.request.app.manager.create(User, username=username,
                                                      password=password,)
         await self.login_user(user)
         return True
@@ -55,5 +55,10 @@ class LogOut(web.View):
     @login_required
     async def logout(self):
         """ Remove user from session """
-        self.session.pop("user")
-        print("user was exit")
+        try:
+            session = await get_session(self.request)
+            session.pop("user")
+            print("user was exit")
+            return True
+        except KeyError:
+            return False
