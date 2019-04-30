@@ -5,7 +5,7 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from './store/configureStore'
 import { socket } from './websockets/websocket'
-import { setPage, connect } from './actions/actions';
+import { setPage, connect, setMessagesList } from './actions/actions';
 
 
 socket.onopen = () =>{
@@ -19,6 +19,8 @@ socket.onclose = () =>{
   store.dispatch(setPage('loading'));
 }
 
+
+
 socket.onmessage = (response) =>{
   let data = JSON.parse(response.data);
   switch (data.Type){
@@ -30,7 +32,20 @@ socket.onmessage = (response) =>{
       }
       break;
     }
-    default: break;
+    case 'registration': {
+      console.log('Регистрация');
+      break;
+    }
+    case 'message': {
+      if (data.Status === 'success'){
+        store.dispatch(setMessagesList(data.Text))
+      }
+      break;
+    }
+    default: {
+      console.log(data);
+      break;
+    }
   }
 }
 

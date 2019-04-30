@@ -11,7 +11,7 @@ class AuthentificationPage extends React.Component {
   render() {
     return (
       <Animated
-        animationIn="flipInX"
+        animationIn="fadeIn"
         animationInDuration={1000}
         isVisible={true}
       >
@@ -87,7 +87,7 @@ const mapStateToProps = store =>{
 
 const mapDispatchToProps = dispatch => {
   return bindActionCreators({ setPage: setPage, setLogin: setLogin, setPassword: setPassword, removeLogin: removeLogin, removePassword: removePassword }, dispatch);
-};
+}
 
 export default connect(
   mapStateToProps,

@@ -4,7 +4,9 @@ export const initialState = {
     login: 'login',
     password: 'password',
     authentification: false,
-    connect: false
+    connect: false,
+    message: 'fghfgh',
+    messagesList: []
 }
 
 export function rootReducer(state = initialState, action){
@@ -15,7 +17,10 @@ export function rootReducer(state = initialState, action){
         case 'REMOVE_LOGIN': return {...state, login: ''};
         case 'REMOVE_PASSWORD': return {...state, password: ''};
         case 'AUTHENTIFICATION': return {...state, authentification: action.authentification};
-        case 'CONNECT': return{...state, connect: action.connect}
+        case 'CONNECT': return {...state, connect: action.connect};
+        case 'SET_MESSAGE': return {...state, message: action.message};
+        case 'SET_MESSAGES_LIST': return {...state, messagesList: [...state.messagesList, action.messagesList]};
+        case 'REMOVE_MESSAGE': return {...state, message: ''};
         default: return state;
     }
 }

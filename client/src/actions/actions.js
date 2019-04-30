@@ -46,3 +46,23 @@ export const connect = (value) => {
         connect: value
     }
 }
+
+export const setMessage = value => {
+    return{
+        type: 'SET_MESSAGE',
+        message: value
+    }
+}
+
+export const setMessagesList = value => {
+    return{
+        type: 'SET_MESSAGES_LIST',
+        messagesList: value
+    }
+}
+
+export const removeMessage = value => {
+    return{
+        type: 'REMOVE_MESSAGE'
+    }
+}
