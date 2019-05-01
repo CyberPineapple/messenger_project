@@ -1,45 +1,82 @@
+import logging as log
 from peewee_async import Manager
-from json import loads
 from aioredis import create_pool
 from asyncio import get_event_loop
 from aiohttp import web
 from aiohttp_session import session_middleware
 from aiohttp_session.redis_storage import RedisStorage
-import logging
 
-from database import database, insert_db_user, extract_db_user
-from database import User, Message
-
-async def is_json(myjson):
-    try:
-        loads(myjson)
-    except ValueError:
-        return False
-    return True
+from tools.models import database
+from tools.json_validator import loads, is_json
+from tools.sessions import request_user_middleware
+from accounts.models import User
+from accounts.views import Register, LogIn, LogOut
+from chat.models import Chat, Message
+from chat.views import CreateChat, ActionMessages
 
 
 async def websocket_handler(request):
+
+    app = request.app
     ws = web.WebSocketResponse()
     await ws.prepare(request)
+    app.active_sockets.append(ws)
+
+    # log.debug(dir(app))
+    # log.debug(f"request = {request}")
+    log.debug(f"app.redis_pool = {app.redis_pool}")
+    # log.debug(f"app.manager = {app.manager}")  # async db manager
+    # contain websockets
+    log.debug(f"app.active_sockets = {app.active_sockets}")
+
+    # action with session
+    # session = await get_session(request)
+    # log.debug(f"{session}")
+    # session['counter'] = (session.get('counter') or 0) + 1
+    # log.debug(f"{session['counter']}")
 
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
-            logging.debug(msg.data)
+
+            log.debug(msg.data)
             jdata = loads(msg.data)
+
             if jdata["Type"] == "close":
+                # TODO: test close field
                 await ws.send_json({"Status": "close"})
+                app.active_sockets.remove(ws)
+                log.debug(app.active_sockets)
                 await ws.close()
+
+            elif jdata["Type"] == "logout":
+                data = await LogOut(request).logout()
+                log.debug(app.active_sockets)
+                await ws.send_json(data)
+                app.active_sockets.remove(ws)
+                await ws.close()
+
             elif jdata["Type"] == "registration":
-                await insert_db_user(app.objects,**jdata)
-                # send cookie
-                await ws.send_json({"Type": "registration", "Status": "success"})
+                # TODO: check setting session after reg
+                data = await Register(request).create_user(**jdata)
+                await ws.send_json(data)
+
             elif jdata["Type"] == "login":
-                credentials = await extract_db_user(app.objects,**jdata)
-                if credentials and jdata["Password"] == credentials[1]:
-                    # send cookie
-                    await ws.send_json({"Type": "login", "Status": "success"})
-                else:
-                    await ws.send_json({"Type": "login", "Status": "error"})
+                # TODO: check setting session after login
+                data = await LogIn(request).loginning(**jdata)
+                print(request.session.get("user"))
+                await ws.send_json(data)
+
+            elif jdata["Type"] == "message":
+                # TODO: send message every chat
+                data = await ActionMessages(request).broadcast(**jdata)
+                if data is not None:
+                    await ws.send_json(data)
+
+            elif jdata["Type"] == "chat":
+                # TODO: create chat
+                data = await CreateChat(request).create(**jdata)
+                await ws.send_json(data)
+
             else:
                 await ws.send_json({"Status": "error in json file"})
 
@@ -50,17 +87,16 @@ async def websocket_handler(request):
     return ws
 
 
-async def request_user_middleware(app,handler):
-    pass
-
-
 async def create_app(loop):
     redis_pool = await create_pool(("localhost", 6379), loop=loop)
-    # middleware = [session_middleware(RedisStorage(redis_pool)),request_user_middleware] # add check user
-    app = web.Application()#middlewares=middleware)
+    middleware = [
+        session_middleware(
+            RedisStorage(redis_pool)),
+        request_user_middleware]
+    app = web.Application(middlewares=middleware)
     app.redis_pool = redis_pool
     app.add_routes([web.get("/", websocket_handler)])
-
+    app.active_sockets = []
 
     DATABASE = {
         "database": "Messenger",
@@ -72,20 +108,16 @@ async def create_app(loop):
     database.init(**DATABASE)
     app.database = database
     app.database.set_allow_sync(False)
-    app.objects = Manager(app.database)
-
-
+    app.manager = Manager(app.database)
 
     return app
 
 if __name__ == "__main__":
     loop = get_event_loop()
     app = loop.run_until_complete(create_app(loop))
-
-    with app.objects.allow_sync():
+    with app.manager.allow_sync():
         User.create_table(True)
+        Chat.create_table(True)
         Message.create_table(True)
-
-    logging.basicConfig(level=logging.DEBUG)
+    log.basicConfig(level=log.DEBUG)
     loop.create_task(web.run_app(app))
-    loop.run_forever()
