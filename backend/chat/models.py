@@ -9,6 +9,9 @@ class Chat(BaseModel):
         db_table = "chats"
         order_by = ("last_send",)
 
+    # Maybe use `unique` is not true way, becouse
+    # if two chats it is name user.
+    # or user name = owner+name in db
     name = peewee.CharField(max_length=32, unique=True)
     owner = peewee.ForeignKeyField(User)
     date_last_send = peewee.TimestampField()

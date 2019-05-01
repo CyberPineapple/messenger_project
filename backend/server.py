@@ -119,5 +119,6 @@ if __name__ == "__main__":
         User.create_table(True)
         Chat.create_table(True)
         Message.create_table(True)
-    log.basicConfig(level=log.DEBUG)
+        log.basicConfig(level=log.DEBUG, format='%(levelname)s %(asctime)s %(message)s', \
+                    datefmt='%m/%d/%Y %I:%M:%S %p')
     loop.create_task(web.run_app(app))
