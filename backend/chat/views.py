@@ -28,5 +28,6 @@ class ActionMessages(web.View):
             user=self.request.session.get("user"),
             chat=chat,
             text=jdata["Text"])
+        jdata["Status"] = "success"
         for ws in self.request.app.active_sockets:
             await ws.send_json(jdata)
