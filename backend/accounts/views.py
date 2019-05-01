@@ -11,12 +11,8 @@ class LogIn(web.View):
 
     async def login_user(self, user):
         """ Create session for user  """
-        session = await get_session(self.request)
-        session["user"] = str(user.id)
-        session["time"] = time()
-
-        # self.request.session["user"] = str(user.id)
-        # self.request.session["time"] = time()
+        self.request.session["user"] = str(user.id)
+        self.request.session["time"] = time()
 
     @anonymous_required
     async def loginning(self, **kwargs):
@@ -28,9 +24,11 @@ class LogIn(web.View):
             user = await self.request.app.manager.get(User, User.username ** username)
             if verify_password(user.password, password):
                 await self.login_user(user)
-                return True
+                self.request.user
+                return {"Type": "login", "Status": "success"}
+            raise User.DoesNotExist
         except User.DoesNotExist:
-            return False
+            return {"Type": "login", "Status": "error"}
 
 
 class Register(LogIn):
@@ -43,11 +41,11 @@ class Register(LogIn):
         password = hash_password(kwargs["Password"])
 
         if await self.request.app.manager.count(User.select().where(User.username ** username)):
-            return False
+            return {"Type": "registration", "Status": "user exist"}
         user = await self.request.app.manager.create(User, username=username,
                                                      password=password,)
         await self.login_user(user)
-        return True
+        return {"Type": "registration", "Status": "success"}
 
 
 class LogOut(web.View):
@@ -57,8 +55,7 @@ class LogOut(web.View):
         """ Remove user from session """
         try:
             session = await get_session(self.request)
-            session.pop("user")
-            print("user was exit")
-            return True
+            self.request.session.pop("user")
+            return {"Type": "logout", "Status": "success"}
         except KeyError:
-            return False
+            return {"Type": "logout", "Status": "error"}
