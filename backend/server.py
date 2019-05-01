@@ -1,4 +1,4 @@
-import logging
+import logging as log
 from peewee_async import Manager
 from aioredis import create_pool
 from asyncio import get_event_loop
@@ -8,59 +8,74 @@ from aiohttp_session.redis_storage import RedisStorage
 
 from tools.models import database
 from tools.json_validator import loads, is_json
-from tools.actions_db import insert_db_user, extract_db_user
 from tools.sessions import request_user_middleware
 from accounts.models import User
 from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
+from chat.views import CreateChat, ActionMessages
 
 
 async def websocket_handler(request):
+
     app = request.app
     ws = web.WebSocketResponse()
     await ws.prepare(request)
-    app.chats_list.append(ws)
+    app.active_sockets.append(ws)
 
-    logging.debug(app.chats_list)
-    logging.debug(app.redis_pool)
+    # log.debug(dir(app))
+    # log.debug(f"request = {request}")
+    log.debug(f"app.redis_pool = {app.redis_pool}")
+    # log.debug(f"app.manager = {app.manager}")  # async db manager
+    # contain websockets
+    log.debug(f"app.active_sockets = {app.active_sockets}")
+
+    # action with session
+    # session = await get_session(request)
+    # log.debug(f"{session}")
+    # session['counter'] = (session.get('counter') or 0) + 1
+    # log.debug(f"{session['counter']}")
+
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
 
-            logging.debug(msg.data)
+            log.debug(msg.data)
             jdata = loads(msg.data)
 
             if jdata["Type"] == "close":
+                # TODO: test close field
                 await ws.send_json({"Status": "close"})
-                app.chats_list.remove(ws)
+                app.active_sockets.remove(ws)
+                log.debug(app.active_sockets)
                 await ws.close()
 
             elif jdata["Type"] == "logout":
-                if await LogOut(request).logout():
-                    await ws.send_json({"Type":"logout", "Status": "success"})
-                    app.chats_list.remove(ws)
-                    await ws.close()
-                    logging.debug(len(app.chats_list))
-                else:
-                    await ws.send_json({"Type":"logout", "Status":"error"})
+                data = await LogOut(request).logout()
+                log.debug(app.active_sockets)
+                await ws.send_json(data)
+                app.active_sockets.remove(ws)
+                await ws.close()
 
             elif jdata["Type"] == "registration":
-                if await Register(request).create_user(**jdata):
-                    await ws.send_json({"Type": "registration", "Status": "success"})
-                else:
-                    await ws.send_json({"Type": "registration", "Status": "user exist"})
+                # TODO: check setting session after reg
+                data = await Register(request).create_user(**jdata)
+                await ws.send_json(data)
 
             elif jdata["Type"] == "login":
-                if await LogIn(request).loginning(**jdata):
-                    await ws.send_json({"Type": "login", "Status": "success"})
-                else:
-                    await ws.send_json({"Type": "login", "Status": "error"}) # user exist
-            elif jdata["Type"] == "message":
-                message = await app.manager.create(Message, user_from=jdata["From"],
-                                         chat=jdata["Chat"], #"general",
-                                         text=jdata["Text"])
-                for user in request.app.wslist[message.chat].values():
-                    user.send_json(message.as_dict())
+                # TODO: check setting session after login
+                data = await LogIn(request).loginning(**jdata)
+                print(request.session.get("user"))
+                await ws.send_json(data)
 
+            elif jdata["Type"] == "message":
+                # TODO: send message every chat
+                data = await ActionMessages(request).broadcast(**jdata)
+                if data is not None:
+                    await ws.send_json(data)
+
+            elif jdata["Type"] == "chat":
+                # TODO: create chat
+                data = await CreateChat(request).create(**jdata)
+                await ws.send_json(data)
 
             else:
                 await ws.send_json({"Status": "error in json file"})
@@ -81,7 +96,7 @@ async def create_app(loop):
     app = web.Application(middlewares=middleware)
     app.redis_pool = redis_pool
     app.add_routes([web.get("/", websocket_handler)])
-    app.chats_list = []
+    app.active_sockets = []
 
     DATABASE = {
         "database": "Messenger",
@@ -104,5 +119,5 @@ if __name__ == "__main__":
         User.create_table(True)
         Chat.create_table(True)
         Message.create_table(True)
-    logging.basicConfig(level=logging.DEBUG)
+    log.basicConfig(level=log.DEBUG)
     loop.create_task(web.run_app(app))
