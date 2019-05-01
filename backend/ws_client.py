@@ -6,6 +6,58 @@ host = "ws://localhost:8080"
 # host = "ws://host-94-103-84-32.hosted-by-vdsina.ru:8080"
 
 
+async def test_success_registration():
+    async with websockets.connect(
+            host) as websocket:
+
+        correct_creds = {
+                "Type": "registration",
+                "Login": "user",
+                "Password": "password"
+        }
+
+        await websocket.send(json.dumps(correct_creds))
+        print(f"R: {correct_creds}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        assert json.loads(answer) == {
+             "Type": "registration",
+            "Status": "success"
+        }
+
+
+async def test_succsses_create_chat():
+    async with websockets.connect(
+            host) as websocket:
+
+        correct_creds = {
+                "Type": "login",
+                "Login": "user",
+                "Password": "password"
+        }
+
+        await websocket.send(json.dumps(correct_creds))
+        print(f"R: {correct_creds}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        assert json.loads(answer) == {"Type": "login", "Status": "success"}
+
+        chat_data = {
+            "Type": "chat",
+            "User": "user",
+            "Chat": "general",
+        }
+
+        await websocket.send(json.dumps(chat_data))
+        print(f"R: {chat_data}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        assert json.loads(answer) == {"Type": "chat", "Status": "success"}
+
+
 async def test_multupule_connection():
     async with websockets.connect(host) as ws:
         correct_creds = {
@@ -56,61 +108,6 @@ async def test_multupule_connection():
         await asyncio.sleep(2)
         answer = await ws_1.recv()
         print(f"A: {answer}")
-
-    # async with websockets.connect(host) as ws_2:
-    #     message_data = {
-    #         "Type": "message",
-    #         "User": "user",
-    #         "Chat": "general",
-    #         "Text": "Hey, there is somebody?"
-    #     }
-
-    #     await ws_2.send(json.dumps(message_data))
-    #     print(f"R: {message_data}")
-
-    #     message_data = {"Type": "close"}
-
-    #     await ws_2.send(json.dumps(message_data))
-    #     print(f"R: {message_data}")
-
-    #     answer = await ws_2.recv()
-    #     print(f"A: {answer}")
-    #     message_data = {
-    #         "Type": "message",
-    #         "User": "user",
-    #         "Chat": "general",
-    #         "Text": "Hey, there is somebody?"
-    #     }
-
-    #     await ws_2.send(json.dumps(message_data))
-    #     print(f"R: {message_data}")
-
-    #     message_data = {"Type": "close"}
-
-    #     await ws_2.send(json.dumps(message_data))
-    #     print(f"R: {message_data}")
-    #     answer = await ws_2.recv()
-    #     print(f"A: {answer}")
-
-
-async def test_success_registration():
-    async with websockets.connect(
-            host) as websocket:
-
-        correct_creds = {
-                "Type": "registration",
-                "Login": "user",
-                "Password": "password"
-        }
-
-        await websocket.send(json.dumps(correct_creds))
-        print(f"R: {correct_creds}")
-
-        answer = await websocket.recv()
-        print(f"A: {answer}")
-        assert json.loads(answer) == {
-             "Type": "registration",
-            "Status": "success"}
 
 
 async def test_exists_registration():
@@ -300,37 +297,6 @@ async def test_failed_send_message():
             "Type": "chat", "Status": "chat not exist"}
 
 
-async def test_succsses_create_chat():
-    async with websockets.connect(
-            host) as websocket:
-
-        correct_creds = {
-                "Type": "login",
-                "Login": "user",
-                "Password": "password"
-        }
-
-        await websocket.send(json.dumps(correct_creds))
-        print(f"R: {correct_creds}")
-
-        answer = await websocket.recv()
-        print(f"A: {answer}")
-        assert json.loads(answer) == {"Type": "login", "Status": "success"}
-
-        chat_data = {
-            "Type": "chat",
-            "User": "user",
-            "Chat": "general",
-        }
-
-        await websocket.send(json.dumps(chat_data))
-        print(f"R: {chat_data}")
-
-        answer = await websocket.recv()
-        print(f"A: {answer}")
-        assert json.loads(answer) == {"Type": "chat", "Status": "success"}
-
-
 async def test_failed_create_chat():
     async with websockets.connect(
             host) as websocket:
@@ -347,11 +313,19 @@ async def test_failed_create_chat():
         answer = await websocket.recv()
         print(f"A: {answer}")
         assert json.loads(answer) == {"Type": "chat", "Status": "chat exist"}
+
+
+async def create_base_for_test():
+    await test_success_registration()
+    await test_succsses_create_chat()
+
+
 loop = asyncio.get_event_loop()
+# run one, becouse next, check exist user
+# loop.create_task(create_base_for_test())
+
 loop.run_until_complete(
     asyncio.gather(
-        # run one, becouse next, check exist user
-        # test_success_registration(),
         test_exists_registration(),
         test_success_sign_in(),
         test_failture_sign_in(),
@@ -361,11 +335,7 @@ loop.run_until_complete(
         # test_succsses_send_message(),
         test_failed_send_message(),
 
-        # test_succsses_create_chat(),
         # test_failed_create_chat(), test after realise redirect for non auth
         # user
         # test_multupule_connection(),
-        #test_multupule_connection(),
         ))
-
-# loop.runi_until_complete(asyncio.gather(*[test_login() for _ in range(100)]))
