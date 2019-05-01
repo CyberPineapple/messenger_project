@@ -3,9 +3,13 @@ import websockets
 import json
 
 
+host = "ws://localhost:8080"
+# host = "ws://host-94-103-84-32.hosted-by-vdsina.ru:8080"
+
+
 async def test_success_registration():
     async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+            host) as websocket:
 
         correct_creds = {
                 "Type": "registration",
@@ -18,12 +22,14 @@ async def test_success_registration():
 
         answer = await websocket.recv()
         print(f"< {answer}")
-        assert json.loads(answer) == {"Status": "success"}
+        assert json.loads(answer) == {
+             "Type": "registration",
+            "Status": "success"}
 
 
-async def test_success_login():
+async def test_success_sign_in():
     async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+            host) as websocket:
 
         correct_creds = {
                 "Type": "login",
@@ -36,12 +42,12 @@ async def test_success_login():
 
         answer = await websocket.recv()
         print(f"< {answer}")
-        assert json.loads(answer) == {"Status": "success"}
+        assert json.loads(answer) == {"Type": "login","Status": "success"}
 
 
-async def test_failture_login():
+async def test_failture_sign_in():
     async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+            host) as websocket:
 
         correct_creds = {
                 "Type": "login",
@@ -54,12 +60,12 @@ async def test_failture_login():
 
         answer = await websocket.recv()
         print(f"< {answer}")
-        assert json.loads(answer) == {"Status": "error"}
+        assert json.loads(answer) == {"Type": "login","Status": "error"}
 
 
 async def test_failture_password():
     async with websockets.connect(
-            'ws://localhost:8080') as websocket:
+            host) as websocket:
 
         correct_creds = {
                 "Type": "login",
@@ -72,14 +78,14 @@ async def test_failture_password():
 
         answer = await websocket.recv()
         print(f"< {answer}")
-        assert json.loads(answer) == {"Status": "error"}
+        assert json.loads(answer) == {"Type": "login","Status": "error"}
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(
     asyncio.gather(
-        test_success_login(),
         test_success_registration(),
-        test_failture_login(),
+        test_success_sign_in(),
+        test_failture_sign_in(),
         test_failture_password(),
     ))
 
