@@ -1,7 +1,5 @@
 import peewee
 
-from datetime import datetime
-
 from accounts.models import User
 from tools.models import BaseModel
 
@@ -13,7 +11,7 @@ class Chat(BaseModel):
 
     name = peewee.CharField(max_length=32, unique=True)
     owner = peewee.ForeignKeyField(User)
-    date_last_send = peewee.DateTimeField(default=datetime.now())
+    date_last_send = peewee.TimestampField()
 
     @classmethod
     async def all_chats(cls, manager):
@@ -33,4 +31,4 @@ class Message(BaseModel):
     user = peewee.ForeignKeyField(User, backref='messages')
     chat = peewee.ForeignKeyField(Chat)
     text = peewee.TextField()
-    created_at = peewee.DateTimeField(default=datetime.now())
+    created_at = peewee.TimestampField()
