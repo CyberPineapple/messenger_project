@@ -11,9 +11,9 @@ class Chat(BaseModel):
         db_table = "chats"
         order_by = ("last_send",)
 
-    name = peewee.CharField(max_length=32, unique=True, null=False, index=True)
-    date_last_send = peewee.DateTimeField(default=datetime.now())
+    name = peewee.CharField(max_length=32, unique=True)
     owner = peewee.ForeignKeyField(User)
+    date_last_send = peewee.DateTimeField(default=datetime.now())
 
     @classmethod
     async def all_chats(cls, manager):
@@ -30,16 +30,7 @@ class Message(BaseModel):
         db_table = "messages"
         order_by = ("date_send",)
 
-    user_from = peewee.ForeignKeyField(User, null=True)
-    chat = peewee.ForeignKeyField(Chat, related_name="messages")
+    user = peewee.ForeignKeyField(User, backref='messages')
+    chat = peewee.ForeignKeyField(Chat)
     text = peewee.TextField()
-    date_send = peewee.DateTimeField(default=datetime.now())
-
-    def as_dict(self):
-        return {
-            "Type": "Message",
-            "Text": self.text,
-            "From": self.user_from.username,
-            "To": self.user_to.username,
-            "Date": self.date_send,
-        }
+    created_at = peewee.DateTimeField(default=datetime.now())

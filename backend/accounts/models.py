@@ -11,8 +11,8 @@ class User(models.BaseModel):
         db_table = "users"
         order_by = ("date_register")
 
-    username = peewee.CharField(max_length=20, unique=True)
     id = peewee.AutoField(null=False)
+    username = peewee.CharField(max_length=20, unique=True)
     # password = sha-1(salt + password)
     password = peewee.CharField(max_length=192)
     online = peewee.BooleanField(default=True)
