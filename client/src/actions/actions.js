@@ -32,7 +32,7 @@ export const removePassword = () => {
     }
 }
 
-export const authentification = (value) => {
+export const authentification = value => {
     return {
         type: 'AUTHENTIFICATION',
         authentification: value
@@ -40,7 +40,7 @@ export const authentification = (value) => {
 }
 
 
-export const connect = (value) => {
+export const connect = value => {
     return {
         type: 'CONNECT',
         connect: value
@@ -61,8 +61,41 @@ export const setMessagesList = value => {
     }
 }
 
-export const removeMessage = value => {
+export const removeMessagesList = () => {
+    return{
+        type: 'REMOVE_MESSAGES_LIST',
+    }
+}
+
+export const removeMessage = () => {
     return{
         type: 'REMOVE_MESSAGE'
+    }
+}
+
+export const setChatList = value => {
+    return{
+        type: 'SET_CHAT_LIST',
+        chatList: value
+    }
+}
+
+export const addChatName = value => {
+    return{
+        type: 'ADD_CHAT_NAME',
+        chatName: value
+    }
+}
+
+export const removeChatName = () => {
+    return{
+        type: 'REMOVE_CHAT_NAME',
+    }
+}
+
+export const activeChat = value => {
+    return {
+        type: 'ACTIVE_CHAT',
+        chat: value
     }
 }

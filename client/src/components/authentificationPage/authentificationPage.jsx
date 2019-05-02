@@ -25,6 +25,7 @@ class AuthentificationPage extends React.Component {
               onChange={(event) => this.props.setLogin(event.target.value)}
               onClick={()=>this.props.removeLogin()}
               value={this.props.login}
+              maxLength={20}
             />
             <p>Пароль</p>
             <input
@@ -33,6 +34,7 @@ class AuthentificationPage extends React.Component {
               onChange={(event) => this.props.setPassword(event.target.value)}
               value={this.props.password}
               onClick={()=>this.props.removePassword()}
+              maxLength={30}
             />
             <div
               className={style.button}

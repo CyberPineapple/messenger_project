@@ -10,7 +10,10 @@ class Chatbox extends React.Component{
 
     render(){
         const { messagesList } = this.props;
-        const messages = messagesList.map((value)=><li>{value}</li>)
+        let messages = [];
+        if (messagesList.length !== 0){
+            messages = messagesList.map((value, id)=><li key={id}>{value.text}</li>)
+        }
         return(
             <div className={style.block}>
                 <div className={style.output}>
@@ -25,11 +28,12 @@ class Chatbox extends React.Component{
     }
 
     sendMessage = () =>{
-        if (this.props.message !== ''){
+        if (this.props.message !== '' && this.props.activeChat !== ''){
             let data = {
                 Type: 'message',
-                Sender: this.props.login,
-                Text: this.props.message
+                User: this.props.login,
+                Text: this.props.message,
+                Chat: this.props.activeChat
             }
             data = JSON.stringify(data);
             socket.send(data);
@@ -46,6 +50,7 @@ class Chatbox extends React.Component{
     onChangeMessage = (value) =>{
         if (value !== '\n')
         this.props.setMessage(value);
+        console.log(value);
     }
 }
 
@@ -53,7 +58,8 @@ const mapStateToProps = store => {
     return {
         message: store.message,
         login: store.login,
-        messagesList: store.messagesList
+        messagesList: store.messagesList,
+        activeChat: store.activeChat
     }
 }
 

@@ -13,3 +13,9 @@ body {
   margin: 0;
   padding: 0;
 }
+
+::-webkit-scrollbar { width: 3px; height: 3px;}
+::-webkit-scrollbar-button {display: none;}
+::-webkit-scrollbar-track {display: none;}
+::-webkit-scrollbar-track-piece {display: none;}
+::-webkit-scrollbar-thumb { height: 50px; background-color: #77207D; border-radius: 3px;}
