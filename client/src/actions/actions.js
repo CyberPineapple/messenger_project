@@ -22,13 +22,80 @@ export const setPassword = value => {
 
 export const removeLogin = () => {
     return{
-        type: 'REMOVE_LOGIN',
+        type: 'REMOVE_LOGIN'
     }
 }
 
-export const removePassword = value => {
+export const removePassword = () => {
     return{
-        type: 'SET_PASSWORD',
-        password: ''
+        type: 'REMOVE_PASSWORD',
+    }
+}
+
+export const authentification = value => {
+    return {
+        type: 'AUTHENTIFICATION',
+        authentification: value
+    }
+}
+
+
+export const connect = value => {
+    return {
+        type: 'CONNECT',
+        connect: value
+    }
+}
+
+export const setMessage = value => {
+    return{
+        type: 'SET_MESSAGE',
+        message: value
+    }
+}
+
+export const setMessagesList = value => {
+    return{
+        type: 'SET_MESSAGES_LIST',
+        messagesList: value
+    }
+}
+
+export const removeMessagesList = () => {
+    return{
+        type: 'REMOVE_MESSAGES_LIST',
+    }
+}
+
+export const removeMessage = () => {
+    return{
+        type: 'REMOVE_MESSAGE'
+    }
+}
+
+export const setChatList = value => {
+    return{
+        type: 'SET_CHAT_LIST',
+        chatList: value
+    }
+}
+
+export const addChatName = value => {
+    return{
+        type: 'ADD_CHAT_NAME',
+        chatName: value
+    }
+}
+
+export const removeChatName = () => {
+    return{
+        type: 'REMOVE_CHAT_NAME',
+    }
+}
+
+export const activeChat = value => {
+    return {
+        type: 'ACTIVE_CHAT',
+        chat: value
     }
 }

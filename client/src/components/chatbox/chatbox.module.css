@@ -1,11 +1,4 @@
-.layout{
-    height: 100vh;
-    width: 100%;
-}
-
-
-
-.chatbox{
+.block{
     position: relative;
     left: 200px;
     top: 0;
@@ -13,43 +6,48 @@
     width: calc(100% - 200px);
     padding-top: 20px;
     box-sizing: border-box;
+    background-image: url(../../images/free_hexagon_pattern_02_by_black_light_studio-d65g32i.png);
 }
 
 .output{
     margin: auto;
     height: 80%;
     width: 90%;
-    border: 2px solid #3afd95;
+    border: 2px solid #77207D;
     margin-bottom: 25px;
+    background-color: white;
+    overflow-y: scroll;
 }
 
 .input{
     margin: auto;
     width: 90%;
-    background-color: #b7a5d1;
+    background-color: #77207D;
     height: 15%;
     display: flex;
 }
 
 .input textarea{
+    padding: 10px;
     box-sizing: border-box;
     width: 70%;
     height: 100%;
     outline: none;
     resize: none;
-    border: 2px solid #3afd95;
+    border: 2px solid #77207D;
     border-right: none;
 }
 
 .button{
     flex: 1 1 auto;
-    border: 2px solid #3afd95;
+    border: 2px solid #77207D;
     background-color: white;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background .2s linear;
 }
 
 .button:hover{
-    border: 2px solid #b7a5d1;
+    background-color: #E6FB71;
 }
