@@ -357,7 +357,7 @@ loop = asyncio.get_event_loop()
 
 loop.run_until_complete(
     asyncio.gather(
-        test_success_send_chats()
+        # test_success_send_chats()
         #test_exists_registration(),
         #test_success_sign_in(),
         #test_failture_sign_in(),

@@ -83,6 +83,8 @@ async def websocket_handler(request):
                         data = await ActionChat(request).send_chats_users()
                     elif jdata["Command"] == "get":
                         data = await ActionChat(request).send_chats_users()
+                    elif jdata["Command"] == "choice":
+                        data = await ActionChat(request).send_messages_from_chat()
                     await ws.send_json(data)
 
             else:

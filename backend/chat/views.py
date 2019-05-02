@@ -4,7 +4,7 @@ from aiohttp import web
 
 
 class ActionChat(web.View):
-
+    # TODO: move `user` from func.
     @login_required
     async def create(self, **jdata):
         name = jdata["Chat"]
@@ -22,6 +22,19 @@ class ActionChat(web.View):
         for chat in query_chats:
             chats.append(chat.name)
         return {"Type": "chat", "Chats": chats}
+
+    async def send_messages_from_chat(self, **jdata):
+        user = self.request.session.get("user")
+        enter_chat = jdata["Chat"]
+        messages = []
+
+        query_chats = await self.request.app.manager.execute(Mesage.select().where(Message.chat.name == enter_chat).order_by(Message.created_at))
+
+        for message in query_chats:
+            messages.append([message.user, message.text, message.creted_at])
+        return {"Type":"chat", "Messages": messages}
+
+
 
 
 class ActionMessages(web.View):
