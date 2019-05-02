@@ -5,7 +5,7 @@ export const initialState = {
     password: 'password',
     authentification: false,
     connect: false,
-    message: 'fghfgh',
+    message: '',
     messagesList: []
 }
 

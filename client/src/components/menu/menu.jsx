@@ -14,4 +14,10 @@ class Menu extends React.Component{
     }
 }
 
-export default connect(null, null)(Menu);
+const mapStateToProps = store =>{
+  return {
+    login: store.login
+  }
+}
+
+export default connect(mapStateToProps, null)(Menu);

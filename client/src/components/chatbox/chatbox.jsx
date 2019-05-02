@@ -17,7 +17,7 @@ class Chatbox extends React.Component{
                     {messages}
                 </div>
                 <div className={style.input}>
-                <textarea onChange={(event)=> this.props.setMessage(event.target.value)} value={this.props.message}></textarea>
+                <textarea onChange={(event)=> this.onChangeMessage(event.target.value)} value={this.props.message}  onKeyPress={(e) => this.pressEnter(e)}></textarea>
                 <div className={style.button} onClick={()=>this.sendMessage()}>Отправить</div>
                 </div>
           </div>
@@ -25,14 +25,27 @@ class Chatbox extends React.Component{
     }
 
     sendMessage = () =>{
-        let data = {
-            Type: 'message',
-            Sender: this.props.login,
-            Text: this.props.message
+        if (this.props.message !== ''){
+            let data = {
+                Type: 'message',
+                Sender: this.props.login,
+                Text: this.props.message
+            }
+            data = JSON.stringify(data);
+            socket.send(data);
+            this.props.removeMessage();
         }
-        data = JSON.stringify(data);
-        socket.send(data);
-        this.props.removeMessage();
+    }
+
+    pressEnter = (e) =>{
+        if (e.key === 'Enter'){
+            this.sendMessage();
+        }
+    }
+
+    onChangeMessage = (value) =>{
+        if (value !== '\n')
+        this.props.setMessage(value);
     }
 }
 

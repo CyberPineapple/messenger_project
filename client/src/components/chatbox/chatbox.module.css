@@ -16,6 +16,7 @@
     border: 2px solid #77207D;
     margin-bottom: 25px;
     background-color: white;
+    overflow-y: scroll;
 }
 
 .input{
