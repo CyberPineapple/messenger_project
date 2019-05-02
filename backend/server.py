@@ -60,12 +60,12 @@ async def websocket_handler(request):
                 # TODO: check setting session after reg
                 data = await Register(request).create_user(**jdata)
                 await ws.send_json(data)
-                data = await ActionChat(request).send_chats_users()
-                await ws.send_json(data)
 
             elif jdata["Type"] == "login":
                 # TODO: check setting session after login
                 data = await LogIn(request).loginning(**jdata)
+                await ws.send_json(data)
+                data = await ActionChat(request).send_chats_users()
                 await ws.send_json(data)
 
             elif jdata["Type"] == "message":

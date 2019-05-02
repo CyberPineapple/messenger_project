@@ -23,19 +23,24 @@ class ActionChat(web.View):
             chats.append(chat.name)
         return {"Type": "chat", "Chats": chats}
 
+
 class ActionMessages(web.View):
 
     @login_required
-    async def broadcast(self, **jdata):
+    async def broadcast(self, in_chat=False, **jdata):
         try:
-            chat = await self.request.app.manager.get(Chat, Chat.name ** jdata["Chat"])
+            chat = await self.request.app.manager.get(Chat,
+                                                      Chat.name ** jdata["Chat"])
         except Chat.DoesNotExist:
-            return {"Type":"chat", "Status":"chat not exist"}
+            return {"Type": "chat", "Status": "chat not exist"}
         await self.request.app.manager.create(
             Message,
             user=self.request.session.get("user"),
             chat=chat,
             text=jdata["Text"])
         jdata["Status"] = "success"
-        for ws in self.request.app.active_sockets:
-            await ws.send_json(jdata)
+        if in_chat is False:
+            for ws in self.request.app.active_sockets:
+                await ws.send_json(jdata)
+        # else:
+        #    for ws in self.request.app.manager.
