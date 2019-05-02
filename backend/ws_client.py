@@ -3,7 +3,7 @@ import websockets
 import json
 
 host = "ws://localhost:8080"
-# host = "ws://host-94-103-84-32.hosted-by-vdsina.ru:8080"
+#host = "ws://host-94-103-84-32.hosted-by-vdsina.ru:8080"
 
 
 async def test_success_registration():
@@ -12,7 +12,7 @@ async def test_success_registration():
 
         correct_creds = {
                 "Type": "registration",
-                "Login": "user",
+                "Login": "login",
                 "Password": "password"
         }
 
@@ -33,7 +33,7 @@ async def test_succsses_create_chat():
 
         correct_creds = {
                 "Type": "login",
-                "Login": "user",
+                "Login": "login",
                 "Password": "password"
         }
 
@@ -46,8 +46,9 @@ async def test_succsses_create_chat():
 
         chat_data = {
             "Type": "chat",
-            "User": "user",
-            "Chat": "general",
+            "User": "login",
+            "Command": "create",
+            "Chat": "POCHANY",
         }
 
         await websocket.send(json.dumps(chat_data))
@@ -314,6 +315,36 @@ async def test_failed_create_chat():
         print(f"A: {answer}")
         assert json.loads(answer) == {"Type": "chat", "Status": "chat exist"}
 
+async def test_success_send_chats():
+    async with websockets.connect(
+            host) as websocket:
+
+        correct_creds = {
+                "Type": "login",
+                "Login": "user",
+                "Password": "password"
+        }
+
+        await websocket.send(json.dumps(correct_creds))
+        print(f"R: {correct_creds}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        assert json.loads(answer) == {"Type": "login", "Status": "success"}
+
+
+        data = {
+            "Type": "chat",
+            "Command": "get"
+        }
+
+        await websocket.send(json.dumps(data))
+        print(f"R: {data}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        #assert json.loads(answer) == {"Type": "login", "Status": "success"}
+
 
 async def create_base_for_test():
     await test_success_registration()
@@ -322,18 +353,19 @@ async def create_base_for_test():
 
 loop = asyncio.get_event_loop()
 # run one, becouse next, check exist user
-# loop.create_task(create_base_for_test())
+# loop.run_until_complete(create_base_for_test())
 
 loop.run_until_complete(
     asyncio.gather(
-        test_exists_registration(),
-        test_success_sign_in(),
-        test_failture_sign_in(),
-        test_failture_password(),
-        test_succsses_logout(),
+        test_success_send_chats()
+        #test_exists_registration(),
+        #test_success_sign_in(),
+        #test_failture_sign_in(),
+        #test_failture_password(),
+        #test_succsses_logout(),
         # test_fault_logout(),# not need becouse, if logout, then logout
         # test_succsses_send_message(),
-        test_failed_send_message(),
+        #test_failed_send_message(),
 
         # test_failed_create_chat(), test after realise redirect for non auth
         # user

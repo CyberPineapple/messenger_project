@@ -12,7 +12,7 @@ from tools.sessions import request_user_middleware
 from accounts.models import User
 from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
-from chat.views import CreateChat, ActionMessages
+from chat.views import ActionChat, ActionMessages
 
 
 async def websocket_handler(request):
@@ -74,8 +74,12 @@ async def websocket_handler(request):
 
             elif jdata["Type"] == "chat":
                 # TODO: create chat
-                data = await CreateChat(request).create(**jdata)
-                await ws.send_json(data)
+                if "Command" in jdata.keys():
+                    if jdata["Command"] == "create":
+                        data = await ActionChat(request).create(**jdata)
+                    elif jdata["Command"] == "get":
+                        data = await ActionChat(request).send_chats_users()
+                    await ws.send_json(data)
 
             else:
                 await ws.send_json({"Status": "error in json file"})

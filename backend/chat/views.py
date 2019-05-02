@@ -3,7 +3,7 @@ from tools.sessions import login_required
 from aiohttp import web
 
 
-class CreateChat(web.View):
+class ActionChat(web.View):
 
     @login_required
     async def create(self, **jdata):
@@ -14,6 +14,14 @@ class CreateChat(web.View):
         await self.request.app.manager.create(Chat, name=name, owner=user)
         return {"Type": "chat", "Status": "success"}
 
+    async def send_chats_users(self):
+        # user? in db or session
+        user = self.request.session.get("user")
+        chats = []
+        query_chats = await self.request.app.manager.execute(Chat.select().where(Chat.owner == user))
+        for chat in query_chats:
+            chats.append(chat.name)
+        return {"Type": "chat", "Chats": chats}
 
 class ActionMessages(web.View):
 
