@@ -22,9 +22,10 @@ async def websocket_handler(request):
     await ws.prepare(request)
     app.active_sockets.append(ws)
 
+    # log.debug(request.session.get("user"))
     # log.debug(dir(app))
     # log.debug(f"request = {request}")
-    log.debug(f"app.redis_pool = {app.redis_pool}")
+    # log.debug(f"app.redis_pool = {app.redis_pool}")
     # log.debug(f"app.manager = {app.manager}")  # async db manager
     # contain websockets
     log.debug(f"app.active_sockets = {app.active_sockets}")
@@ -65,7 +66,6 @@ async def websocket_handler(request):
             elif jdata["Type"] == "login":
                 # TODO: check setting session after login
                 data = await LogIn(request).loginning(**jdata)
-                print(request.session.get("user"))
                 await ws.send_json(data)
 
             elif jdata["Type"] == "message":
