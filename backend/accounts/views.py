@@ -9,9 +9,9 @@ from aiohttp_session import get_session
 
 class LogIn(web.View):
 
-    async def login_user(self, user):
+    async def _login_user(self, user):
         """ Create session for user  """
-        self.request.session["user"] = str(user.id)
+        self.request.session["user"] = str(user.username)
         self.request.session["time"] = time()
 
     @anonymous_required
@@ -21,10 +21,11 @@ class LogIn(web.View):
         password = kwargs["Password"]
 
         try:
-            user = await self.request.app.manager.get(User, User.username ** username)
+            user = await self.request.app.manager.get(
+                            User, User.username ** username)
             if verify_password(user.password, password):
-                await self.login_user(user)
-                self.request.user
+                await self._login_user(user)
+                # self.request.user
                 return {"Type": "login", "Status": "success"}
             raise User.DoesNotExist
         except User.DoesNotExist:
@@ -40,11 +41,13 @@ class Register(LogIn):
         username = kwargs["Login"]
         password = hash_password(kwargs["Password"])
 
-        if await self.request.app.manager.count(User.select().where(User.username ** username)):
+        if await self.request.app.manager.count(
+            User.select().where(User.username == username)):
             return {"Type": "registration", "Status": "user exist"}
-        user = await self.request.app.manager.create(User, username=username,
-                                                     password=password,)
-        await self.login_user(user)
+
+        user = await self.request.app.manager.create(
+            User, username=username, password=password,)
+        await self._login_user(user)
         return {"Type": "registration", "Status": "success"}
 
 
