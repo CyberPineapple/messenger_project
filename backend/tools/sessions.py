@@ -4,11 +4,14 @@ from accounts.models import User
 
 async def request_user_middleware(app, handler):
     async def middleware(request):
-        request.session = await get_session(request)
-        request.user = None
-        user_id = request.session.get('user')
-        if user_id is not None:
-            request.user = await request.app.manager.get(User, id=user_id)
+        request.session = await get_session(request) # send the session
+        request.user = None # init state
+        user_ident = request.session.get('user') # find in store
+        if user_ident is not None: # if find get him
+            request.user = await request.app.manager.get(User.username == user_ident)
+
+        print("From tools/session:",request.user,user_ident)
+
         return await handler(request)
     return middleware
 
