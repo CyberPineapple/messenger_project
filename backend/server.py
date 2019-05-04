@@ -22,6 +22,10 @@ async def websocket_handler(request):
     await ws.prepare(request)
     app.active_sockets.append(ws)
 
+    # chat = requet.session.get("chat")
+    # if chat not in app.active_sockets.keys():
+    #     app.active_sockets[chat] = [] # -> {None:[]}
+
     # log.debug(request.session.get("user"))
     # log.debug(dir(app))
     # log.debug(f"request = {request}")
@@ -65,28 +69,35 @@ async def websocket_handler(request):
                 # TODO: check setting session after login
                 data = await LogIn(request).loginning(**jdata)
                 await ws.send_json(data)
-                data = await ActionChat(request).send_chats_users()
-                await ws.send_json(data)
+                # data = await Chat.all_chats(request.app.manager)
+                # await ws.send_json(data)
 
-            elif jdata["Type"] == "message":
-                # TODO: send message every chat
-                data = await ActionMessages(request).broadcast(**jdata)
-                if data is not None:
-                    await ws.send_json(data)
+            # elif jdata["Type"] == "message":
+            #     # TODO: send message every chat
+            #     data = await ActionMessages(request).broadcast(**jdata)
+            #     if data is not None:
+            #         await ws.send_json(data)
 
             elif jdata["Type"] == "chat":
-                # TODO: create chat
+                data = {}
+                # TODO: CRUD chat
                 if "Command" in jdata.keys():
-                    if jdata["Command"] == "create":
-                        data = await ActionChat(request).create(**jdata)
-                        await ws.send_json(data)
-                        data = await ActionChat(request).send_chats_users()
-                    elif jdata["Command"] == "get":
-                        data = await ActionChat(request).send_chats_users()
+                    if jdata["Command"] == "message":
+                        data = await ActionChat(request).send_message(**jdata)
                     elif jdata["Command"] == "choice":
-                        data = await ActionChat(request).send_messages_from_chat()
-                    await ws.send_json(data)
+                        data = await ActionChat(request).send_messages_from_chat(**jdata)
+                    elif jdata["Command"] == "create":
+                        data = await ActionChat(request).create_chat(**jdata)
+                        await ws.send_json(data)
+                        data = await Chat.all_chats(request.app.manager)
+                    elif jdata["Command"] == "list":
+                        # TODO: Non auth user can get all chats
+                        # data = await ActionChat(request).send_chats_users()
+                        data = await Chat.all_chats(request.app.manager)
+                    elif jdata["Command"] == "delete":
+                        pass
 
+                await ws.send_json(data)
             else:
                 await ws.send_json({"Status": "error in json file"})
 
@@ -107,7 +118,7 @@ async def create_app(loop):
     app.redis_pool = redis_pool
     app.add_routes([web.get("/", websocket_handler)])
     app.active_sockets = []
-
+    # app.active_sockets = {}
     DATABASE = {
         "database": "Messenger",
         "password": "sl+@lM!93nd3_===",
@@ -129,6 +140,8 @@ if __name__ == "__main__":
         User.create_table(True)
         Chat.create_table(True)
         Message.create_table(True)
-        log.basicConfig(level=log.DEBUG, format='%(levelname)s %(asctime)s %(message)s', \
-                    datefmt='%m/%d/%Y %I:%M:%S %p')
+    log.basicConfig(
+        level=log.DEBUG,
+        format='%(levelname)s %(asctime)s %(message)s',
+        datefmt='%m/%d/%Y %I:%M:%S %p')
     loop.create_task(web.run_app(app))
