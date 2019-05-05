@@ -12,7 +12,7 @@ from tools.sessions import request_user_middleware
 from accounts.models import User
 from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
-from chat.views import ActionChat, ActionMessages
+from chat.views import ActionChat
 
     # TODO: goto active_sockets -> dict()
     # it's need for send messages to current chat
