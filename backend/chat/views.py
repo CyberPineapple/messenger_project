@@ -1,6 +1,5 @@
 from .models import Chat, Message
 from tools.sessions import login_required
-from tools.actions_db import get_user_by_id
 from aiohttp import web
 
 

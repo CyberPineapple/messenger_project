@@ -14,6 +14,8 @@ from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
 from chat.views import ActionChat, ActionMessages
 
+    # TODO: goto active_sockets -> dict()
+    # it's need for send messages to current chat
 
 async def websocket_handler(request):
 
@@ -21,7 +23,6 @@ async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
     app.active_sockets.append(ws)
-
     # chat = requet.session.get("chat")
     # if chat not in app.active_sockets.keys():
     #     app.active_sockets[chat] = [] # -> {None:[]}
