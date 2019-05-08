@@ -24,8 +24,8 @@ class Chat(BaseModel):
     @classmethod
     async def all_chats(cls, manager):
         chats = await manager.execute(cls.select())
-        return {"Type": "chat", "Chats": [{"Chat":chat.name,
-                                     "Closed":chat.closed} for chat in chats]}
+        return {"Type": "chat", "Command": "list", "Chats": [
+            {"Chat": chat.name, "Closed": chat.closed} for chat in chats]}
 
 
 class Message(BaseModel):

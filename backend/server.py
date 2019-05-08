@@ -70,8 +70,8 @@ async def websocket_handler(request):
                 # TODO: check setting session after login
                 data = await LogIn(request).loginning(**jdata)
                 await ws.send_json(data)
-                # data = await Chat.all_chats(request.app.manager)
-                # await ws.send_json(data)
+                data = await Chat.all_chats(request.app.manager)
+                await ws.send_json(data)
 
             # elif jdata["Type"] == "message":
             #     # TODO: send message every chat
