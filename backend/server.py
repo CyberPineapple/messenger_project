@@ -70,17 +70,12 @@ async def websocket_handler(request):
 
             elif jdata["Type"] == "login":
                 # TODO: check setting session after login
+                # two send_json, compare in one json
                 data = await LogIn(request).loginning(**jdata)
                 await ws.send_json(data)
                 data = await Chat.all_chats(request.app.manager)
                 await ws.send_json(data)
                 await ws.close()
-
-            # elif jdata["Type"] == "message":
-            #     # TODO: send message every chat
-            #     data = await ActionMessages(request).broadcast(**jdata)
-            #     if data is not None:
-            #         await ws.send_json(data)
 
             elif jdata["Type"] == "chat":
                 data = {}
@@ -94,11 +89,11 @@ async def websocket_handler(request):
                     elif jdata["Command"] == "create":
                         data = await ActionChat(request).create_chat(**jdata)
                         await ws.send_json(data)
-                        data = await Chat.all_chats(request.app.manager)
+                        data = await ActionChat(request).send_list_chats()
                     elif jdata["Command"] == "list":
                         # TODO: Non auth user can get all chats
                         # data = await ActionChat(request).send_chats_users()
-                        data = await Chat.all_chats(request.app.manager)
+                        data = await ActionChat(request).send_list_chats()
                     elif jdata["Command"] == "delete":
                         pass
 
