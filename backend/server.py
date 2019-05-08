@@ -1,9 +1,8 @@
 import logging as log
 from peewee_async import Manager
 from aioredis import create_pool
-from asyncio import get_event_loop
 from aiohttp import web
-from aiohttp_session import session_middleware
+from aiohttp_session import session_middleware, setup
 from aiohttp_session.redis_storage import RedisStorage
 
 from tools.models import database
@@ -14,8 +13,9 @@ from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
 from chat.views import ActionChat
 
-    # TODO: goto active_sockets -> dict()
-    # it's need for send messages to current chat
+# TODO: goto active_sockets -> dict()
+# it's need for send messages to current chat
+
 
 async def websocket_handler(request):
 
@@ -30,16 +30,18 @@ async def websocket_handler(request):
     # log.debug(request.session.get("user"))
     # log.debug(dir(app))
     # log.debug(f"request = {request}")
-    # log.debug(f"app.redis_pool = {app.redis_pool}")
+    # log.debug(f"app.redis = {app.redis_pool}")
     # log.debug(f"app.manager = {app.manager}")  # async db manager
     # contain websockets
     log.debug(f"app.active_sockets = {app.active_sockets}")
 
     # action with session
-    # session = await get_session(request)
-    # log.debug(f"{session}")
-    # session['counter'] = (session.get('counter') or 0) + 1
-    # log.debug(f"{session['counter']}")
+    from aiohttp_session import get_session
+    session = await get_session(request)
+    log.debug(f"{session}")
+    session['counter'] = (session.get('counter') or 0) + 1
+    assert "counter" in session
+    log.debug(f"{session['counter']}")
 
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
@@ -109,17 +111,18 @@ async def websocket_handler(request):
     return ws
 
 
-async def create_app(loop):
-    redis_pool = await create_pool(("localhost", 6379), loop=loop)
+async def init():
+    redis = await create_pool("redis://localhost")
+    storage = RedisStorage(redis)
     middleware = [
-        session_middleware(
-            RedisStorage(redis_pool)),
+        session_middleware(storage),
         request_user_middleware]
     app = web.Application(middlewares=middleware)
-    app.redis_pool = redis_pool
     app.add_routes([web.get("/", websocket_handler)])
+
     app.active_sockets = []
     # app.active_sockets = {}
+
     DATABASE = {
         "database": "Messenger",
         "password": "sl+@lM!93nd3_===",
@@ -131,18 +134,19 @@ async def create_app(loop):
     app.database = database
     app.database.set_allow_sync(False)
     app.manager = Manager(app.database)
+    setup(app, storage)
 
-    return app
-
-if __name__ == "__main__":
-    loop = get_event_loop()
-    app = loop.run_until_complete(create_app(loop))
     with app.manager.allow_sync():
         User.create_table(True)
         Chat.create_table(True)
         Message.create_table(True)
+
     log.basicConfig(
         level=log.DEBUG,
         format='%(levelname)s %(asctime)s %(message)s',
         datefmt='%m/%d/%Y %I:%M:%S %p')
-    loop.create_task(web.run_app(app))
+
+    return app
+
+if __name__ == "__main__":
+    web.run_app(init())

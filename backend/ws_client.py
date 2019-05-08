@@ -543,13 +543,13 @@ async def create_base_for_test():
 
 
 loop = asyncio.get_event_loop()
-# run one, becouse next, check exist user
+# run one, becouse next, check # exist user
 # loop.run_until_complete(create_base_for_test())
 
 loop.run_until_complete(
     asyncio.gather(
         # test_exists_registration(),
-        # test_success_sign_in(),
+        test_success_sign_in(),
         # test_failture_sign_in(),
         # test_failture_password(),
         # test_succsses_logout(),
@@ -558,7 +558,7 @@ loop.run_until_complete(
         # test_success_send_message(),
         # test_success_send_message_to_closed_chat(),
         # test_failed_send_message(),
-        test_success_send_message_in_closed_chat(),
+        # test_success_send_message_in_closed_chat(),
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
         # test_success_enter_in_closed_chat(),
