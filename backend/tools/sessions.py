@@ -1,19 +1,19 @@
 from aiohttp_session import get_session
+from aiohttp.web import middleware
 from accounts.models import User
 
 
-async def request_user_middleware(app, handler):
-    async def middleware(request):
-        request.session = await get_session(request) # send the session
-        request.user = None # init state
-        user_ident = request.session.get('user') # find in store
-        if user_ident is not None: # if find get him
-            request.user = await request.app.manager.get(User.username == user_ident)
-
-        print("From tools/session:",request.user,user_ident)
-
-        return await handler(request)
-    return middleware
+@middleware
+async def request_user_middleware(request, handler):
+    request.session = await get_session(request)
+    request.user = None
+    user_ident = request.session.get('user')
+    if user_ident is not None:
+        request.user = await request.app.manager.get(
+                                User.username == user_ident)
+    responce = await handler(request)
+    print(request.user)
+    return responce
 
 
 def login_required(func):
