@@ -7,7 +7,7 @@ from aiohttp_session.redis_storage import RedisStorage
 
 from tools.models import database
 from tools.json_validator import loads, is_json
-from tools.sessions import request_user
+from tools.sessions import request_user_middleware
 from accounts.models import User
 from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
@@ -133,8 +133,8 @@ async def init():
     storage = RedisStorage(redis)
     middleware = [
         session_middleware(
-            RedisStorage(redis_pool)),
-        request_user]
+            RedisStorage(redis)),
+        request_user_middleware]
     app = web.Application(middlewares=middleware)
     setup(app, storage)
     app.add_routes([web.get("/", websocket_handler)])
