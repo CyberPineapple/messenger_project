@@ -131,7 +131,7 @@ async def test_succsses_logout():
         assert json.loads(answer) == {"Type": "logout", "Status": "success"}
 
 
-async def test_fault_logout():
+async def test_failture_logout():
     async with websockets.connect(
             host) as websocket:
 
@@ -225,6 +225,7 @@ async def test_success_create_close_chat():
 
         answer = await websocket.recv()
         print(f"A: {answer}")
+        print("There no assert")
 
 
 async def test_success_send_chat_list():
@@ -439,6 +440,18 @@ async def test_success_send_message():
         message_data["Status"] = "success"
         assert json.loads(answer) == message_data
 
+        logout_data = {
+            "Type": "logout",
+            "Login": "user"
+        }
+
+        await websocket.send(json.dumps(logout_data))
+        print(f"R: {logout_data}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        assert json.loads(answer) == {"Type": "logout", "Status": "success"}
+
 
 async def test_success_send_message_to_closed_chat():
     async with websockets.connect(
@@ -461,6 +474,51 @@ async def test_success_send_message_to_closed_chat():
                 "Command": "choice",
                 "Chat": "secret general",
                 "Password": "secret"}
+
+        await websocket.send(json.dumps(data))
+        print(f"R: {data}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        print("There no assert")
+
+        message_data = {
+            "Type": "chat",
+            "Command": "message",
+            "Text": "Hey, there is somebody?"
+        }
+
+        await websocket.send(json.dumps(message_data))
+        print(f"R: {message_data}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        message_data["Status"] = "success"
+        assert json.loads(answer) == message_data
+
+async def test_reconnect():
+    async with websockets.connect(
+            host) as websocket:
+
+        correct_creds = {
+                "Type": "login",
+                "Login": "user",
+                "Password": "password"
+        }
+
+        await websocket.send(json.dumps(correct_creds))
+        print(f"R: {correct_creds}")
+
+        answer = await websocket.recv()
+        print(f"A: {answer}")
+        assert json.loads(answer) == {"Type": "login", "Status": "success"}
+
+    async with websockets.connect(
+            host) as websocket:
+
+        data = {"Type": "chat",
+                "Command": "choice",
+                "Chat": "general"}
 
         await websocket.send(json.dumps(data))
         print(f"R: {data}")
@@ -548,19 +606,22 @@ loop = asyncio.get_event_loop()
 
 loop.run_until_complete(
     asyncio.gather(
-        test_exists_registration(),
-        test_success_sign_in(),
-        test_failture_sign_in(),
-        test_failture_password(),
-        test_succsses_logout(),
-        test_success_choise_chat(),
-        test_success_send_chat_list(),
-        test_success_send_message(),
-        test_success_send_message_to_closed_chat(),
-        test_failed_enter_in_closed_chat(),
-        test_failed_enter_in_closed_chat_bad_pass(),
-        test_success_enter_in_closed_chat(),
-        test_nonauth_get_chat_list()
+        # test_exists_registration(),
+        # test_success_sign_in(),
+        # test_failture_sign_in(),
+        # test_failture_password(),
+        # test_succsses_logout(),
+        # test_failture_logout(),
+        # test_failed_create_chat(),
+        # test_success_choise_chat(),
+        # test_success_send_chat_list(),
+        ##  test_success_send_message(),
+        # test_success_send_message_to_closed_chat(),
+        # test_failed_enter_in_closed_chat(),
+        # test_failed_enter_in_closed_chat_bad_pass(),
+        # test_success_enter_in_closed_chat(),
+        # test_nonauth_get_chat_list()
+        # test_reconnect(),
         # test_failed_create_chat()#, test after realise redirect for non auth
         # test_fault_logout(),# not need becouse, if logout, then logout
         # test_multupule_connection(),

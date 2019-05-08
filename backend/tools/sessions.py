@@ -16,6 +16,22 @@ async def request_user_middleware(request, handler):
     return responce
 
 
+#async def request_user_middleware(app, handler):
+#    async def middleware(request):
+#        request.session = await get_session(request)  # send the session
+#        user_ident = request.session.get('user')  # find in store
+#        if user_ident is not None:  # if find get him
+#            print("WARNING!!")
+#            request.user = await request.app.manager.get(
+#                User.username == user_ident)
+#
+#        request.user = None  # init state
+#        print("From tools/session:", request.user, user_ident)
+#
+#        return await handler(request)
+#    return middleware
+
+
 def login_required(func):
     """ Allow only auth users """
     async def wrapped(self, *args, **kwargs):

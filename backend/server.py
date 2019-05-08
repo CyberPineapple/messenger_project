@@ -7,7 +7,7 @@ from aiohttp_session.redis_storage import RedisStorage
 
 from tools.models import database
 from tools.json_validator import loads, is_json
-from tools.sessions import request_user_middleware
+from tools.sessions import request_user
 from accounts.models import User
 from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
@@ -17,15 +17,29 @@ from chat.views import ActionChat
 # it's need for send messages to current chat
 
 
+    # sessions maybe problem becouse middleware not work in websockets
+    # once request and talk
+
+    # request object contain:
+        # app -- settings db and kv store
+            # manager -- async db manager
+        # session -- result method get_session()
+        # username_session -- session.get("user")
+        # user -- if username_session then object from db
+        # chat -- current chat when "Command: Choise"
+        # active_sockets -- store for websockets
+
 async def websocket_handler(request):
 
     app = request.app
     ws = web.WebSocketResponse()
     await ws.prepare(request)
-    app.active_sockets.append(ws)
-    # chat = requet.session.get("chat")
+    request.app.websocket = ws
+    #app.active_sockets.append(ws)
+    # user = request.session.get("user")
+    # chat = request.session.get("chat")
     # if chat not in app.active_sockets.keys():
-    #     app.active_sockets[chat] = [] # -> {None:[]}
+    #     app.active_sockets[chat] = {} # -> {"name_chat":{"user_id": ws}}
 
     # log.debug(request.session.get("user"))
     # log.debug(dir(app))
@@ -46,21 +60,27 @@ async def websocket_handler(request):
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
 
+
+            user = request.session.get("user")
+            chat = request.session.get("chat")
+            print(user, chat)
+
             log.debug(msg.data)
             jdata = loads(msg.data)
 
             if jdata["Type"] == "close":
                 # TODO: test close field
                 await ws.send_json({"Status": "close"})
-                app.active_sockets.remove(ws)
+                app.active_sockets[chat].pop(user)
+                # app.active_sockets.remove(ws)
                 log.debug(app.active_sockets)
                 await ws.close()
 
             elif jdata["Type"] == "logout":
                 data = await LogOut(request).logout()
-                log.debug(app.active_sockets)
                 await ws.send_json(data)
-                app.active_sockets.remove(ws)
+                log.debug(app.active_sockets)
+                #app.active_sockets.remove(ws)
                 await ws.close()
 
             elif jdata["Type"] == "registration":
@@ -112,15 +132,15 @@ async def init():
     redis = await create_pool("redis://localhost")
     storage = RedisStorage(redis)
     middleware = [
-        session_middleware(storage),
-        request_user_middleware]
+        session_middleware(
+            RedisStorage(redis_pool)),
+        request_user]
     app = web.Application(middlewares=middleware)
     setup(app, storage)
     app.add_routes([web.get("/", websocket_handler)])
 
-    app.active_sockets = []
-    # app.active_sockets = {}
-
+    #app.active_sockets = []
+    app.active_sockets = {}
     DATABASE = {
         "database": "Messenger",
         "password": "sl+@lM!93nd3_===",

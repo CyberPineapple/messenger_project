@@ -14,6 +14,8 @@ class LogIn(web.View):
         self.request.session["user"] = str(user.username)
         self.request.session["time"] = time()
 
+
+
     @anonymous_required
     async def loginning(self, **kwargs):
         """ Check username and password  """
@@ -25,7 +27,6 @@ class LogIn(web.View):
                             User, User.username ** username)
             if verify_password(user.password, password):
                 await self._login_user(user)
-                # self.request.user
                 return {"Type": "login", "Status": "success"}
             raise User.DoesNotExist
         except User.DoesNotExist:
@@ -57,7 +58,6 @@ class LogOut(web.View):
     async def logout(self):
         """ Remove user from session """
         try:
-            session = await get_session(self.request)
             self.request.session.pop("user")
             return {"Type": "logout", "Status": "success"}
         except KeyError:
