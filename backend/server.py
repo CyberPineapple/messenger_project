@@ -36,12 +36,12 @@ async def websocket_handler(request):
     log.debug(f"app.active_sockets = {app.active_sockets}")
 
     # action with session
-    from aiohttp_session import get_session
-    session = await get_session(request)
-    log.debug(f"{session}")
-    session['counter'] = (session.get('counter') or 0) + 1
-    assert "counter" in session
-    log.debug(f"{session['counter']}")
+    # from aiohttp_session import get_session
+    # session = await get_session(request)
+    # log.debug(f"{session}")
+    # session['counter'] = (session.get('counter') or 0) + 1
+    # assert "counter" in session
+    # log.debug(f"{session['counter']}")
 
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
@@ -74,6 +74,7 @@ async def websocket_handler(request):
                 await ws.send_json(data)
                 data = await Chat.all_chats(request.app.manager)
                 await ws.send_json(data)
+                await ws.close()
 
             # elif jdata["Type"] == "message":
             #     # TODO: send message every chat
@@ -88,7 +89,8 @@ async def websocket_handler(request):
                     if jdata["Command"] == "message":
                         data = await ActionChat(request).send_message(**jdata)
                     elif jdata["Command"] == "choice":
-                        data = await ActionChat(request).send_messages_from_chat(**jdata)
+                        data = await ActionChat(
+                            request).send_messages_from_chat(**jdata)
                     elif jdata["Command"] == "create":
                         data = await ActionChat(request).create_chat(**jdata)
                         await ws.send_json(data)
@@ -118,6 +120,7 @@ async def init():
         session_middleware(storage),
         request_user_middleware]
     app = web.Application(middlewares=middleware)
+    setup(app, storage)
     app.add_routes([web.get("/", websocket_handler)])
 
     app.active_sockets = []
@@ -134,7 +137,6 @@ async def init():
     app.database = database
     app.database.set_allow_sync(False)
     app.manager = Manager(app.database)
-    setup(app, storage)
 
     with app.manager.allow_sync():
         User.create_table(True)
