@@ -81,7 +81,7 @@ class ActionChat(web.View):
 
     @login_required
     async def send_list_chats(self):
-        return Chat.all_chats()
+        return await Chat.all_chats(self.request.app.manager)
 
 # class ActionMessages(web.View):
 
