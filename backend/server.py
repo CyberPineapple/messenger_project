@@ -95,7 +95,6 @@ async def websocket_handler(request):
                 await ws.send_json(data)
                 data = await Chat.all_chats(request.app.manager)
                 await ws.send_json(data)
-                await ws.close()
 
             elif jdata["Type"] == "chat":
                 data = {}
