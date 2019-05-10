@@ -9,6 +9,7 @@ export const initialState = {
     messagesList: [],
     chatList: [],
     chatName: '',
+    chatPassword: '',
     activeChat: ''
 }
 
@@ -27,6 +28,8 @@ export function rootReducer(state = initialState, action){
         case 'SET_CHAT_LIST': return {...state, chatList: action.chatList};
         case 'ADD_CHAT_NAME': return {...state, chatName: action.chatName};
         case 'REMOVE_CHAT_NAME': return {...state, chatName: ''};
+        case 'ADD_CHAT_PASSWORD': return {...state, chatPassword: action.chatPassword};
+        case 'REMOVE_CHAT_PASSWORD': return {...state, chatPassword: ''};
         case 'ACTIVE_CHAT': return {...state, activeChat: action.chat};
         case 'REMOVE_MESSAGES_LIST': return{...state, messagesList: []};
         default: return state;
