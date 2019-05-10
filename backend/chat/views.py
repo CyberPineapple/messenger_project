@@ -67,7 +67,7 @@ class ActionChat(web.View):
                 data_message["text"] = message.text
                 data_message["date"] = str(message.created_at)
                 messages.append(data_message.copy())
-            return {"Type": "chat", "Command": "choice",
+        return {"Type": "chat", "Command": "choice",
                         "Messages": messages}
 
     @login_required
