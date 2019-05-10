@@ -87,7 +87,6 @@ class ActionChat(web.View):
         message = {
             "user": user,
             "text":jdata["Text"],
-            "date": datetime.now().isoformat()
             }
         answer = {
             "Type":"chat",
