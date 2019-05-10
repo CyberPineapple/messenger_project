@@ -313,6 +313,11 @@ async def test_success_create_close_chat():
         await success_signin(websocket)
         await success_create_close_chat(websocket)
 
+async def test_failed_create_non_auth():
+    async with websockets.connect(
+        host) as websocket:
+
+        await success_create_chat(websocket, reson=False)
 
 async def test_success_send_chat_list():
     async with websockets.connect(
@@ -398,6 +403,17 @@ async def test_success_send_message_to_closed_chat():
         await choice_close_chat(websocket)
         await send_message(websocket)
 
+async def test_failed_send_message_chat_not_exist():
+    async with websockets.connect(
+            host) as websocket:
+
+        await success_signin(websocket)
+        data = {"Type": "chat",
+                "Command": "choise",
+                "Chat": "qwerty"
+        }
+        await choice_chat(websocket, data)
+        await send_message(websocket)
 
 async def test_reconnect():
     async with websockets.connect(
@@ -482,6 +498,8 @@ loop.run_until_complete(
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
         # test_nonauth_get_chat_list(),
+        # test_failed_create_non_auth(),
+        test_failed_send_message_chat_not_exist(),
         # test_reconnect(), only for browser
         # test_failed_create_chat(), # test after realise redirect for non auth
         # test_fault_logout(),# not need becouse, if logout, then logout
