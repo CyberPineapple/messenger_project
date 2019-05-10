@@ -1,5 +1,5 @@
 from .models import Chat, Message
-from tools.sessions import login_required, add_active_sockets
+from tools.sessions import login_required, add_active_sockets, create_instance
 from aiohttp import web
 from datetime import datetime
 
@@ -21,6 +21,7 @@ class ActionChat(web.View):
             await self.request.app.manager.create(Chat, name=chat, owner=user)
 
         self.request.session["chat"] = chat
+        await create_instance(self.request)
         await add_active_sockets(self.request)
 
         return {"Type": "chat", "Status": "success"}
@@ -38,15 +39,21 @@ class ActionChat(web.View):
 
     @login_required
     async def send_messages_from_chat(self, **jdata):
-        chat = jdata["Chat"]
-        chat = await self.request.app.manager.get(Chat, name=chat)
+        jchat = jdata["Chat"]
+
+        try:
+            chat = await self.request.app.manager.get(Chat, name=jchat)
+        except Chat.DoesNotExist:
+            return {"Type":"chat", "Status": "error"}
+
         if chat.closed and "Password" not in jdata.keys():
             return {"Type": "chat", "Status": "access denied"}
         elif "Password" in jdata.keys():
             if chat.password != jdata["Password"]:
                 return {"Type": "chat", "Status": "access denied"}
 
-        self.request.session["chat"] = chat
+        self.request.session["chat"] = jchat
+        await create_instance(self.request)
         await add_active_sockets(self.request)
         query_messages = await self.request.app.manager.execute(
             Message.select().where(Message.chat == chat))
@@ -61,7 +68,7 @@ class ActionChat(web.View):
                 data_message["text"] = message.text
                 data_message["date"] = str(message.created_at)
                 messages.append(data_message.copy())
-        return {"Type": "chat", "Messages": messages}
+                return {"Type": "chat","Command": "choice",  "Messages": messages}
 
     @login_required
     async def send_message(self, **jdata):
@@ -76,12 +83,44 @@ class ActionChat(web.View):
                         user=user,
                         chat=chat,
                         text=jdata["Text"])
-        jdata["Time"] = datetime.now().isoformat()
-        print(dir(chat), chat)
+
+        message = {
+            "user": user,
+            "text":jdata["Text"],
+            "date": datetime.now().isoformat()
+            }
+        answer = {
+            "Type":"chat",
+            "Command":"message",
+            "Message": message
+        }
         for user in self.request.app.active_sockets[chat]:
             for ws in user.values():
-                await ws.send_json(jdata)
+                await ws.send_json(answer)
 
     @login_required
     async def send_list_chats(self):
         return await Chat.all_chats(self.request.app.manager)
+
+    @login_required
+    async def delete_chat(self):
+        """
+        Assert chat is choised!
+        """
+        with self.request.app.manager.allow_sync():
+            #print(self.request.chat,dir(self.request.chat))
+            #print(self.request.user, self.request.chat.owner)
+            if self.request.user != self.request.chat.owner:
+                return {
+                    "Type": "chat",
+                    "Command": "delete",
+                    "Status": "error"
+                }
+
+            self.request.chat.delete_instance(recursive=True)
+        self.request.chat = None
+        self.request.session["chat"] = None
+        return {
+            "Type": "chat",
+            "Command": "delete",
+            "Status": "success"}
