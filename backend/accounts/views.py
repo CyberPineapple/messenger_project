@@ -3,15 +3,14 @@ from time import time
 
 from .models import User
 from tools.passwords import hash_password, verify_password
-from tools.sessions import login_required, anonymous_required
-from aiohttp_session import get_session
+from tools.sessions import login_required, anonymous_required, add_active_sockets, create_instance
 
 
 class LogIn(web.View):
 
-    async def login_user(self, user):
+    async def _login_user(self, user):
         """ Create session for user  """
-        self.request.session["user"] = str(user.id)
+        self.request.session["user"] = str(user.username)
         self.request.session["time"] = time()
 
     @anonymous_required
@@ -21,10 +20,14 @@ class LogIn(web.View):
         password = kwargs["Password"]
 
         try:
-            user = await self.request.app.manager.get(User, User.username ** username)
+            user = await self.request.app.manager.get(
+                            User, User.username ** username)
             if verify_password(user.password, password):
-                await self.login_user(user)
-                self.request.user
+
+                self.request.user = user
+                await self._login_user(user)
+                await add_active_sockets(self.request)
+                await create_instance(self.request)
                 return {"Type": "login", "Status": "success"}
             raise User.DoesNotExist
         except User.DoesNotExist:
@@ -40,11 +43,16 @@ class Register(LogIn):
         username = kwargs["Login"]
         password = hash_password(kwargs["Password"])
 
-        if await self.request.app.manager.count(User.select().where(User.username ** username)):
+        if await self.request.app.manager.count(
+                User.select().where(User.username == username)):
             return {"Type": "registration", "Status": "user exist"}
-        user = await self.request.app.manager.create(User, username=username,
-                                                     password=password,)
-        await self.login_user(user)
+
+        user = await self.request.app.manager.create(
+            User, username=username, password=password,)
+        self.request.user = user
+        await self._login_user(user)
+        await add_active_sockets(self.request)
+        await create_instance(self.request)
         return {"Type": "registration", "Status": "success"}
 
 
@@ -54,8 +62,18 @@ class LogOut(web.View):
     async def logout(self):
         """ Remove user from session """
         try:
-            session = await get_session(self.request)
+            user = self.request.session.get("user")
+            active_sockets = self.request.app.active_sockets
+
+            for i in active_sockets.items():
+                for n, j in enumerate(i[1]):
+                    if user in j.keys():
+                        active_sockets[i[0]][n].popitem()
+            # await self.request.app.active_sockets.get(
+            #    self.request.chat).pop(self.request.user)
             self.request.session.pop("user")
+            self.request.user = None
+            self.request.chat = None
             return {"Type": "logout", "Status": "success"}
         except KeyError:
             return {"Type": "logout", "Status": "error"}

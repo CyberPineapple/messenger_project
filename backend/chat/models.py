@@ -1,7 +1,5 @@
 import peewee
 
-from datetime import datetime
-
 from accounts.models import User
 from tools.models import BaseModel
 
@@ -11,17 +9,23 @@ class Chat(BaseModel):
         db_table = "chats"
         order_by = ("last_send",)
 
-    name = peewee.CharField(max_length=32, unique=True)
+    # Maybe use `unique` is not true way, becouse
+    # if two chats it is name user.
+    # or user name = owner+name in db
+    name = peewee.CharField(max_length=32, unique=True, primary_key=True)
     owner = peewee.ForeignKeyField(User)
-    date_last_send = peewee.DateTimeField(default=datetime.now())
+    password = peewee.CharField(max_length=192, null=True)
+    closed = peewee.BooleanField(default=False)
+    date_last_send = peewee.TimestampField()
+
+    def __str__(self):
+        return self.name
 
     @classmethod
     async def all_chats(cls, manager):
-        return await manager.execute(cls.select())
-
-    async def n_messages(self, manager, num):
-        """ Change on return n - messages """
-        return await manager.prefetch(self.messages, User.select())
+        chats = await manager.execute(cls.select())
+        return {"Type": "chat", "Command": "list", "Chats": [
+            {"Chat": chat.name, "Closed": chat.closed} for chat in chats]}
 
 
 class Message(BaseModel):
@@ -31,6 +35,6 @@ class Message(BaseModel):
         order_by = ("date_send",)
 
     user = peewee.ForeignKeyField(User, backref='messages')
-    chat = peewee.ForeignKeyField(Chat)
+    chat = peewee.ForeignKeyField(Chat)  # add backref
     text = peewee.TextField()
-    created_at = peewee.DateTimeField(default=datetime.now())
+    created_at = peewee.TimestampField()

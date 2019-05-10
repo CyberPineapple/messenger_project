@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import peewee
 
 from tools import models
@@ -11,11 +9,14 @@ class User(models.BaseModel):
         db_table = "users"
         order_by = ("date_register")
 
-    id = peewee.AutoField(null=False)
-    username = peewee.CharField(max_length=20, unique=True)
+    username = peewee.CharField(max_length=20, unique=True, primary_key=True)
     # password = sha-1(salt + password)
     password = peewee.CharField(max_length=192)
     online = peewee.BooleanField(default=True)
 
-    date_register = peewee.DateTimeField(default=datetime.now())
-    date_last_online = peewee.DateTimeField(default=datetime.now())
+    # datetime.utcfromtimestamp(a).strftime('%Y-%m-%d %H:%M:%S')
+    date_register = peewee.TimestampField()
+    date_last_online = peewee.TimestampField()
+
+    def __str__(self):
+        return self.username

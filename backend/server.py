@@ -1,9 +1,8 @@
 import logging as log
 from peewee_async import Manager
 from aioredis import create_pool
-from asyncio import get_event_loop
 from aiohttp import web
-from aiohttp_session import session_middleware
+from aiohttp_session import session_middleware, setup
 from aiohttp_session.redis_storage import RedisStorage
 
 from tools.models import database
@@ -12,28 +11,27 @@ from tools.sessions import request_user_middleware
 from accounts.models import User
 from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
-from chat.views import CreateChat, ActionMessages
+from chat.views import ActionChat
+
+
+# request -- object contain:
+# # app -- settings db and kv store
+# # # manager -- async db manager
+# # session -- result method get_session()
+# # username_session -- session.get("user")
+# # user -- object from db
+# # chat -- current chat when "Command: Choise"
+# # active_sockets -- store for websockets
 
 
 async def websocket_handler(request):
 
     app = request.app
     ws = web.WebSocketResponse()
+    request.app.websocket = ws
     await ws.prepare(request)
-    app.active_sockets.append(ws)
 
-    # log.debug(dir(app))
-    # log.debug(f"request = {request}")
-    log.debug(f"app.redis_pool = {app.redis_pool}")
-    # log.debug(f"app.manager = {app.manager}")  # async db manager
-    # contain websockets
     log.debug(f"app.active_sockets = {app.active_sockets}")
-
-    # action with session
-    # session = await get_session(request)
-    # log.debug(f"{session}")
-    # session['counter'] = (session.get('counter') or 0) + 1
-    # log.debug(f"{session['counter']}")
 
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
@@ -44,16 +42,14 @@ async def websocket_handler(request):
             if jdata["Type"] == "close":
                 # TODO: test close field
                 await ws.send_json({"Status": "close"})
-                app.active_sockets.remove(ws)
-                log.debug(app.active_sockets)
                 await ws.close()
+                log.debug(app.active_sockets)
 
             elif jdata["Type"] == "logout":
                 data = await LogOut(request).logout()
-                log.debug(app.active_sockets)
                 await ws.send_json(data)
-                app.active_sockets.remove(ws)
                 await ws.close()
+                log.debug(app.active_sockets)
 
             elif jdata["Type"] == "registration":
                 # TODO: check setting session after reg
@@ -62,21 +58,32 @@ async def websocket_handler(request):
 
             elif jdata["Type"] == "login":
                 # TODO: check setting session after login
+                # two send_json, compare in one json
                 data = await LogIn(request).loginning(**jdata)
-                print(request.session.get("user"))
                 await ws.send_json(data)
-
-            elif jdata["Type"] == "message":
-                # TODO: send message every chat
-                data = await ActionMessages(request).broadcast(**jdata)
-                if data is not None:
-                    await ws.send_json(data)
+                data = await Chat.all_chats(request.app.manager)
+                await ws.send_json(data)
 
             elif jdata["Type"] == "chat":
-                # TODO: create chat
-                data = await CreateChat(request).create(**jdata)
+                # TODO: CRUD chat
+                # `return` from message, data is null
+                if "Command" in jdata.keys():
+                    if jdata["Command"] == "message":
+                        data = await ActionChat(request).send_message(**jdata)
+                    elif jdata["Command"] == "choice":
+                        data = await ActionChat(
+                            request).send_messages_from_chat(**jdata)
+                    elif jdata["Command"] == "create":
+                        data = await ActionChat(request).create_chat(**jdata)
+                        await ws.send_json(data)
+                        data = await ActionChat(request).send_list_chats()
+                    elif jdata["Command"] == "list":
+                        # TODO: Non auth user can get all chats
+                        # data = await ActionChat(request).send_chats_users()
+                        data = await ActionChat(request).send_list_chats()
+                    elif jdata["Command"] == "delete":
+                        data = await ActionChat(request).delete_chat()
                 await ws.send_json(data)
-
             else:
                 await ws.send_json({"Status": "error in json file"})
 
@@ -87,17 +94,18 @@ async def websocket_handler(request):
     return ws
 
 
-async def create_app(loop):
-    redis_pool = await create_pool(("localhost", 6379), loop=loop)
+async def init():
+    redis = await create_pool("redis://localhost")
+    storage = RedisStorage(redis)
     middleware = [
         session_middleware(
-            RedisStorage(redis_pool)),
+            RedisStorage(redis)),
         request_user_middleware]
     app = web.Application(middlewares=middleware)
-    app.redis_pool = redis_pool
+    setup(app, storage)
     app.add_routes([web.get("/", websocket_handler)])
-    app.active_sockets = []
 
+    app.active_sockets = {}
     DATABASE = {
         "database": "Messenger",
         "password": "sl+@lM!93nd3_===",
@@ -110,14 +118,17 @@ async def create_app(loop):
     app.database.set_allow_sync(False)
     app.manager = Manager(app.database)
 
-    return app
-
-if __name__ == "__main__":
-    loop = get_event_loop()
-    app = loop.run_until_complete(create_app(loop))
     with app.manager.allow_sync():
         User.create_table(True)
         Chat.create_table(True)
         Message.create_table(True)
-    log.basicConfig(level=log.DEBUG)
-    loop.create_task(web.run_app(app))
+
+    log.basicConfig(
+        level=log.DEBUG,
+        format='%(levelname)s %(asctime)s %(message)s',
+        datefmt='%m/%d/%Y %I:%M:%S %p')
+
+    return app
+
+if __name__ == "__main__":
+    web.run_app(init())
