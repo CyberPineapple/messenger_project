@@ -13,6 +13,12 @@ from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
 from chat.views import ActionChat
 
+# TODO:
+# hash for chats password
+# after send message server send `data`
+# Before delete chat kick users from chat
+# upadte after login/logout online users
+# update after login data_last_online
 
 # request -- object contain:
 # # app -- settings db and kv store
@@ -83,7 +89,7 @@ async def websocket_handler(request):
                         data = await ActionChat(request).send_list_chats()
                     elif jdata["Command"] == "delete":
                         data = await ActionChat(request).delete_chat()
-                await ws.send_json(data)
+                    await ws.send_json(data)
             else:
                 await ws.send_json({"Status": "error in json file"})
 
