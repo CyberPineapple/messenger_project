@@ -12,7 +12,11 @@ class Chatbox extends React.Component{
         const { messagesList } = this.props;
         let messages = [];
         if (messagesList.length !== 0){
-            messages = messagesList.map((value, id)=><li key={id}>{value.text}</li>)
+            messages = messagesList.map((value, id)=><div key={id} className={style.message}>
+                <div className={style.message_user}>{value.user}</div>
+                <div className={style.message_text}>{value.text}</div>
+                <div className={style.message_time}>{value.date}</div>
+            </div>)
         }
         return(
             <div className={style.block}>
@@ -30,10 +34,9 @@ class Chatbox extends React.Component{
     sendMessage = () =>{
         if (this.props.message !== '' && this.props.activeChat !== ''){
             let data = {
-                Type: 'message',
-                User: this.props.login,
+                Type: 'chat',
+                Command: 'message',
                 Text: this.props.message,
-                Chat: this.props.activeChat
             }
             data = JSON.stringify(data);
             socket.send(data);
@@ -50,7 +53,6 @@ class Chatbox extends React.Component{
     onChangeMessage = (value) =>{
         if (value !== '\n')
         this.props.setMessage(value);
-        console.log(value);
     }
 }
 

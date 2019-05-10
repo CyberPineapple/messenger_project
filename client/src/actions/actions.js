@@ -93,6 +93,19 @@ export const removeChatName = () => {
     }
 }
 
+export const addChatPassword = value => {
+    return{
+        type: 'ADD_CHAT_PASSWORD',
+        chatPassword: value
+    }
+}
+
+export const removeChatPassword = () => {
+    return{
+        type: 'REMOVE_CHAT_PASSWORD',
+    }
+}
+
 export const activeChat = value => {
     return {
         type: 'ACTIVE_CHAT',

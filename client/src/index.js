@@ -21,34 +21,36 @@ socket.onclose = () =>{
 socket.onmessage = (response) =>{
   let data = JSON.parse(response.data);
   console.log(data);
-  switch (data.Type){
-    case 'login': {
-      if (data.Status === 'success'){
-        store.dispatch(setPage('main'));
-      } else if (data.Status === 'error'){
-        console.log('Ошибка авторизации');
+  if (data !== null){
+    switch (data.Type){
+      case 'login': {
+        if (data.Status === 'success'){
+          store.dispatch(setPage('main'));
+        } else if (data.Status === 'error'){
+          console.log('Ошибка авторизации');
+        }
+        break;
       }
-      break;
-    }
-    case 'registration': {
-      console.log('Регистрация');
-      break;
-    }
-    case 'chat': {
-      if (data.Command === 'get'){
-        store.dispatch(setChatList(data.Chats));
-      };
-      if (data.Status === 'success'){
-        store.dispatch(setMessagesList(data.Messages));
+      case 'registration': {
+        console.log('Регистрация');
+        break;
       }
-      if (data.Command === 'message'){
-        store.dispatch(setMessagesList(data.Message));
+      case 'chat': {
+        if (data.Command === 'list'){
+          store.dispatch(setChatList(data.Chats));
+        };
+        if (data.Command === 'choice'){
+          store.dispatch(setMessagesList(data.Messages));
+        }
+        if (data.Command === 'message'){
+          store.dispatch(setMessagesList(data.Message));  
+        }
+        break;
       }
-      break;
-    }
-    default: {
-      console.log(data);
-      break;
+      default: {
+        console.log(data);
+        break;
+      }
     }
   }
 }
