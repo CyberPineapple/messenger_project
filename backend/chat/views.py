@@ -1,6 +1,7 @@
 from .models import Chat, Message
-from tools.sessions import login_required
+from tools.sessions import login_required, add_active_sockets
 from aiohttp import web
+from datetime import datetime
 
 
 class ActionChat(web.View):
@@ -19,17 +20,15 @@ class ActionChat(web.View):
         else:
             await self.request.app.manager.create(Chat, name=chat, owner=user)
 
-        self.request.app.active_sockets.setdefault(
-                    chat, {user: self.request.app.websocket})
         self.request.session["chat"] = chat
+        await add_active_sockets(self.request)
+
         return {"Type": "chat", "Status": "success"}
 
     @login_required
     async def send_chats_users(self):
-            # The problem:
-            # Func sends only chats created by user
+        """ Func sends only chats created by user """
         username = self.request.session.get("user")
-        print("From chat/views.py:", username)
         chats = []
         query_chats = await self.request.app.manager.execute(
             Chat.select().where(Chat.owner == username))
@@ -39,20 +38,18 @@ class ActionChat(web.View):
 
     @login_required
     async def send_messages_from_chat(self, **jdata):
-        user = self.request.session.get("user")
-        enter_chat = jdata["Chat"]
-        chat = await self.request.app.manager.get(Chat, name=enter_chat)
+        chat = jdata["Chat"]
+        chat = await self.request.app.manager.get(Chat, name=chat)
         if chat.closed and "Password" not in jdata.keys():
             return {"Type": "chat", "Status": "access denied"}
         elif "Password" in jdata.keys():
             if chat.password != jdata["Password"]:
                 return {"Type": "chat", "Status": "access denied"}
 
-        self.request.app.active_sockets.setdefault(
-                    enter_chat, {user: self.request.app.websocket})
-        self.request.session["chat"] = enter_chat
+        self.request.session["chat"] = chat
+        await add_active_sockets(self.request)
         query_messages = await self.request.app.manager.execute(
-            Message.select().where(Message.chat == enter_chat))
+            Message.select().where(Message.chat == chat))
         messages = []
         data_message = {}
         for message in query_messages:
@@ -79,33 +76,12 @@ class ActionChat(web.View):
                         user=user,
                         chat=chat,
                         text=jdata["Text"])
-        jdata["Status"] = "success"
-        print(self.request.app.active_sockets)
-        for ws in self.request.app.active_sockets[chat].values():
-            await ws.send_json(jdata)
+        jdata["Time"] = datetime.now().isoformat()
+        print(dir(chat), chat)
+        for user in self.request.app.active_sockets[chat]:
+            for ws in user.values():
+                await ws.send_json(jdata)
 
     @login_required
     async def send_list_chats(self):
         return await Chat.all_chats(self.request.app.manager)
-
-# class ActionMessages(web.View):
-
-    # @login_required
-    # async def broadcast(self, in_chat=False, **jdata):
-    #     try:
-    #         chat = await self.request.app.manager.get(Chat,
-    #                                                   Chat.name ** jdata["Chat"])
-    #     except Chat.DoesNotExist:
-    #         return {"Type": "chat", "Status": "chat not exist"}
-    #     await self.request.app.manager.create(
-    #         Message,
-    #         # user=self.request.session.get("user"),
-    #         user=jdata["User"],
-    #         chat=jdata["Chat"],
-    #         text=jdata["Text"])
-    #     jdata["Status"] = "success"
-    #     if in_chat is False:
-    #         for ws in self.request.app.active_sockets:
-    #             await ws.send_json(jdata)
-    #     # else:
-        #    for ws in self.request.app.manager.

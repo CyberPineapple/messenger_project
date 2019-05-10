@@ -35,6 +35,6 @@ class Message(BaseModel):
         order_by = ("date_send",)
 
     user = peewee.ForeignKeyField(User, backref='messages')
-    chat = peewee.ForeignKeyField(Chat)
+    chat = peewee.ForeignKeyField(Chat)  # add backref
     text = peewee.TextField()
     created_at = peewee.TimestampField()

@@ -16,26 +16,24 @@ from chat.views import ActionChat
 # TODO: goto active_sockets -> dict()
 # it's need for send messages to current chat
 
+# request -- object contain:
+# # app -- settings db and kv store
+# # # manager -- async db manager
+# # session -- result method get_session()
+# # username_session -- session.get("user")
+# # user -- object from db
+# # chat -- current chat when "Command: Choise"
+# # active_sockets -- store for websockets
 
-    # sessions maybe problem becouse middleware not work in websockets
-    # once request and talk
-
-    # request object contain:
-        # app -- settings db and kv store
-            # manager -- async db manager
-        # session -- result method get_session()
-        # username_session -- session.get("user")
-        # user -- if username_session then object from db
-        # chat -- current chat when "Command: Choise"
-        # active_sockets -- store for websockets
 
 async def websocket_handler(request):
 
     app = request.app
     ws = web.WebSocketResponse()
-    await ws.prepare(request)
     request.app.websocket = ws
-    #app.active_sockets.append(ws)
+    await ws.prepare(request)
+
+    # app.active_sockets.append(ws)
     # user = request.session.get("user")
     # chat = request.session.get("chat")
     # if chat not in app.active_sockets.keys():
@@ -60,18 +58,13 @@ async def websocket_handler(request):
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
 
-
-            user = request.session.get("user")
-            chat = request.session.get("chat")
-            print(user, chat)
-
             log.debug(msg.data)
             jdata = loads(msg.data)
 
             if jdata["Type"] == "close":
                 # TODO: test close field
                 await ws.send_json({"Status": "close"})
-                app.active_sockets[chat].pop(user)
+                # app.active_sockets[chat].pop(user)
                 # app.active_sockets.remove(ws)
                 log.debug(app.active_sockets)
                 await ws.close()
@@ -79,8 +72,8 @@ async def websocket_handler(request):
             elif jdata["Type"] == "logout":
                 data = await LogOut(request).logout()
                 await ws.send_json(data)
+                # app.active_sockets.remove(ws)
                 log.debug(app.active_sockets)
-                #app.active_sockets.remove(ws)
                 await ws.close()
 
             elif jdata["Type"] == "registration":
@@ -138,7 +131,7 @@ async def init():
     setup(app, storage)
     app.add_routes([web.get("/", websocket_handler)])
 
-    #app.active_sockets = []
+    # app.active_sockets = []
     app.active_sockets = {}
     DATABASE = {
         "database": "Messenger",
