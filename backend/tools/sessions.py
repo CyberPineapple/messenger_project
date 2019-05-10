@@ -13,10 +13,10 @@ async def request_user_middleware(request, handler):
     user_ident = request.session.get("user")
     chat_ident = request.session.get("chat")
     if user_ident is not None:
-        request.user = await request.app.manager.get(
+        request.user = await request.app.manager.get(User,
                                 User.username == user_ident)
         if chat_ident is not None:
-            request.chat = await request.app.manager.get(
+            request.chat = await request.app.manager.get(Chat,
                                 Chat.name == chat_ident)
 
     responce = await handler(request)
@@ -47,7 +47,14 @@ def anonymous_required(func):
         return await func(self, *args, **kwargs)
     return wrapped
 
-
+async def create_instance(request):
+    user_ident = request.session.get("user")
+    request.user = await request.app.manager.get(User,
+                                User.username == user_ident)
+    chat_ident = request.session.get("chat")
+    if chat_ident is not None:
+        request.chat = await request.app.manager.get(Chat,
+                                Chat.name == chat_ident)
 # TASK
 # think up container which have
 # link like chat -> [user -> ws, ...]

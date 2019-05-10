@@ -3,7 +3,7 @@ from time import time
 
 from .models import User
 from tools.passwords import hash_password, verify_password
-from tools.sessions import login_required, anonymous_required, add_active_sockets
+from tools.sessions import login_required, anonymous_required, add_active_sockets, create_instance
 
 
 class LogIn(web.View):
@@ -27,6 +27,7 @@ class LogIn(web.View):
                 self.request.user = user
                 await self._login_user(user)
                 await add_active_sockets(self.request)
+                await create_instance(self.request)
                 return {"Type": "login", "Status": "success"}
             raise User.DoesNotExist
         except User.DoesNotExist:
@@ -51,6 +52,7 @@ class Register(LogIn):
         self.request.user = user
         await self._login_user(user)
         await add_active_sockets(self.request)
+        await create_instance(self.request)
         return {"Type": "registration", "Status": "success"}
 
 
