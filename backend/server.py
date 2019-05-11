@@ -13,6 +13,15 @@ from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
 from chat.views import ActionChat
 
+# TODO:
+# hash for chats password
+# after send message server ws send `data` = {}
+# check eof ws
+# Before delete chat kick users from chat
+# update after login/logout online users
+# update after login data_last_online
+# check one user by one login
+# How users know about new created chat?
 
 # request -- object contain:
 # # app -- settings db and kv store
@@ -28,7 +37,6 @@ async def websocket_handler(request):
 
     app = request.app
     ws = web.WebSocketResponse()
-    request.app.websocket = ws
     await ws.prepare(request)
 
     log.debug(f"app.active_sockets = {app.active_sockets}")
@@ -36,11 +44,11 @@ async def websocket_handler(request):
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
 
+            request.app.websocket = ws
             log.debug(msg.data)
             jdata = loads(msg.data)
 
             if jdata["Type"] == "close":
-                # TODO: test close field
                 await ws.send_json({"Status": "close"})
                 await ws.close()
                 log.debug(app.active_sockets)
@@ -52,17 +60,16 @@ async def websocket_handler(request):
                 log.debug(app.active_sockets)
 
             elif jdata["Type"] == "registration":
-                # TODO: check setting session after reg
                 data = await Register(request).create_user(**jdata)
                 await ws.send_json(data)
 
             elif jdata["Type"] == "login":
-                # TODO: check setting session after login
                 # two send_json, compare in one json
                 data = await LogIn(request).loginning(**jdata)
                 await ws.send_json(data)
-                data = await Chat.all_chats(request.app.manager)
-                await ws.send_json(data)
+                if data["Status"] == "success":
+                    data = await Chat.all_chats(request.app.manager)
+                    await ws.send_json(data)
 
             elif jdata["Type"] == "chat":
                 # TODO: CRUD chat
@@ -70,6 +77,7 @@ async def websocket_handler(request):
                 if "Command" in jdata.keys():
                     if jdata["Command"] == "message":
                         data = await ActionChat(request).send_message(**jdata)
+                        log.debug(f"app.active_sockets = {app.active_sockets}")
                     elif jdata["Command"] == "choice":
                         data = await ActionChat(
                             request).send_messages_from_chat(**jdata)
@@ -83,7 +91,7 @@ async def websocket_handler(request):
                         data = await ActionChat(request).send_list_chats()
                     elif jdata["Command"] == "delete":
                         data = await ActionChat(request).delete_chat()
-                await ws.send_json(data)
+                    await ws.send_json(data)
             else:
                 await ws.send_json({"Status": "error in json file"})
 

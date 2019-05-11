@@ -68,7 +68,7 @@ class LogOut(web.View):
             for i in active_sockets.items():
                 for n, j in enumerate(i[1]):
                     if user in j.keys():
-                        active_sockets[i[0]][n].popitem()
+                        del active_sockets[i[0]][n]
             # await self.request.app.active_sockets.get(
             #    self.request.chat).pop(self.request.user)
             self.request.session.pop("user")
