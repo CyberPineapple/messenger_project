@@ -107,8 +107,6 @@ class ActionChat(web.View):
         """
         # TODO kick users from deleted chat
         with self.request.app.manager.allow_sync():
-            # print(self.request.chat,dir(self.request.chat))
-            #print(self.request.user, self.request.chat.owner)
             if self.request.user != self.request.chat.owner:
                 return {
                     "Type": "chat",
