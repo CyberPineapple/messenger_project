@@ -15,7 +15,6 @@ from chat.views import ActionChat
 
 # TODO:
 # hash for chats password
-# after send message server ws send `data` = {}
 # check eof ws
 # Before delete chat kick users from chat
 # update after login/logout online users
@@ -73,7 +72,6 @@ async def websocket_handler(request):
 
             elif jdata["Type"] == "chat":
                 # TODO: CRUD chat
-                # `return` from message, data is null
                 if "Command" in jdata.keys():
                     if jdata["Command"] == "message":
                         data = await ActionChat(request).send_message(**jdata)
@@ -91,6 +89,8 @@ async def websocket_handler(request):
                         data = await ActionChat(request).send_list_chats()
                     elif jdata["Command"] == "delete":
                         data = await ActionChat(request).delete_chat()
+                # crutch
+                if data is not None:
                     await ws.send_json(data)
             else:
                 await ws.send_json({"Status": "error in json file"})
