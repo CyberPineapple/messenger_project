@@ -3,7 +3,8 @@ from time import time
 
 from .models import User
 from tools.passwords import hash_password, verify_password
-from tools.sessions import login_required, anonymous_required, add_active_sockets, create_instance
+from tools.sessions import login_required, anonymous_required, \
+                           add_active_sockets, create_instance
 
 
 class LogIn(web.View):
@@ -65,10 +66,11 @@ class LogOut(web.View):
             user = self.request.session.get("user")
             active_sockets = self.request.app.active_sockets
 
-            for i in active_sockets.items():
-                for n, j in enumerate(i[1]):
-                    if user in j.keys():
-                        del active_sockets[i[0]][n]
+            for chats in active_sockets.items():
+                for num, users in enumerate(chats[1]):
+                    if user in users.keys():
+                        del active_sockets[chats[0]][num]
+
             # await self.request.app.active_sockets.get(
             #    self.request.chat).pop(self.request.user)
             self.request.session.pop("user")

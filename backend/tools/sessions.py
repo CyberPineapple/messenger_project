@@ -73,10 +73,10 @@ async def add_active_sockets(request):
         active_sockets[chat] = []
 
     # del user if him in another chat
-    for i in active_sockets.items():
-        for n, j in enumerate(i[1]):
-            if user in j.keys():
-                del active_sockets[i[0]][n]
+    for chats in active_sockets.items():
+        for num, users in enumerate(chats[1]):
+            if user in users.keys():
+                del active_sockets[chats[0]][num]
 
     # and add him in chat
     active_sockets[chat].append({user: ws})
