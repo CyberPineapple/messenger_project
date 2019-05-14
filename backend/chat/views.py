@@ -5,6 +5,26 @@ from aiohttp import web
 
 class ActionChat(web.View):
 
+    limiter = 15
+
+    @staticmethod
+    async def send_messages(instance, manager, command="choice"):
+        messages = []
+        data_message = {}
+
+        for message in instance:
+            # The option allow_sync becouse message.user
+            # it is foreign key from User db, if del,
+            # can use list comphehension.
+            with manager.allow_sync():
+                data_message["user"] = str(message.user)
+                data_message["text"] = message.text
+                data_message["date"] = str(message.created_at)
+                messages.append(data_message.copy())
+
+        return {"Type": "chat", "Command": command,
+                "Messages": messages[::-1]}
+
     @login_required
     async def create_chat(self, **jdata):
         chat = jdata["Chat"]
@@ -39,9 +59,9 @@ class ActionChat(web.View):
     @login_required
     async def send_messages_from_chat(self, **jdata):
         jchat = jdata["Chat"]
+        manager = self.request.app.manager
         try:
-            # Maybe count?
-            chat = await self.request.app.manager.get(Chat, name=jchat)
+            chat = await manager.get(Chat, name=jchat)
         except Chat.DoesNotExist:
             return {"Type": "chat", "Status": "error"}
 
@@ -54,21 +74,15 @@ class ActionChat(web.View):
         self.request.session["chat"] = jchat
         await create_instance(self.request)
         await add_active_sockets(self.request)
-        query_messages = await self.request.app.manager.execute(
-            Message.select().where(Message.chat == jchat))
-        messages = []
-        data_message = {}
-        for message in query_messages:
-            # The option allow_sync becouse message.user
-            # it is foreign key from User db, if del,
-            # can use list comphehension.
-            with self.request.app.manager.allow_sync():
-                data_message["user"] = str(message.user)
-                data_message["text"] = message.text
-                data_message["date"] = str(message.created_at)
-                messages.append(data_message.copy())
-        return {"Type": "chat", "Command": "choice",
-                        "Messages": messages}
+
+        self.request.session["page"] = 1
+        page = self.request.session.get("page")
+
+        chat_messages = await manager.execute(
+            self.request.chat.messages.order_by(
+                -Message.created_at).paginate(page, self.limiter))
+
+        return await ActionChat.send_messages(chat_messages, manager)
 
     @login_required
     async def send_message(self, **jdata):
@@ -121,3 +135,15 @@ class ActionChat(web.View):
             "Type": "chat",
             "Command": "delete",
             "Status": "success"}
+
+    @login_required
+    async def earlier_messages(self):
+        manager = self.request.app.manager
+        page = self.request.session.get("page") + 1
+        self.request.session["page"] = page
+
+        chat_messages = await manager.execute(
+                self.request.chat.messages.order_by(
+                    -Message.created_at).paginate(page, self.limiter))
+        return await ActionChat.send_messages(
+                          chat_messages, manager, command="earlier")

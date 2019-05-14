@@ -38,13 +38,11 @@ async def websocket_handler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
-    log.debug(f"app.active_sockets = {app.active_sockets}")
-
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
 
             request.app.websocket = ws
-            log.debug(msg.data)
+            # log.debug(msg.data)
             jdata = loads(msg.data)
 
             if jdata["Type"] == "close":
@@ -89,6 +87,8 @@ async def websocket_handler(request):
                         data = await ActionChat(request).send_list_chats()
                     elif jdata["Command"] == "delete":
                         data = await ActionChat(request).delete_chat()
+                    elif jdata["Command"] == "earlier":
+                        data = await ActionChat(request).earlier_messages()
                 # crutch
                 if data is not None:
                     await ws.send_json(data)

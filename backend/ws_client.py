@@ -149,6 +149,7 @@ async def delete_chat(websocket):
     print(f"A: {answer}")
     print("There no assert")
 
+
 async def send_chat_list(websocket, data=None):
     if data is None:
         data = {
@@ -215,8 +216,24 @@ async def send_message(websocket, message_data=None):
     json_answer = json.loads(answer)
     #assert json_answer == message_data
     print("There no assert")
+
+
+async def send_message_next_page(websocket):
+
+    message_data = {
+        "Type": "chat",
+        "Command": "earlier",
+    }
+
+
+    await websocket.send(json.dumps(message_data))
+    print(f"R: {message_data}")
+
     answer = await websocket.recv()
     print(f"A: {answer}")
+    json_answer = json.loads(answer)
+    #assert json_answer == message_data
+    print("There no assert")
 
 
 async def test_success_registration():
@@ -330,9 +347,10 @@ async def test_success_create_close_chat():
 
 async def test_failed_create_non_auth():
     async with websockets.connect(
-        host) as websocket:
+            host) as websocket:
 
         await success_create_chat(websocket, reson=False)
+
 
 async def test_success_send_chat_list():
     async with websockets.connect(
@@ -359,6 +377,7 @@ async def test_success_choise_chat():
 
         await choice_chat(websocket)
 
+
 async def test_success_delete_chat():
     async with websockets.connect(
             host) as websocket:
@@ -366,15 +385,16 @@ async def test_success_delete_chat():
 
         chat_data = {
             "Type": "chat",
-           #"Command": "choice",
-           "Command": "create",
+            # "Command": "choice",
+            "Command": "create",
             "Chat": "temp",
         }
 
-        #await choice_chat(websocket, chat_data)
-        await success_create_chat(websocket,chat_data)
+        # await choice_chat(websocket, chat_data)
+        await success_create_chat(websocket, chat_data)
 
         await delete_chat(websocket)
+
 
 async def test_success_delete_close_chat():
     async with websockets.connect(
@@ -388,10 +408,11 @@ async def test_success_delete_close_chat():
             "Password": "sec"
         }
 
-        #await choice_chat(websocket, chat_data)
-        await success_create_close_chat(websocket,chat_data)
+        # await choice_chat(websocket, chat_data)
+        await success_create_close_chat(websocket, chat_data)
 
         await delete_chat(websocket)
+
 
 async def test_success_enter_in_closed_chat():
     async with websockets.connect(
@@ -451,6 +472,17 @@ async def test_success_send_message_to_closed_chat():
         await choice_close_chat(websocket)
         await send_message(websocket)
 
+
+async def test_success_send_message_next_page():
+    async with websockets.connect(
+            host) as websocket:
+
+        await success_signin(websocket)
+        await choice_chat(websocket)
+        await send_message_next_page(websocket)
+
+        await send_message_next_page(websocket)
+
 async def test_failed_send_message_chat_not_exist():
     async with websockets.connect(
             host) as websocket:
@@ -459,9 +491,10 @@ async def test_failed_send_message_chat_not_exist():
         data = {"Type": "chat",
                 "Command": "choice",
                 "Chat": "qwerty"
-        }
+                }
         await choice_chat(websocket, data)
         await send_message(websocket)
+
 
 async def test_reconnect():
     async with websockets.connect(
@@ -540,11 +573,12 @@ loop.run_until_complete(
         # test_failed_create_chat(),
         # test_success_delete_chat(),
         # test_success_delete_close_chat(),
-        test_success_choise_chat(),
+        # test_success_choise_chat(),
         # test_success_send_chat_list(),
         # test_success_enter_in_closed_chat(),
         # test_success_send_message(),
         # test_success_send_message_to_closed_chat(),
+        test_success_send_message_next_page(),
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
         # test_nonauth_get_chat_list(),
