@@ -12,7 +12,7 @@ from accounts.models import User
 from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
 from chat.views import ActionChat
-from tools.StoreUsers import StoreActiveChats
+from tools.store_users import StoreActiveChats
 
 # TODO:
 # hash for chats password

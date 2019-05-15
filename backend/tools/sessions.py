@@ -3,7 +3,7 @@ from aiohttp_session import get_session
 from aiohttp.web import middleware
 from accounts.models import User
 from chat.models import Chat
-from .StoreUsers import OnlineUser, ActiveChat
+from .store_users import OnlineUser, ActiveChat
 
 
 @middleware
