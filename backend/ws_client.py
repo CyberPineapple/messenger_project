@@ -225,7 +225,6 @@ async def send_message_next_page(websocket):
         "Command": "earlier",
     }
 
-
     await websocket.send(json.dumps(message_data))
     print(f"R: {message_data}")
 
@@ -483,15 +482,18 @@ async def test_success_send_message_next_page():
 
         await send_message_next_page(websocket)
 
+
 async def test_failed_send_message_chat_not_exist():
     async with websockets.connect(
             host) as websocket:
 
         await success_signin(websocket)
+
         data = {"Type": "chat",
                 "Command": "choice",
                 "Chat": "qwerty"
                 }
+
         await choice_chat(websocket, data)
         await send_message(websocket)
 
@@ -578,7 +580,7 @@ loop.run_until_complete(
         # test_success_enter_in_closed_chat(),
         # test_success_send_message(),
         # test_success_send_message_to_closed_chat(),
-        test_success_send_message_next_page(),
+        # test_success_send_message_next_page(),
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
         # test_nonauth_get_chat_list(),
