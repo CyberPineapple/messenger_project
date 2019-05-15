@@ -1,7 +1,9 @@
 from aiohttp_session import get_session
+
 from aiohttp.web import middleware
 from accounts.models import User
 from chat.models import Chat
+from .StoreUsers import OnlineUser, ActiveChat
 
 
 @middleware
@@ -64,19 +66,22 @@ async def create_instance(request):
 
 
 async def add_active_sockets(request):
-    user = request.session.get("user")
-    chat = request.session.get("chat")
     ws = request.app.websocket
     active_sockets = request.app.active_sockets
 
-    if chat not in active_sockets.keys():
-        active_sockets[chat] = []
+    chat = ActiveChat(request.session.get("chat"))
+    user = OnlineUser(request.session.get("user"), ws)
 
-    # del user if him in another chat
-    for chats in active_sockets.items():
-        for num, users in enumerate(chats[1]):
-            if user in users.keys():
-                del active_sockets[chats[0]][num]
+    if chat not in active_sockets.all_chats():
+        active_sockets.add_new_chat(chat)
+
+    # Maybe set var old_chat without
+    # iter by all chat.
+
+    # Del user if he in another chat
+    for cht in active_sockets.all_chats():
+        if cht.get_user(user.name):
+            cht.del_user(user.name)
 
     # and add him in chat
-    active_sockets[chat].append({user: ws})
+    active_sockets.get_chat(chat.name).add_new_user(user)

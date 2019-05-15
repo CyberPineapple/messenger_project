@@ -106,9 +106,8 @@ class ActionChat(web.View):
                 }
         }
 
-        for user in self.request.app.active_sockets[chat]:
-            for ws in user.values():
-                await ws.send_json(answer)
+        for ws in self.request.app.active_sockets.get_chat(chat).all_ws():
+            await ws.send_json(answer)
 
     @login_required
     async def send_list_chats(self):

@@ -64,13 +64,10 @@ class LogOut(web.View):
         """ Remove user from session """
         try:
             user = self.request.session.get("user")
+            chat = self.request.session.get("chat")
             active_sockets = self.request.app.active_sockets
-
-            for chats in active_sockets.items():
-                for num, users in enumerate(chats[1]):
-                    if user in users.keys():
-                        del active_sockets[chats[0]][num]
-
+            print(user,chat)
+            active_sockets.get_chat(chat).del_user(user)
             # await self.request.app.active_sockets.get(
             #    self.request.chat).pop(self.request.user)
             self.request.session.pop("user")
