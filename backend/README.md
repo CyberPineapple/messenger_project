@@ -400,3 +400,6 @@
 ```
 
 Так будет с каждым, кто дочитает спецификацию до конца.
+
+Команда для создания базы данных с utf-8 кодировкой
+create database Messenger with encoding='utf-8' LC_CTYPE='en_US.utf8' LC_COLLATE='en_US.utf8' TEMPLATE template0;

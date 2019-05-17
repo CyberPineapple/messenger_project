@@ -116,7 +116,7 @@ async def init():
 
     app.active_sockets = StoreActiveChats()
     DATABASE = {
-        "database": "Messenger",
+        "database": "messenger",
         "password": "sl+@lM!93nd3_===",
         "user": "user",
         "host": "localhost"
