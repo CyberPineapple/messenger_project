@@ -66,7 +66,7 @@ class LogOut(web.View):
             user = self.request.session.get("user")
             chat = self.request.session.get("chat")
             active_sockets = self.request.app.active_sockets
-            print(user,chat)
+            # print(user,chat)
             active_sockets.get_chat(chat).del_user(user)
             # await self.request.app.active_sockets.get(
             #    self.request.chat).pop(self.request.user)
