@@ -59,6 +59,7 @@ async def success_logout(websocket, failture=False):
     if failture:
         answer = await websocket.recv()
         print(f"A: {answer}")
+
         assert json.loads(answer) == {"Type": "login", "Status": "error"}
     else:
         answer = await websocket.recv()
@@ -234,6 +235,10 @@ async def send_message_next_page(websocket):
     #assert json_answer == message_data
     print("There no assert")
 
+async def get_requests(websocket):
+
+    answer = await websocket.recv()
+    print(f"A: {answer}")
 
 async def test_success_registration():
     async with websockets.connect(
@@ -272,6 +277,7 @@ async def test_success_sign_in():
             host) as websocket:
 
         await success_signin(websocket)
+        await get_requests(websocket)
 
 
 async def test_failture_sign_in_bad_password():
@@ -459,7 +465,8 @@ async def test_success_send_message():
             host) as websocket:
 
         await success_signin(websocket)
-        await choice_chat(websocket)
+        await get_requests(websocket)
+        # await choice_chat(websocket)
         await send_message(websocket)
 
 
@@ -562,7 +569,7 @@ async def create_base_for_test():
 
 loop = asyncio.get_event_loop()
 # run one, becouse next, check # exist user
-loop.run_until_complete(create_base_for_test())
+#loop.run_until_complete(create_base_for_test())
 
 loop.run_until_complete(
     asyncio.gather(
@@ -578,7 +585,7 @@ loop.run_until_complete(
         # test_success_choise_chat(),
         # test_success_send_chat_list(),
         # test_success_enter_in_closed_chat(),
-        # test_success_send_message(),
+        test_success_send_message(),
         # test_success_send_message_to_closed_chat(),
         # test_success_send_message_next_page(),
         # test_failed_enter_in_closed_chat(),
