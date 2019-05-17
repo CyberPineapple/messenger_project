@@ -112,3 +112,17 @@ export const activeChat = value => {
         chat: value
     }
 }
+
+export const renderChatOutput = (value) =>{
+    return {
+        type: 'RENDER_CHAT_OUTPUT',
+        payload: value
+    }
+}
+
+export const earlierMessagesList = (value) =>{
+    return {
+        type: 'EARLIER_MESSAGES',
+        payload: value
+    }
+}

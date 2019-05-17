@@ -5,7 +5,7 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from './store/configureStore'
 import { socket } from './websockets/websocket'
-import { setPage, connect, setMessagesList, setChatList } from './actions/actions';
+import { setPage, connect, setMessagesList, setChatList, renderChatOutput, earlierMessagesList } from './actions/actions';
 
 socket.onopen = () =>{
   store.dispatch(setPage('authentification'));
@@ -41,9 +41,13 @@ socket.onmessage = (response) =>{
         };
         if (data.Command === 'choice'){
           store.dispatch(setMessagesList(data.Messages));
+          store.dispatch(renderChatOutput(true));
         }
         if (data.Command === 'message'){
-          store.dispatch(setMessagesList(data.Message));  
+          store.dispatch(setMessagesList(data.Message));
+        }
+        if (data.Command === 'earlier'){
+          store.dispatch(earlierMessagesList(data.Messages));
         }
         break;
       }

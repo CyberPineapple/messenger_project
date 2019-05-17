@@ -9,18 +9,6 @@
     background-image: url(../../images/free_hexagon_pattern_02_by_black_light_studio-d65g32i.png);
 }
 
-.output{
-    margin: auto;
-    height: 80%;
-    width: 90%;
-    border: 2px solid #77207D;
-    margin-bottom: 25px;
-    background-color: white;
-    overflow-y: scroll;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
 .input{
     margin: auto;
     width: 90%;
@@ -54,28 +42,11 @@
     background-color: #E6FB71;
 }
 
-.message{
-    padding: 3px;
-    border-bottom: 2px solid #E6FB71;
-    display: grid;
-    grid-template-columns: 20% 60% 20%;
-    margin-top: -2px;
-}
-
-.message_user{
-    border-right: 2px solid #E6FB71;
-    text-align: center;
-    word-wrap: break-word;
-}
-
-.message_text{
-    text-align: center;
-    word-wrap: break-word;
-    border-right: 2px solid #E6FB71;
-}
-
-.message_time{
-    text-align: center;
-    word-wrap: break-word;
-
+.chat{
+    margin: auto;
+    height: 80%;
+    width: 90%;
+    border: 2px solid #77207D;
+    margin-bottom: 25px;
+    background-color: white;
 }
