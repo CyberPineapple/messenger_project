@@ -5,7 +5,7 @@ from aiohttp import web
 
 class ActionChat(web.View):
 
-    limiter = 15
+    limiter = 30
 
     @staticmethod
     async def send_messages(instance, manager, command="choice"):
