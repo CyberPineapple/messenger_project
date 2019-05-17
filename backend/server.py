@@ -12,6 +12,7 @@ from accounts.models import User
 from accounts.views import Register, LogIn, LogOut
 from chat.models import Chat, Message
 from chat.views import ActionChat
+from tools.store_users import StoreActiveChats
 
 # TODO:
 # hash for chats password
@@ -70,10 +71,10 @@ async def websocket_handler(request):
 
             elif jdata["Type"] == "chat":
                 # TODO: CRUD chat
+                log.debug(f"app.active_sockets = {app.active_sockets}")
                 if "Command" in jdata.keys():
                     if jdata["Command"] == "message":
                         data = await ActionChat(request).send_message(**jdata)
-                        log.debug(f"app.active_sockets = {app.active_sockets}")
                     elif jdata["Command"] == "choice":
                         data = await ActionChat(
                             request).send_messages_from_chat(**jdata)
@@ -113,7 +114,7 @@ async def init():
     setup(app, storage)
     app.add_routes([web.get("/", websocket_handler)])
 
-    app.active_sockets = {}
+    app.active_sockets = StoreActiveChats()
     DATABASE = {
         "database": "Messenger",
         "password": "sl+@lM!93nd3_===",
