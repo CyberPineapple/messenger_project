@@ -50,6 +50,9 @@ class StoreActiveChats():
     def all_chats(self):
         return [chat for chat in self.pool]
 
+    def all_chat_names(self):
+        return [chat.name for chat in self.pool]
+
     def add_new_chat(self, chat: ActiveChat):
         if chat.name not in self.all_chats():
             self.pool.append(chat)

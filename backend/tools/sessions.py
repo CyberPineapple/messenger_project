@@ -15,11 +15,12 @@ async def request_user_middleware(request, handler):
     user_ident = request.session.get("user")
     chat_ident = request.session.get("chat")
     if user_ident is not None:
-        request.user = await request.app.manager.get(User,
-                                                     User.username == user_ident)
+        request.user = \
+                await request.app.manager.get(
+                    User, User.username == user_ident)
         if chat_ident is not None:
-            request.chat = await request.app.manager.get(Chat,
-                                                         Chat.name == chat_ident)
+            request.chat = \
+                await request.app.manager.get(Chat, Chat.name == chat_ident)
 
     responce = await handler(request)
     return responce
@@ -58,11 +59,6 @@ async def create_instance(request):
     if chat_ident is not None:
         request.chat = await request.app.manager.get(Chat,
                                                      Chat.name == chat_ident)
-# TASK
-# think up container which have
-# link like chat -> [user -> ws, ...]
-# easy add chat, user and remove them
-# where chat, may be is None
 
 
 async def add_active_sockets(request):
@@ -72,7 +68,7 @@ async def add_active_sockets(request):
     chat = ActiveChat(request.session.get("chat"))
     user = OnlineUser(request.session.get("user"), ws)
 
-    if chat not in active_sockets.all_chats():
+    if chat.name not in active_sockets.all_chat_names():
         active_sockets.add_new_chat(chat)
 
     # Maybe set var old_chat without
