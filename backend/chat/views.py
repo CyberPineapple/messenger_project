@@ -143,6 +143,6 @@ class ActionChat(web.View):
 
         chat_messages = await manager.execute(
                 self.request.chat.messages.order_by(
-                    -Message.created_at).paginate(page, self.limiter))
+                    -Message.created_at).paginate(page, self.limiter // 2))
         return await ActionChat.send_messages(
                           chat_messages, manager, command="earlier")
