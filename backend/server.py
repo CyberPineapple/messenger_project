@@ -71,7 +71,7 @@ async def websocket_handler(request):
 
             elif jdata["Type"] == "chat":
                 # TODO: CRUD chat
-                log.debug(f"app.active_sockets = {app.active_sockets}")
+                log.debug(f"app.active_sockets = {app.active_sockets.all_chats()}")
                 if "Command" in jdata.keys():
                     if jdata["Command"] == "message":
                         data = await ActionChat(request).send_message(**jdata)

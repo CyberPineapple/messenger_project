@@ -11,7 +11,7 @@ async def success_register(websocket, register_creds=None):
     if register_creds is None:
 
         register_creds = {
-                "Type": "",
+                "Type": "registration",
                 "Login": "user",
                 "Password": "password"
         }
@@ -562,7 +562,7 @@ async def create_base_for_test():
 
 loop = asyncio.get_event_loop()
 # run one, becouse next, check # exist user
-# loop.run_until_complete(create_base_for_test())
+loop.run_until_complete(create_base_for_test())
 
 loop.run_until_complete(
     asyncio.gather(
