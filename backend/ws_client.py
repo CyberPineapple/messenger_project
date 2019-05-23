@@ -1,7 +1,6 @@
 import asyncio
 import websockets
 import json
-import ssl
 
 #host = "ws://localhost:8080"
 host = "wss://host-94-103-84-32.hosted-by-vdsina.ru:443"
