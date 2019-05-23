@@ -1,3 +1,8 @@
+# Commnand to run the server
+#  $ gunicorn -c settings.ini  server:main
+#                       --worker-class aiohttp.worker.GunicornWebWorker
+#
+
 import logging as log
 from peewee_async import Manager
 from aioredis import create_pool
@@ -75,7 +80,8 @@ async def websocket_handler(request):
 
             elif jdata["Type"] == "chat":
                 # TODO: CRUD chat
-                log.debug(f"app.active_sockets = {app.active_sockets.all_chats()}")
+                log.debug(
+                    f"app.active_sockets = {app.active_sockets.all_chats()}")
                 if "Command" in jdata.keys():
                     if jdata["Command"] == "message":
                         data = await ActionChat(request).send_message(**jdata)
@@ -142,6 +148,9 @@ async def init():
         datefmt='%m/%d/%Y %I:%M:%S %p')
 
     return app
+
+async def main():
+    return await init()
 
 if __name__ == "__main__":
     web.run_app(init())
