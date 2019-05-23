@@ -1,9 +1,10 @@
 import asyncio
 import websockets
 import json
+import ssl
 
-host = "ws://localhost:8080"
-#host = "ws://host-94-103-84-32.hosted-by-vdsina.ru:8080"
+#host = "ws://localhost:8080"
+host = "wss://host-94-103-84-32.hosted-by-vdsina.ru:443"
 
 
 async def success_register(websocket, register_creds=None):
@@ -462,10 +463,8 @@ async def test_failed_enter_in_closed_chat_bad_pass():
 
 async def test_success_send_message():
     async with websockets.connect(
-            host) as websocket:
-
+            host ) as websocket:
         await success_signin(websocket)
-        await get_requests(websocket)
         # await choice_chat(websocket)
         await send_message(websocket)
 
