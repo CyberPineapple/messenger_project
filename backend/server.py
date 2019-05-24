@@ -20,7 +20,6 @@ from chat.views import ActionChat
 from tools.store_users import StoreActiveChats
 
 # TODO:
-# startup general chat
 # hash for chats password
 # check eof ws
 # Before delete chat kick users from chat
@@ -74,9 +73,9 @@ async def websocket_handler(request):
                 if data["Status"] == "success":
                     data = await Chat.all_chats(request.app.manager)
                     await ws.send_json(data)
-                    data = await ActionChat(
-                            request).send_messages_from_chat(**{})
-                    await ws.send_json(data)
+                    # data = await ActionChat(
+                    #         request).send_messages_from_chat(**{})
+                    # await ws.send_json(data)
 
             elif jdata["Type"] == "chat":
                 # TODO: CRUD chat
@@ -148,6 +147,7 @@ async def init():
         datefmt='%m/%d/%Y %I:%M:%S %p')
 
     return app
+
 
 async def main():
     return await init()
