@@ -464,7 +464,7 @@ async def test_success_send_message():
     async with websockets.connect(
             host ) as websocket:
         await success_signin(websocket)
-        # await choice_chat(websocket)
+        await choice_chat(websocket)
         await send_message(websocket)
 
 
