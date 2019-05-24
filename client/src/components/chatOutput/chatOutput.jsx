@@ -35,6 +35,7 @@ class ChatOutput extends React.Component{
             Command: 'earlier'
           }
           socket.send(JSON.stringify(data));
+          value.target.scrollTop = 10;
         }
 
     };
