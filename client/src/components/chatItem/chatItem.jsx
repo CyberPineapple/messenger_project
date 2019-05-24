@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import style from './chatItem.module.css';
 import { bindActionCreators } from 'redux';
 import { removeMessagesList, activeChat, renderChatOutput } from '../../actions/actions';
-import { socket } from '../../websockets/websocket'
+import { socket } from '../../websockets/websocket';
 
 class ChatItem extends React.Component {
   constructor() {

@@ -4,7 +4,8 @@ import style from "./menu.module.css";
 import { socket } from "../../websockets/websocket";
 import { bindActionCreators } from "redux";
 import { addChatName, removeChatName, activeChat, removeMessagesList, addChatPassword, removeChatPassword } from "../../actions/actions";
-import ChatItem from '../chatItem/chatItem'
+import ChatItem from '../chatItem/chatItem';
+import Clock from '../clock/clock';
 
 class Menu extends React.Component {
   constructor() {
@@ -58,6 +59,7 @@ class Menu extends React.Component {
           <div className={style.menu_chat_list}>
             {chats}
           </div>
+          <Clock />
         </div>
       </React.Fragment >
     );

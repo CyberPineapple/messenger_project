@@ -1,6 +1,20 @@
 .output{
     height: 100%;
     width: 100%;
+}
+
+.nameChat{
+    border-bottom: 2px solid #77207D;
+    text-align: center;
+    font-size: 20px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.messagesList{
+    height: 90%;
+    width: 100%;
     overflow-y: scroll;
     padding: 10px;
 }

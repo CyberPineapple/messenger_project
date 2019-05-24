@@ -5,7 +5,7 @@ import App from "./App";
 import { Provider } from "react-redux";
 import { store } from './store/configureStore'
 import { socket } from './websockets/websocket'
-import { setPage, connect, setMessagesList, setChatList, renderChatOutput, earlierMessagesList } from './actions/actions';
+import { setPage, connect, setMessagesList, setChatList, renderChatOutput, earlierMessagesList, activeChat } from './actions/actions';
 
 socket.onopen = () =>{
   store.dispatch(setPage('authentification'));
@@ -26,6 +26,14 @@ socket.onmessage = (response) =>{
       case 'login': {
         if (data.Status === 'success'){
           store.dispatch(setPage('main'));
+          store.dispatch(activeChat('general'));
+          let data = {
+            Type: 'chat',
+            Command: 'choice',
+            Chat: 'general'
+          }
+          data = JSON.stringify(data);
+          socket.send(data);
         } else if (data.Status === 'error'){
           console.log('Ошибка авторизации');
         }
