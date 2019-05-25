@@ -65,7 +65,7 @@ class ActionChat(web.View):
 
     @login_required
     async def send_messages_from_chat(self, **jdata):
-        jchat = jdata.get("Chat", "general")
+        jchat = jdata.get("Chat", None)
         manager = self.request.app.manager
         try:
             chat = await manager.get(Chat, name=jchat)

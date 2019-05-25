@@ -424,7 +424,7 @@ async def test_failed_enter_in_closed_chat_bad_pass():
 async def test_success_send_message():
     async with websockets.connect(host) as websocket:
         await success_signin(websocket)
-        # await choice_chat(websocket)
+        await choice_chat(websocket)
         await send_message(websocket)
 
 
