@@ -1,15 +1,16 @@
 from dataclasses import dataclass, field
+
 from aiohttp.web import WebSocketResponse
 
 
 @dataclass
-class OnlineUser():
+class OnlineUser:
     name: str
     ws: WebSocketResponse
 
 
 @dataclass
-class ActiveChat():
+class ActiveChat:
     name: str
     pool: list = field(default_factory=list)
 
@@ -39,12 +40,13 @@ class ActiveChat():
 
 
 @dataclass
-class StoreActiveChats():
+class StoreActiveChats:
     pool = []
 
     def __new__(cls):
         if not hasattr(cls, "instance"):
             cls.instance = super(StoreActiveChats, cls).__new__(cls)
+
         return cls.instance
 
     def all_chats(self):
@@ -64,9 +66,11 @@ class StoreActiveChats():
 
     def del_chat(self, chat: str):
         chat = self.get_chat(chat)
+
         if chat is not None:
             chat.remove_all_users()
             self.pool.remove(chat)
+
 
 # user = OnlineUser("user", "..")
 # user1 = OnlineUser("user", "...")

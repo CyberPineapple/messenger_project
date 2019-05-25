@@ -4,20 +4,21 @@
 #
 
 import logging as log
-from peewee_async import Manager
-from aioredis import create_pool
+
+from accounts.models import User
+from accounts.views import LogIn, LogOut, Register
 from aiohttp import web
 from aiohttp_session import session_middleware, setup
 from aiohttp_session.redis_storage import RedisStorage
-
-from tools.models import database
-from tools.json_validator import loads, is_json
-from tools.sessions import request_user_middleware
-from accounts.models import User
-from accounts.views import Register, LogIn, LogOut
+from aioredis import create_pool
 from chat.models import Chat, Message
 from chat.views import ActionChat
+from peewee_async import Manager
+from tools.json_validator import is_json, loads
+from tools.models import database
+from tools.sessions import request_user_middleware
 from tools.store_users import StoreActiveChats
+
 
 # TODO:
 # startup general chat
@@ -37,8 +38,6 @@ from tools.store_users import StoreActiveChats
 # # user -- object from db
 # # chat -- current chat when "Command: Choise"
 # # active_sockets -- store for websockets
-
-
 async def websocket_handler(request):
 
     app = request.app
@@ -71,17 +70,19 @@ async def websocket_handler(request):
                 # two send_json, compare in one json
                 data = await LogIn(request).loginning(**jdata)
                 await ws.send_json(data)
+
                 if data["Status"] == "success":
                     data = await Chat.all_chats(request.app.manager)
                     await ws.send_json(data)
-                    data = await ActionChat(
-                            request).send_messages_from_chat(**{})
+                    data = await ActionChat(request).send_messages_from_chat(
+                        **{})
                     await ws.send_json(data)
 
             elif jdata["Type"] == "chat":
                 # TODO: CRUD chat
                 log.debug(
                     f"app.active_sockets = {app.active_sockets.all_chats()}")
+
                 if "Command" in jdata.keys():
                     if jdata["Command"] == "message":
                         data = await ActionChat(request).send_message(**jdata)
@@ -101,14 +102,14 @@ async def websocket_handler(request):
                     elif jdata["Command"] == "earlier":
                         data = await ActionChat(request).earlier_messages()
                 # crutch
+
                 if data is not None:
                     await ws.send_json(data)
             else:
                 await ws.send_json({"Status": "error in json file"})
 
         elif msg.type == web.WSMsgType.ERROR:
-            print("Connection closed with exception %s" %
-                  ws.exception())
+            print("Connection closed with exception %s" % ws.exception())
 
     return ws
 
@@ -117,9 +118,8 @@ async def init():
     redis = await create_pool("redis://localhost")
     storage = RedisStorage(redis)
     middleware = [
-        session_middleware(
-            RedisStorage(redis)),
-        request_user_middleware]
+        session_middleware(RedisStorage(redis)), request_user_middleware
+    ]
     app = web.Application(middlewares=middleware)
     setup(app, storage)
     app.add_routes([web.get("/", websocket_handler)])
@@ -129,7 +129,7 @@ async def init():
         "database": "messenger",
         "password": "sl+@lM!93nd3_===",
         "user": "user",
-        "host": "localhost"
+        "host": "localhost",
     }
 
     database.init(**DATABASE)
@@ -144,13 +144,16 @@ async def init():
 
     log.basicConfig(
         level=log.DEBUG,
-        format='%(levelname)s %(asctime)s %(message)s',
-        datefmt='%m/%d/%Y %I:%M:%S %p')
+        format="%(levelname)s %(asctime)s %(message)s",
+        datefmt="%m/%d/%Y %I:%M:%S %p",
+    )
 
     return app
 
+
 async def main():
     return await init()
+
 
 if __name__ == "__main__":
     web.run_app(init())
