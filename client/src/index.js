@@ -34,6 +34,7 @@ socket.onmessage = (response) =>{
           }
           data = JSON.stringify(data);
           socket.send(data);
+          store.dispatch(renderChatOutput(false));
         } else if (data.Status === 'error'){
           console.log('Ошибка авторизации');
         }
