@@ -137,6 +137,9 @@ class ActionChat(web.View):
                     self.request.session['chat']).all_ws():
                 await ws.send_json(
                     await self.send_messages_from_chat(**{"Chat": 'general'}))
+                # There maybe bug, as in send_messages_from_chat
+                # `request.chat = 'general'`
+                # but after self.request.chat = None(next strings)
         self.request.chat = None
         self.request.session["chat"] = None
 
