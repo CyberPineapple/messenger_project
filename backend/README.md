@@ -16,7 +16,7 @@
 * длина логина не больше 20 символов;
 * логин должен быть уникальным.
 
-**(?)** А если больше 20 симоволов? *ограничить на фронтэнде*
+    **(?)** А если больше 20 симоволов? *ограничить на фронтэнде*
 
 ### Регистрация
 
@@ -24,9 +24,9 @@
 
 ```json
 {
-    "Type": "registration",
-        "Login": "user",
-        "Password": "password",
+"Type": "registration",
+"Login": "user",
+"Password": "password"
 }
 ```
 
@@ -34,8 +34,8 @@
 
 ```json
 {
-    "Type": "registration",
-        "Status": "success"
+"Type": "registration",
+"Status": "success"
 }
 ```
 
@@ -45,8 +45,8 @@
 
 ```json
 {
-    "Type": "registration",
-        "Status": "user exist"
+"Type": "registration",
+"Status": "user exist"
 }
 ```
 
@@ -61,9 +61,9 @@
 
 ```json
 {
-    "Type":"login",
-        "Login": "user",
-        "Password": "password"
+"Type":"login",
+"Login": "user",
+"Password": "password"
 }
 ```
 
@@ -71,8 +71,8 @@
 
 ```json
 {
-    "Type": "login",
-        "Status": "success"
+"Type": "login",
+"Status": "success"
 }
 ```
 
@@ -81,8 +81,8 @@
 
 ```json
 {
-    "Type": "login",
-        "Status": "error"
+"Type": "login",
+"Status": "error"
 }
 ```
 
@@ -91,8 +91,8 @@
 
 ```json
 {
-    "Type": "logout",
-        "Login": "user"
+"Type": "logout",
+"Login": "user"
 }
 ```
 
@@ -100,8 +100,8 @@
 
 ```json
 {
-    "Type": "logout",
-        "Status": "success"
+"Type": "logout",
+"Status": "success"
 }
 ```
 
@@ -112,32 +112,32 @@
 
 ```json
 {
-    "Type": "logout",
-        "Status": "error"
+"Type": "logout",
+"Status": "error"
 }
 ```
 
 ## 3. Шифрование паролей
 Пользователь может быть спокоен, все пароли хранятся в sha-512 + salt(sha256 + random)
 
-    **(?)** Добавить хранение от чата пароля в хеше
+**(?)** Добавить хранение от чата пароля в хеше
 
 ## 4. Сессия пользователя
-    Сессия пользователя автоматически создаётся при входе или регистрации пользователя. Сессия хранит идентификатор пользователя и время входа в систему и текущий чат.
+Сессия пользователя автоматически создаётся при входе или регистрации пользователя. Сессия хранит идентификатор пользователя и время входа в систему и текущий чат.
 
 ## 5. Чат
-    При создании чата перед пользователем предъявляются следующие требования:
+Rри создании чата перед пользователем предъявляются следующие требования:
     * длина имени чата не должна превышать 32 символов;
     * пользователь должен быть авторизован в системе.
 
 ### Создание
-    Для создания чата клиент должен отправить json-запрос с следущим содержанием
+Для создания чата клиент должен отправить json-запрос с следущим содержанием
 
-    ```json
+```json
 {
-    "Type": "chat",
-        "Command": "create",
-        "Chat": "general",
+"Type": "chat",
+"Command": "create",
+"Chat": "general"
 }
 ```
 
@@ -145,8 +145,8 @@
 
 ```json
 {
-    "Type": "chat",
-        "Status": "success"
+"Type": "chat",
+"Status": "success"
 }
 ```
 
@@ -154,8 +154,8 @@
 
 ```json
 {
-    "Type": "login",
-        "Status": "error"
+"Type": "login",
+"Status": "error"
 }
 ```
 
@@ -164,27 +164,26 @@
 
 ```json
 {
-    "Type": "chat",
-        "Command": "create",
-        "Chat": "general secret",
-        "Password": "secret",
-
+"Type": "chat",
+"Command": "create",
+"Chat": "general secret",
+"Password": "secret"
 }
 ```
 При успешном создании чата с паролем сервер ответит
 
 ```json
 {
-    "Type": "chat",
-        "Status": "success"
+"Type": "chat",
+"Status": "success"
 
 }
 ```
 Если пользователь создат чат с уже имеющимся именем в базе, сервер ответит
 ```json
 {
-    "Type": "chat"
-        "Status": "chat exist"
+"Type": "chat",
+"Status": "chat exist"
 }
 ```
 ### Удаление чата
@@ -193,38 +192,38 @@
 * пользователь должнен быть создателем чата
 * пользователь должен выбрать чат ("Command": "choice")
 
-Удаление чата как **с паролем**, так **без** приходит **без изменений**.
+    Удаление чата как **с паролем**, так **без** приходит **без изменений**.
 
-Для удаления пользователь должен отправить следующий json запрос
+    Для удаления пользователь должен отправить следующий json запрос
 
-```json
-{
-    "Type": "chat"
-        "Command": "delete"
-}
-```
-
-При успешном запросе сервер ответит
-
-```json
-{
+    ```json
+    {
     "Type": "chat",
-        "Command": "delete",
-        "Status": "success",
-}
-```
+    "Command": "delete"
+    }
+    ```
 
-Важно, что после удаления чата, все пользователи удаленного чата будут перенапралены в чат **general**
+    При успешном запросе сервер ответит
 
-Если попытается удалить не создатель чата, сервер ответит так
-
-```json
-{
+    ```json
+    {
     "Type": "chat",
-        "Command": "delete",
-        "Status": "error",
-}
-```
+    "Command": "delete",
+    "Status": "success"
+    }
+    ```
+
+    Важно, что после удаления чата, все пользователи удаленного чата будут перенапралены в чат **general**
+
+    Если попытается удалить не создатель чата, сервер ответит так
+
+    ```json
+    {
+    "Type": "chat",
+    "Command": "delete",
+    "Status": "error"
+    }
+    ```
 
 
 
@@ -233,8 +232,8 @@
 
 ```json
 {
-    "Type": "chat"
-        "Command": "list"
+"Type": "chat",
+"Command": "list"
 }
 ```
 
@@ -242,17 +241,17 @@
 
 ```json
 {
-    "Type": "chat",
-        "Chats": [
-        {
-            "Chat": "general",
-            "Closed": false
-        },
-        {
-            "Chat": "secret general",
-            "Closed": true
-        }
-        ]
+"Type": "chat",
+"Chats": [
+{
+"Chat": "general",
+"Closed": false
+},
+{
+"Chat": "secret general",
+"Closed": true
+}
+]
 }
 ```
 
@@ -262,8 +261,8 @@
 
 ```json
 {
-    "Type": "login"
-        "Status": "error"
+"Type": "login",
+"Status": "error"
 }
 ```
 
@@ -273,9 +272,9 @@
 
 ```json
 {
-    "Type": "chat",
-        "Chat": "general",
-        "Command": "choice"
+"Type": "chat",
+"Chat": "general",
+"Command": "choice"
 }
 ```
 
@@ -283,20 +282,20 @@
 
 ```json
 {
-    "Type": "chat"
-        "Command": "choice",
-        "Messages": [
-        {
-            "user": "user",
-            "text": "Hello from past",
-            "date": "1970-01-03 03:59:00"
-        },
-        {
-            "user": "user",
-            "text": "Hey, there is somebody?",
-            "date": "2019-05-04 20:00:00"
-        }
-        ]
+"Type": "chat",
+"Command": "choice",
+"Messages": [
+{
+"user": "user",
+"text": "Hello from past",
+"date": "1970-01-03 03:59:00"
+},
+{
+"user": "user",
+"text": "Hey, there is somebody?",
+"date": "2019-05-04 20:00:00"
+}
+]
 }
 ```
 Где **Messages** это массив с json объектам.
@@ -307,10 +306,10 @@
 
 ```json
 {
-    "Type": "chat",
-        "Command": "choice",
-        "Chat": "secret general",
-        "Password": "secret"
+"Type": "chat",
+"Command": "choice",
+"Chat": "secret general",
+"Password": "secret"
 }
 ```
 
@@ -318,14 +317,14 @@
 
 ```json
 {
-    "Type": "chat",
-        "Messages": [
-        {
-            "user": "user",
-            "text": "Встретимся на остановке",
-            "date": "2019-01-01 03:59:00"
-        },
-        ]
+"Type": "chat",
+"Messages": [
+{
+"user": "user",
+"text": "Встретимся на остановке",
+"date": "2019-01-01 03:59:00"
+}
+]
 }
 ```
 
@@ -335,9 +334,9 @@
 
 ```json
 {
-    "Type":"chat",
-        "Command":"choice",
-        "Chat":"secret general"
+"Type":"chat",
+"Command":"choice",
+"Chat":"secret general"
 }
 ```
 
@@ -345,8 +344,8 @@
 
 ```json
 {
-    "Type": "chat",
-        "Status": "access denied"
+"Type": "chat",
+"Status": "access denied"
 }
 ```
 
@@ -354,10 +353,10 @@
 
 ```json
 {
-    "Type":"chat",
-        "Command":"choice",
-        "Chat":"secret general",
-        "Password": "terces"
+"Type":"chat",
+"Command":"choice",
+"Chat":"secret general",
+"Password": "terces"
 }
 ```
 
@@ -365,8 +364,8 @@
 
 ```json
 {
-    "Type": "chat",
-        "Status": "access denied"
+"Type": "chat",
+"Status": "access denied"
 }
 ```
 ### Получить более ранние сообщения
@@ -377,8 +376,8 @@
 
 ```json
 {
-    "Type": "chat",
-        "Command": "earlier"
+"Type": "chat",
+"Command": "earlier"
 }
 ```
 
@@ -386,20 +385,20 @@
 
 ```json
 {
-    "Type": "chat",
-        "Command": "earlier",
-        "Messages": [
-        {
-            "user": "login",
-            "text": "Hello from past",
-            "date": "1970-01-03 03:59:00"
-        },
-        {
-            "user": "user",
-            "text": "Hey, there is somebody?",
-            "date": "2019-05-04 20:00:00"
-        }
-        ]
+"Type": "chat",
+"Command": "earlier",
+"Messages": [
+{
+"user": "login",
+"text": "Hello from past",
+"date": "1970-01-03 03:59:00"
+},
+{
+"user": "user",
+"text": "Hey, there is somebody?",
+"date": "2019-05-04 20:00:00"
+}
+]
 }
 ```
 
@@ -407,9 +406,9 @@
 
 ```json
 {
-    "Type": "chat",
-        "Command": "earlier",
-        "Messages": []
+"Type": "chat",
+"Command": "earlier",
+"Messages": []
 }
 ```
 
@@ -419,67 +418,67 @@
 * авторизован;
 * чат должен существовать.
 
-Прежде чем отправить сообщение пользователь должен выбрать чат.
+    Прежде чем отправить сообщение пользователь должен выбрать чат.
 
-```json
-{
+    ```json
+    {
     "Type": "chat",
-        "Chat": "general",
-        "Command": "choice"
-}
-```
-Только после пользователь может приступать к отправке сообщения.
+    "Chat": "general",
+    "Command": "choice"
+    }
+    ```
+    Только после пользователь может приступать к отправке сообщения.
 
-Для отправки сообщения в чат клиент должен отправить сообщение
+    Для отправки сообщения в чат клиент должен отправить сообщение
 
-```json
-{
+    ```json
+    {
     "Type": "chat",
-        "Command": "message",
-        "Text": "Hey, there is somebody?"
-}
-```
+    "Command": "message",
+    "Text": "Hey, there is somebody?"
+    }
+    ```
 
-На что сервер ответит, точно таким же сообщением каждому подключенному пользователю
+    На что сервер ответит, точно таким же сообщением каждому подключенному пользователю
 
-```json
-{
+    ```json
+    {
     "Type": "chat",
-        "Command": "message",
-        "Message": {
-            "user": "user",
-            "text": "Hey, there is somebody?",
-            "date": "2019-05-01T00:00:00"
-        }
-}
-```
+    "Command": "message",
+    "Message": {
+    "user": "user",
+    "text": "Hey, there is somebody?",
+    "date": "2019-05-01T00:00:00"
+    }
+    }
+    ```
 
-**Почему так?** Это происходит потому что, все общение идет через сервер. А значит мы должны отправлять только те сообщения которые гарантированно дошли до сервера и сохранены в базе.
+    **Почему так?** Это происходит потому что, все общение идет через сервер. А значит мы должны отправлять только те сообщения которые гарантированно дошли до сервера и сохранены в базе.
 
-Если пользователь попрообует отправить сообщение не авторизованныем или не выбрав чат, сервер ответит
+    Если пользователь попрообует отправить сообщение не авторизованныем или не выбрав чат, сервер ответит
 
-```json
+    ```json
 
-{
+    {
     "Type": "chat",
-        "Command": "message",
-        "Status": "error in chat or user"
-}
-```
+    "Command": "message",
+    "Status": "error in chat or user"
+    }
+    ```
 
-**(?)** Обработать сообщение "Status": "error", например когда база недоступна или память кончилась, или сервер упал.
+    **(?)** Обработать сообщение "Status": "error", например когда база недоступна или память кончилась, или сервер упал.
 
-Если авторизованный пользователь попробует отправить в несуществующий чат сервер ему ответит
+    Если авторизованный пользователь попробует отправить в несуществующий чат сервер ему ответит
 
-```json
-{
+    ```json
+    {
     "Type": "chat",
-        "Status": "error"
+    "Status": "error"
 
-}
-```
+    }
+    ```
 
-Так будет с каждым, кто дочитает спецификацию до конца.
+    Так будет с каждым, кто дочитает спецификацию до конца.
 
-Команда для создания базы данных с utf-8 кодировкой
-create database Messenger with encoding='utf-8' LC_CTYPE='en_US.utf8' LC_COLLATE='en_US.utf8' TEMPLATE template0;
+    Команда для создания базы данных с utf-8 кодировкой
+    create database Messenger with encoding='utf-8' LC_CTYPE='en_US.utf8' LC_COLLATE='en_US.utf8' TEMPLATE template0;
