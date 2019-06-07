@@ -133,6 +133,10 @@ class ActionChat(web.View):
                 return {"Type": "chat", "Command": "delete", "Status": "error"}
 
             self.request.chat.delete_instance(recursive=True)
+            for ws in self.request.app.active_sockets.get_chat(
+                    self.request.session['chat']).all_ws():
+                await ws.send_json(
+                    await self.send_messages_from_chat(**{"Chat": 'general'}))
         self.request.chat = None
         self.request.session["chat"] = None
 
