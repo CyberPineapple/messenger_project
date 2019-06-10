@@ -1,5 +1,6 @@
 from aiohttp import web
 from tools.sessions import add_active_sockets, create_instance, login_required
+from tools.passwords import hash_password, verify_password
 
 from .models import Chat, Message
 
@@ -36,10 +37,11 @@ class ActionChat(web.View):
             return {"Type": "chat", "Status": "chat exist"}
 
         if "Password" in jdata.keys():
+            password = hash_password(jdata["Password"], algorithm="sha256")
             await self.request.app.manager.create(Chat,
                                                   name=chat,
                                                   owner=user,
-                                                  password=jdata["Password"],
+                                                  password=password,
                                                   closed=True)
         else:
             await self.request.app.manager.create(Chat, name=chat, owner=user)
@@ -75,7 +77,7 @@ class ActionChat(web.View):
         if chat.closed and "Password" not in jdata.keys():
             return {"Type": "chat", "Status": "access denied"}
         elif "Password" in jdata.keys():
-            if chat.password != jdata["Password"]:
+            if not verify_password(chat.password, jdata["Password"], algorithm="sha256"):
                 return {"Type": "chat", "Status": "access denied"}
 
         self.request.session["chat"] = jchat
