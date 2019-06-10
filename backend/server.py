@@ -21,9 +21,7 @@ from tools.store_users import StoreActiveChats
 
 
 # TODO:
-# hash for chats password
 # check eof ws
-# Before delete chat kick users from chat
 # update after login/logout online users
 # update after login data_last_online
 # check one user by one login
