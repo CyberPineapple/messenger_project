@@ -22,6 +22,7 @@ from tools.store_users import StoreActiveChats
 
 # TODO:
 # check eof ws
+# send images in chats
 # update after login/logout online users
 # update after login data_last_online
 # check one user by one login
