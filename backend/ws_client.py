@@ -3,7 +3,7 @@ import json
 
 import websockets
 
-host = "ws://localhost:8000"
+host = "ws://localhost:8080"
 # host = "wss://host-94-103-84-32.hosted-by-vdsina.ru:443"
 
 
@@ -202,7 +202,7 @@ async def send_message(websocket, message_data=None):
 
     answer = await websocket.recv()
     print(f"A: {answer}")
-    json_answer = json.loads(answer)
+    # json_answer = json.loads(answer)
     # assert json_answer == message_data
     print("There no assert")
 
@@ -216,7 +216,7 @@ async def send_message_next_page(websocket):
 
     answer = await websocket.recv()
     print(f"A: {answer}")
-    json_answer = json.loads(answer)
+    # json_answer = json.loads(answer)
     # assert json_answer == message_data
     print("There no assert")
 
@@ -428,6 +428,22 @@ async def test_success_send_message():
         await send_message(websocket)
 
 
+async def test_success_send_image():
+    async with websockets.connect(host) as websocket:
+        await success_signin(websocket)
+        await choice_chat(websocket)
+        with open('static/pica.png', 'rb') as image:
+            import base64
+            image = base64.encodebytes(image.read())
+
+            message_data = {
+                "Type": "chat",
+                "Command": "message",
+                "Image": image,
+            }
+            await send_message(websocket, message_data)
+
+
 async def test_success_send_message_to_closed_chat():
     async with websockets.connect(host) as websocket:
 
@@ -531,7 +547,8 @@ loop.run_until_complete(
         # test_success_choise_chat(),
         # test_success_send_chat_list(),
         # test_success_enter_in_closed_chat(),
-        test_success_send_message(),
+        # test_success_send_message(),
+        # test_success_send_image(),
         # test_success_send_message_to_closed_chat(),
         # test_success_send_message_next_page(),
         # test_failed_enter_in_closed_chat(),

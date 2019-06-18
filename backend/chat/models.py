@@ -45,5 +45,6 @@ class Message(BaseModel):
 
     user = peewee.ForeignKeyField(User, backref="user_messages")
     chat = peewee.ForeignKeyField(Chat, backref="messages")
-    text = peewee.TextField()
+    text = peewee.TextField(null=True)
+    image = peewee.TextField(null=True)
     created_at = peewee.TimestampField()
