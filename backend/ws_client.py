@@ -3,7 +3,7 @@ import json
 
 import websockets
 
-host = "ws://localhost:8080"
+host = "ws://localhost:8000"
 # host = "wss://host-94-103-84-32.hosted-by-vdsina.ru:443"
 
 
@@ -434,7 +434,7 @@ async def test_success_send_image():
         await choice_chat(websocket)
         with open('static/pica.png', 'rb') as image:
             import base64
-            image = base64.encodebytes(image.read())
+            image = base64.encodebytes(image.read()).decode()
 
             message_data = {
                 "Type": "chat",
