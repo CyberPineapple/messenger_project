@@ -1,14 +1,11 @@
 import imghdr
 import uuid
 import os
+import base64
 
-# from tools.sessions import login_required
 
-
-# @login_required
-# TODO: security problem
-# anyone send to server binary image
 async def is_image(binary):
+    binary = base64.b64decode(binary)
     path = f"/tmp/{uuid.uuid1()}"
     flag = False
     with open(path, "wb") as tmpfile:

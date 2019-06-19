@@ -4,7 +4,6 @@
 #
 
 import logging as log
-import base64
 
 from accounts.models import User
 from accounts.views import LogIn, LogOut, Register
@@ -19,7 +18,6 @@ from tools.json_validator import is_json, loads
 from tools.models import database
 from tools.sessions import request_user_middleware
 from tools.store_users import StoreActiveChats
-from tools.image_validator import is_image
 
 
 # TODO:
