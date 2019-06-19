@@ -451,7 +451,6 @@
 	"Message": {
 		"user": "user",
 		"text": "Hey, there is somebody?",
-		"date": "2019-05-01T00:00:00"
 	}
 }
 ```
@@ -500,7 +499,6 @@
 	"Message": {
 		"user": "user",
 		"image": "WW91IGEgcGlkb3IK",
-		"date": "2019-05-01T00:00:00"
 	}
 }
 ```
