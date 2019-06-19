@@ -4,9 +4,9 @@ import json
 import websockets
 
 host = "ws://localhost:8000"
+
+
 # host = "wss://host-94-103-84-32.hosted-by-vdsina.ru:443"
-
-
 async def success_register(websocket, register_creds=None):
 
     if register_creds is None:
@@ -444,6 +444,24 @@ async def test_success_send_image():
             await send_message(websocket, message_data)
 
 
+async def test_success_send_image_and_text():
+    async with websockets.connect(host) as websocket:
+        await success_signin(websocket)
+        await choice_chat(websocket)
+        with open('static/pica.png', 'rb') as image:
+            import base64
+            # image = base64.encodebytes(image.read()).decode()
+
+            image = "qweadd;l=="
+            message_data = {
+                "Type": "chat",
+                "Command": "message",
+                "Text": "Look! I find new memas",
+                "Image": image,
+            }
+            await send_message(websocket, message_data)
+
+
 async def test_success_send_message_to_closed_chat():
     async with websockets.connect(host) as websocket:
 
@@ -549,6 +567,7 @@ loop.run_until_complete(
         # test_success_enter_in_closed_chat(),
         # test_success_send_message(),
         # test_success_send_image(),
+        # test_success_send_image_and_text(),
         # test_success_send_message_to_closed_chat(),
         # test_success_send_message_next_page(),
         # test_failed_enter_in_closed_chat(),
