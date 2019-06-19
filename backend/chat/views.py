@@ -23,7 +23,7 @@ class ActionChat(web.View):
                 data_message["user"] = str(message.user)
                 data_message["date"] = str(message.created_at)
 
-                if message.test is not None:
+                if message.text is not None:
                     data_message["text"] = message.text
                 if message.image is not None:
                     data_message["image"] = message.image
@@ -114,37 +114,29 @@ class ActionChat(web.View):
                 "Status": "error in chat or user",
             }
 
+        answer = {
+            "Type": "chat",
+            "Command": "message",
+            "Message": {
+                "user": user,
+            },
+        }
+
         if "Text" in jdata.keys():
             text = jdata["Text"]
-
-            answer = {
-                "Type": "chat",
-                "Command": "message",
-                "Message": {
-                    "user": user,
-                    "text": text
-                },
-            }
+            answer["Message"]["Text"] = text
 
         if "Image" in jdata.keys():
             image = jdata["Image"]
-
-            answer = {
-                "Type": "chat",
-                "Command": "message",
-                "Message": {
-                    "user": user,
-                    "text": text,
-                    "image": image
-                },
-            }
+            answer["Message"]["Image"] = image
 
         await self.request.app.manager.create(Message,
                                               user=user,
                                               chat=chat,
                                               image=image,
-                                              text=jdata["Text"])
+                                              text=text)
 
+        print(answer)
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():
             await ws.send_json(answer)
 
