@@ -19,9 +19,12 @@ class ActionChat(web.View):
             # it is foreign key from User db, if del,
             # can use list comphehension.
             with manager.allow_sync():
+
                 data_message["user"] = str(message.user)
-                data_message["text"] = message.text
                 data_message["date"] = str(message.created_at)
+
+                if message.test is not None:
+                    data_message["text"] = message.text
                 if message.image is not None:
                     data_message["image"] = message.image
 
@@ -102,6 +105,7 @@ class ActionChat(web.View):
         chat = self.request.session.get("chat")
         user = self.request.session.get("user")
         image = None
+        text = None
 
         if not (chat and user):
             return {
@@ -111,16 +115,16 @@ class ActionChat(web.View):
             }
 
         if "Text" in jdata.keys():
+            text = jdata["Text"]
+
             answer = {
                 "Type": "chat",
                 "Command": "message",
                 "Message": {
                     "user": user,
-                    "text": jdata["Text"]
+                    "text": text
                 },
             }
-        else:
-            jdata["Text"] = None
 
         if "Image" in jdata.keys():
             image = jdata["Image"]
@@ -130,7 +134,7 @@ class ActionChat(web.View):
                 "Command": "message",
                 "Message": {
                     "user": user,
-                    "text": jdata["Text"],
+                    "text": text,
                     "image": image
                 },
             }

@@ -24,6 +24,7 @@ from tools.image_validator import is_image
 
 # TODO:
 # check eof ws
+# send empty message and image
 # send images in chats
 # update after login/logout online users
 # update after login data_last_online
