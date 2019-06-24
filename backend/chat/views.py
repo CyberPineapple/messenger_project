@@ -39,15 +39,18 @@ class ActionChat(web.View):
         chat = jdata["Chat"]
         user = self.request.session.get("user")
 
-        if await self.request.app.manager.count(Chat.select().where(Chat.name == chat)):
+        if await self.request.app.manager.count(
+                Chat.select().where(Chat.name == chat)):
 
             return {"Type": "chat", "Status": "chat exist"}
 
         if "Password" in jdata.keys():
             password = hash_password(jdata["Password"], algorithm="sha256")
-            await self.request.app.manager.create(
-                Chat, name=chat, owner=user, password=password, closed=True
-            )
+            await self.request.app.manager.create(Chat,
+                                                  name=chat,
+                                                  owner=user,
+                                                  password=password,
+                                                  closed=True)
         else:
             await self.request.app.manager.create(Chat, name=chat, owner=user)
 
@@ -63,8 +66,7 @@ class ActionChat(web.View):
         username = self.request.session.get("user")
         chats = []
         query_chats = await self.request.app.manager.execute(
-            Chat.select().where(Chat.owner == username)
-        )
+            Chat.select().where(Chat.owner == username))
 
         for chat in query_chats:
             chats.append(chat.name)
@@ -84,8 +86,7 @@ class ActionChat(web.View):
             return {"Type": "chat", "Status": "access denied"}
         elif "Password" in jdata.keys():
             if not verify_password(
-                chat.password, jdata["Password"], algorithm="sha256"
-            ):
+                    chat.password, jdata["Password"], algorithm="sha256"):
 
                 return {"Type": "chat", "Status": "access denied"}
 
@@ -98,9 +99,7 @@ class ActionChat(web.View):
 
         chat_messages = await manager.execute(
             self.request.chat.messages.order_by(-Message.created_at).paginate(
-                page, self.limiter
-            )
-        )
+                page, self.limiter))
 
         return await ActionChat.send_messages(chat_messages, manager)
 
@@ -118,7 +117,13 @@ class ActionChat(web.View):
                 "Status": "error in chat or user",
             }
 
-        answer = {"Type": "chat", "Command": "message", "Message": {"user": user}}
+        answer = {
+            "Type": "chat",
+            "Command": "message",
+            "Message": {
+                "user": user
+            }
+        }
 
         if "Text" in jdata.keys():
             text = jdata["Text"]
@@ -135,9 +140,11 @@ class ActionChat(web.View):
                 }
 
             answer["Message"]["Image"] = image
-        await self.request.app.manager.create(
-            Message, user=user, chat=chat, image=image, text=text
-        )
+        await self.request.app.manager.create(Message,
+                                              user=user,
+                                              chat=chat,
+                                              image=image,
+                                              text=text)
 
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():
             await ws.send_json(answer)
@@ -159,11 +166,9 @@ class ActionChat(web.View):
             self.request.chat.delete_instance(recursive=True)
 
             for ws in self.request.app.active_sockets.get_chat(
-                self.request.session["chat"]
-            ).all_ws():
+                    self.request.session["chat"]).all_ws():
                 await ws.send_json(
-                    await self.send_messages_from_chat(**{"Chat": "general"})
-                )
+                    await self.send_messages_from_chat(**{"Chat": "general"}))
                 # There maybe bug, as in send_messages_from_chat
                 # `request.chat = 'general'`
                 # but after self.request.chat = None(next strings)
@@ -180,8 +185,8 @@ class ActionChat(web.View):
 
         chat_messages = await manager.execute(
             self.request.chat.messages.order_by(-Message.created_at).paginate(
-                page, self.limiter // 2
-            )
-        )
+                page, self.limiter // 2))
 
-        return await ActionChat.send_messages(chat_messages, manager, command="earlier")
+        return await ActionChat.send_messages(chat_messages,
+                                              manager,
+                                              command="earlier")
