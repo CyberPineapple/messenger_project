@@ -2,20 +2,14 @@ import React from "react";
 import { connect } from "react-redux";
 import style from "./chatOutput.module.css";
 import { socket } from "../../websockets/websocket";
+import Message from "../message/message";
 
 class ChatOutput extends React.Component {
   render() {
     const { messagesList } = this.props;
     let messages = [];
-    console.log(this.props.messagesList);
     if (messagesList.length !== 0) {
-      messages = messagesList.map((value, id) => (
-        <div key={id} className={style.message}>
-          <div className={style.message_user}>{value.user}</div>
-          <div className={style.message_text}>{value.text}</div>
-          <div className={style.message_time}>{value.date}</div>
-        </div>
-      ));
+      messages = messagesList.map((value, id) =>  <Message data={value} key={id} />);
     }
     return (
       <div className={style.output}>

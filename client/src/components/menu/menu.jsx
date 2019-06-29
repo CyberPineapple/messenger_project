@@ -25,7 +25,7 @@ class Menu extends React.Component {
     } else if (this.state.viewChatInput === true) {
       chatInput = (<React.Fragment>
         <p className={style.menu_chat} onClick={() => this.setState({ viewChatInput: !this.state.viewChatInput })}>Закрыть</p>
-        <p className={style.menu_chat}>Логин</p>
+        <p className={style.menu_chat}>Название чата</p>
         <input
           type="text"
           className={style.input}

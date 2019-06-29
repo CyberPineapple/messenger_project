@@ -12,7 +12,6 @@
 .input{
     margin: auto;
     width: 90%;
-    background-color: #77207D;
     height: 15%;
     display: flex;
 }
@@ -49,4 +48,31 @@
     border: 2px solid #77207D;
     margin-bottom: 25px;
     background-color: white;
+}
+
+.button_file{
+    display: block;
+    background-image: url(https://cdn-images-1.medium.com/max/1200/1*19zdlV3KHXgy73OsiQbZQg.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 50%;
+    width: 100%;
+}
+
+.imagesBlock{
+    width: 30%;
+}
+
+.pictures{
+    height: 50%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.image{
+    flex: 1 1 auto;
+    background-size: contain;
+    background-repeat: no-repeat;
 }

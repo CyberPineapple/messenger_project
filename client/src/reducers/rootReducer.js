@@ -11,7 +11,8 @@ export const initialState = {
     chatName: '',
     chatPassword: '',
     activeChat: '',
-    renderChatOutput: true
+    renderChatOutput: true,
+    images: ''
 }
 
 export function rootReducer(state = initialState, action){
@@ -33,8 +34,10 @@ export function rootReducer(state = initialState, action){
         case 'REMOVE_CHAT_PASSWORD': return {...state, chatPassword: ''};
         case 'ACTIVE_CHAT': return {...state, activeChat: action.chat};
         case 'REMOVE_MESSAGES_LIST': return{...state, messagesList: []};
-        case 'RENDER_CHAT_OUTPUT': return{...state, renderChatOutput: action.payload}
-        case 'EARLIER_MESSAGES': return{...state, messagesList: [...action.payload, ...state.messagesList]}
+        case 'RENDER_CHAT_OUTPUT': return{...state, renderChatOutput: action.payload};
+        case 'EARLIER_MESSAGES': return{...state, messagesList: [...action.payload, ...state.messagesList]};
+        case 'ADD_IMAGE': return {...state, images: action.image};
+        case 'CLEAR_IMAGES': return {...state, images: []};
         default: return state;
     }
 }
