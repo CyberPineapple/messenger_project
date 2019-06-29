@@ -4,8 +4,8 @@ import os
 import base64
 
 
-async def is_image(binary):
-    binary = base64.b64decode(binary)
+async def is_image(str_base64):
+    binary = base64.b64decode(str_base64[:str_base64.index(",") + 1])
     path = f"/tmp/{uuid.uuid1()}"
     flag = False
     with open(path, "wb") as tmpfile:
