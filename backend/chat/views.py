@@ -1,6 +1,7 @@
 from aiohttp import web
-from tools.sessions import add_active_sockets, create_instance, login_required
+from tools.image_validator import is_image
 from tools.passwords import hash_password, verify_password
+from tools.sessions import add_active_sockets, create_instance, login_required
 
 from .models import Chat, Message
 
@@ -19,9 +20,16 @@ class ActionChat(web.View):
             # it is foreign key from User db, if del,
             # can use list comphehension.
             with manager.allow_sync():
+
                 data_message["user"] = str(message.user)
-                data_message["text"] = message.text
                 data_message["date"] = str(message.created_at)
+
+                if message.text is not None:
+                    data_message["text"] = message.text
+
+                if message.image is not None:
+                    data_message["image"] = message.image
+
                 messages.append(data_message.copy())
 
         return {"Type": "chat", "Command": command, "Messages": messages[::-1]}
@@ -77,7 +85,9 @@ class ActionChat(web.View):
         if chat.closed and "Password" not in jdata.keys():
             return {"Type": "chat", "Status": "access denied"}
         elif "Password" in jdata.keys():
-            if not verify_password(chat.password, jdata["Password"], algorithm="sha256"):
+            if not verify_password(
+                    chat.password, jdata["Password"], algorithm="sha256"):
+
                 return {"Type": "chat", "Status": "access denied"}
 
         self.request.session["chat"] = jchat
@@ -97,6 +107,8 @@ class ActionChat(web.View):
     async def send_message(self, **jdata):
         chat = self.request.session.get("chat")
         user = self.request.session.get("user")
+        image = None
+        text = None
 
         if not (chat and user):
             return {
@@ -104,18 +116,35 @@ class ActionChat(web.View):
                 "Command": "message",
                 "Status": "error in chat or user",
             }
-        await self.request.app.manager.create(Message,
-                                              user=user,
-                                              chat=chat,
-                                              text=jdata["Text"])
+
         answer = {
             "Type": "chat",
             "Command": "message",
             "Message": {
-                "user": user,
-                "text": jdata["Text"]
-            },
+                "user": user
+            }
         }
+
+        if "Text" in jdata.keys():
+            text = jdata["Text"]
+            answer["Message"]["text"] = text
+
+        if "Image" in jdata.keys():
+            image = jdata["Image"]
+
+            if not await is_image(image):
+                return {
+                    "Type": "chat",
+                    "Command": "message",
+                    "Status": "failed to attach image",
+                }
+
+            answer["Message"]["image"] = image
+        await self.request.app.manager.create(Message,
+                                              user=user,
+                                              chat=chat,
+                                              image=image,
+                                              text=text)
 
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():
             await ws.send_json(answer)
@@ -135,10 +164,11 @@ class ActionChat(web.View):
                 return {"Type": "chat", "Command": "delete", "Status": "error"}
 
             self.request.chat.delete_instance(recursive=True)
+
             for ws in self.request.app.active_sockets.get_chat(
-                    self.request.session['chat']).all_ws():
+                    self.request.session["chat"]).all_ws():
                 await ws.send_json(
-                    await self.send_messages_from_chat(**{"Chat": 'general'}))
+                    await self.send_messages_from_chat(**{"Chat": "general"}))
                 # There maybe bug, as in send_messages_from_chat
                 # `request.chat = 'general'`
                 # but after self.request.chat = None(next strings)
