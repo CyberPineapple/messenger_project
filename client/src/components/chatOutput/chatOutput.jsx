@@ -9,12 +9,16 @@ class ChatOutput extends React.Component {
     const { messagesList } = this.props;
     let messages = [];
     if (messagesList.length !== 0) {
-      messages = messagesList.map((value, id) =>  <Message data={value} key={id} />);
+      messages = messagesList.map((value, id) => (
+        <Message data={value} key={id} />
+      ));
     }
     return (
       <div className={style.output}>
         <div className={style.nameChat}>{this.props.activeChat}</div>
-        <div className={style.messagesList} onScroll={e => this.scrollChat(e)}>{messages}</div>
+        <div className={style.messagesList} onScroll={e => this.scrollChat(e)}>
+          {messages}
+        </div>
       </div>
     );
   }
