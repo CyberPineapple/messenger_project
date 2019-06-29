@@ -127,7 +127,7 @@ class ActionChat(web.View):
 
         if "Text" in jdata.keys():
             text = jdata["Text"]
-            answer["Message"]["Text"] = text
+            answer["Message"]["text"] = text
 
         if "Image" in jdata.keys():
             image = jdata["Image"]
@@ -139,7 +139,7 @@ class ActionChat(web.View):
                     "Status": "failed to attach image",
                 }
 
-            answer["Message"]["Image"] = image
+            answer["Message"]["image"] = image
         await self.request.app.manager.create(Message,
                                               user=user,
                                               chat=chat,
