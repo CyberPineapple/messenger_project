@@ -31,6 +31,7 @@ class ActionChat(web.View):
                     data_message["image"] = message.image
 
                 messages.append(data_message.copy())
+                data_message.clear()
 
         return {"Type": "chat", "Command": command, "Messages": messages[::-1]}
 
