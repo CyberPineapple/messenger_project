@@ -3,7 +3,7 @@ import json
 
 import websockets
 
-host = "ws://localhost:8000"
+host = "ws://localhost:8080"
 
 
 # host = "wss://host-94-103-84-32.hosted-by-vdsina.ru:443"
@@ -222,6 +222,14 @@ async def send_message_next_page(websocket):
 
 
 async def get_requests(websocket):
+
+    answer = await websocket.recv()
+    print(f"A: {answer}")
+
+
+async def send_custom_json(websocket, json_data):
+    await websocket.send(json.dumps(json_data))
+    print(f"R: {json_data}")
 
     answer = await websocket.recv()
     print(f"A: {answer}")
@@ -541,6 +549,16 @@ async def test_multupule_connection():
         await send_message(ws, message_data)
 
 
+async def test_success_purge_messages():
+    async with websockets.connect(host) as websocket:
+        await success_signin(websocket)
+        await choice_chat(websocket)
+
+        json_data = {"Type": "chat", "Command": "purge"}
+
+        await send_custom_json(websocket, json_data)
+
+
 async def create_base_for_test():
     await test_success_registration()
     await test_succsses_create_chat()
@@ -570,6 +588,7 @@ loop.run_until_complete(
         # test_success_send_image_and_text(),
         # test_success_send_message_to_closed_chat(),
         # test_success_send_message_next_page(),
+        test_success_purge_messages(),
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
         # test_nonauth_get_chat_list(),

@@ -190,3 +190,19 @@ class ActionChat(web.View):
         return await ActionChat.send_messages(chat_messages,
                                               manager,
                                               command="earlier")
+
+    # temp functionality
+    @login_required
+    async def purge_messages(self):
+        chat = self.request.session.get("chat")
+
+        if not chat:
+            return {
+                "Type": "chat",
+                "Command": "purge",
+                "Status": "purge is not completed",
+            }
+
+        await self.request.app.manager.execute(
+            Message().delete().where(Message.chat_id == chat))
+        return {"Type": "chat", "Command": "purge", "Status": "Success"}

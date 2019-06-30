@@ -100,6 +100,11 @@ async def websocket_handler(request):
                         data = await ActionChat(request).delete_chat()
                     elif jdata["Command"] == "earlier":
                         data = await ActionChat(request).earlier_messages()
+
+                    ## Temp functional
+                    elif jdata["Command"] == "purge":
+                        data = await ActionChat(request).purge_messages()
+
                 # crutch
 
                 if data is not None:
