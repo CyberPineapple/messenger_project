@@ -108,7 +108,7 @@ class ActionChat(web.View):
     async def send_message(self, **jdata):
         chat = self.request.session.get("chat")
         user = self.request.session.get("user")
-        image = None
+        path_to_image = None
         text = None
 
         if not (chat and user):
