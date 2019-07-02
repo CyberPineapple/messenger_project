@@ -1,5 +1,5 @@
 from aiohttp import web
-from tools.image_validator import is_image
+from tools.image_validator import is_image, store_image
 from tools.passwords import hash_password, verify_password
 from tools.sessions import add_active_sockets, create_instance, login_required
 
@@ -139,12 +139,13 @@ class ActionChat(web.View):
                     "Command": "message",
                     "Status": "failed to attach image",
                 }
+            path_to_image = await store_image(image, chat)
 
-            answer["Message"]["image"] = image
+            answer["Message"]["image"] = path_to_image
         await self.request.app.manager.create(Message,
                                               user=user,
                                               chat=chat,
-                                              image=image,
+                                              image=path_to_image,
                                               text=text)
 
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():
