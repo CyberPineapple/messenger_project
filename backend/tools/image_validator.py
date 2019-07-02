@@ -20,7 +20,7 @@ async def is_image(str_base64):
 
 
 async def store_image(str_base64, chat):
-    local_path = f'./../../public/{chat}/'
+    local_path = f'./../../public/images/{chat}/'
     if not os.path.isdir(local_path):
         os.mkdir(local_path)  # descriptors
     cuted_base64 = base64.b64decode(str_base64[str_base64.index(",") + 1:])
