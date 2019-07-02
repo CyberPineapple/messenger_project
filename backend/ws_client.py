@@ -443,6 +443,7 @@ async def test_success_send_image():
         with open('static/pica.png', 'rb') as image:
             import base64
             image = base64.encodebytes(image.read()).decode()
+            image = "data:image/png;base64," + image
 
             message_data = {
                 "Type": "chat",
@@ -458,9 +459,9 @@ async def test_success_send_image_and_text():
         await choice_chat(websocket)
         with open('static/pica.png', 'rb') as image:
             import base64
-            # image = base64.encodebytes(image.read()).decode()
+            image = base64.encodebytes(image.read()).decode()
+            image = "data:image/png;base64," + image
 
-            image = "qweadd;l=="
             message_data = {
                 "Type": "chat",
                 "Command": "message",
@@ -588,7 +589,7 @@ loop.run_until_complete(
         # test_success_send_image_and_text(),
         # test_success_send_message_to_closed_chat(),
         # test_success_send_message_next_page(),
-        test_success_purge_messages(),
+        # test_success_purge_messages(),
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
         # test_nonauth_get_chat_list(),
