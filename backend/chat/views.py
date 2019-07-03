@@ -132,14 +132,18 @@ class ActionChat(web.View):
 
         if "Image" in jdata.keys():
             image = jdata["Image"]
-
-            if not await is_image(image):
+            flag, ext = await is_image(image)
+            if not flag:
                 return {
                     "Type": "chat",
                     "Command": "message",
                     "Status": "failed to attach image",
                 }
-            path_to_image = await store_image(image, chat)
+            path_to_image = await store_image(
+                image,
+                ext,
+                chat,
+            )
 
             answer["Message"]["image"] = path_to_image
         await self.request.app.manager.create(Message,

@@ -13,23 +13,22 @@ async def is_image(str_base64):
     path = f"/tmp/{uuid.uuid1()}"
     with open(path, "wb") as tmpfile:
         tmpfile.write(cuted_base64)
-        if imghdr.what(path):
+        extension = imghdr.what(path)
+        if extension:
             flag = True
     os.remove(path)
-    return flag
+    return flag, extension
 
 
-async def store_image(str_base64, chat):
+async def store_image(str_base64, extension, chat):
     local_path = f'./../../public/images/{chat}/'
     if not os.path.isdir(local_path):
         os.mkdir(local_path)  # descriptors
     binary = base64.b64decode(str_base64[str_base64.index(",") + 1:])
     name_file = str(int(time()))
-    local_path = local_path + name_file
-    extension = "." + imghdr.what(local_path)
-    local_path = local_path + extension
-    with open(local_path, 'wb') as image:
+    full_local_path = local_path + name_file + "." + extension
+    with open(full_local_path, 'wb') as image:
         image.write(binary)
     # TODO: send full path to image
-    path = '/images/' + chat + "/" + name_file + extension
+    path = '/images/' + chat + "/" + name_file + "." + extension
     return path
