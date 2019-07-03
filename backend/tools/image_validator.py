@@ -23,11 +23,13 @@ async def store_image(str_base64, chat):
     local_path = f'./../../public/images/{chat}/'
     if not os.path.isdir(local_path):
         os.mkdir(local_path)  # descriptors
-    cuted_base64 = base64.b64decode(str_base64[str_base64.index(",") + 1:])
-    unix_time = str(int(time()))
-    local_path = local_path + unix_time
+    binary = base64.b64decode(str_base64[str_base64.index(",") + 1:])
+    name_file = str(int(time()))
+    local_path = local_path + name_file
+    extension = "." + imghdr.what(local_path)
+    local_path = local_path + extension
     with open(local_path, 'wb') as image:
-        image.write(cuted_base64)
+        image.write(binary)
     # TODO: send full path to image
-    path = '/images/' + chat + "/" + unix_time + "." + str_base64[11:14]
+    path = '/images/' + chat + "/" + name_file + extension
     return path
