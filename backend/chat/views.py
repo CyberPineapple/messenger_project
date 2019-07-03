@@ -1,5 +1,5 @@
 from aiohttp import web
-from tools.image_validator import is_image
+from tools.image_validator import is_image, store_image
 from tools.passwords import hash_password, verify_password
 from tools.sessions import add_active_sockets, create_instance, login_required
 
@@ -108,7 +108,7 @@ class ActionChat(web.View):
     async def send_message(self, **jdata):
         chat = self.request.session.get("chat")
         user = self.request.session.get("user")
-        image = None
+        path_to_image = None
         text = None
 
         if not (chat and user):
@@ -132,19 +132,24 @@ class ActionChat(web.View):
 
         if "Image" in jdata.keys():
             image = jdata["Image"]
-
-            if not await is_image(image):
+            ext = await is_image(image)
+            if not ext:
                 return {
                     "Type": "chat",
                     "Command": "message",
                     "Status": "failed to attach image",
                 }
+            path_to_image = await store_image(
+                image,
+                ext,
+                chat,
+            )
 
-            answer["Message"]["image"] = image
+            answer["Message"]["image"] = path_to_image
         await self.request.app.manager.create(Message,
                                               user=user,
                                               chat=chat,
-                                              image=image,
+                                              image=path_to_image,
                                               text=text)
 
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():
