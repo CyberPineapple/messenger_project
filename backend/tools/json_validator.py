@@ -6,4 +6,5 @@ async def is_json(myjson):
         loads(myjson)
     except ValueError:
         return False
+
     return True

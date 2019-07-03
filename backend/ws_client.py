@@ -1,19 +1,20 @@
 import asyncio
-import websockets
 import json
 
+import websockets
+
 host = "ws://localhost:8080"
-#host = "ws://host-94-103-84-32.hosted-by-vdsina.ru:8080"
 
 
+# host = "wss://host-94-103-84-32.hosted-by-vdsina.ru:443"
 async def success_register(websocket, register_creds=None):
 
     if register_creds is None:
 
         register_creds = {
-                "Type": "",
-                "Login": "user",
-                "Password": "password"
+            "Type": "registration",
+            "Login": "user",
+            "Password": "password",
         }
 
     await websocket.send(json.dumps(register_creds))
@@ -29,9 +30,9 @@ async def success_signin(websocket, signin_creds=None):
     if signin_creds is None:
 
         signin_creds = {
-                "Type": "login",
-                "Login": "user",
-                "Password": "password"
+            "Type": "login",
+            "Login": "user",
+            "Password": "password"
         }
 
     await websocket.send(json.dumps(signin_creds))
@@ -48,10 +49,7 @@ async def success_signin(websocket, signin_creds=None):
 
 async def success_logout(websocket, failture=False):
 
-    logout_data = {
-        "Type": "logout",
-        "Login": "user"
-    }
+    logout_data = {"Type": "logout", "Login": "user"}
 
     await websocket.send(json.dumps(logout_data))
     print(f"R: {logout_data}")
@@ -59,6 +57,7 @@ async def success_logout(websocket, failture=False):
     if failture:
         answer = await websocket.recv()
         print(f"A: {answer}")
+
         assert json.loads(answer) == {"Type": "login", "Status": "error"}
     else:
         answer = await websocket.recv()
@@ -75,9 +74,9 @@ async def failture_login(websocket, uncorrect_creds=None):
 
     if uncorrect_creds is None:
         uncorrect_creds = {
-                "Type": "login",
-                "Login": "user",
-                "Password": "password123"
+            "Type": "login",
+            "Login": "user",
+            "Password": "password123"
         }
 
     await websocket.send(json.dumps(uncorrect_creds))
@@ -93,13 +92,10 @@ async def success_create_chat(websocket, chat_data=None, reson=True):
     Arg reson need for evasion crush test, when non auth user
     try create chat, server send one json with Status: error
     """
+
     if chat_data is None:
 
-        chat_data = {
-            "Type": "chat",
-            "Command": "create",
-            "Chat": "general",
-        }
+        chat_data = {"Type": "chat", "Command": "create", "Chat": "general"}
 
     await websocket.send(json.dumps(chat_data))
     print(f"R: {chat_data}")
@@ -122,7 +118,7 @@ async def success_create_close_chat(websocket, chat_data=None):
             "Type": "chat",
             "Command": "create",
             "Chat": "secret general",
-            "Password": "secret"
+            "Password": "secret",
         }
 
     await websocket.send(json.dumps(chat_data))
@@ -137,10 +133,7 @@ async def success_create_close_chat(websocket, chat_data=None):
 
 
 async def delete_chat(websocket):
-    chat_data = {
-        "Type": "chat",
-        "Command": "delete",
-        }
+    chat_data = {"Type": "chat", "Command": "delete"}
 
     await websocket.send(json.dumps(chat_data))
     print(f"R: {chat_data}")
@@ -149,13 +142,10 @@ async def delete_chat(websocket):
     print(f"A: {answer}")
     print("There no assert")
 
+
 async def send_chat_list(websocket, data=None):
     if data is None:
-        data = {
-            "Type": "chat",
-            "Chat": "general",
-            "Command": "list"
-        }
+        data = {"Type": "chat", "Chat": "general", "Command": "list"}
 
     await websocket.send(json.dumps(data))
     print(f"R: {data}")
@@ -169,9 +159,7 @@ async def choice_chat(websocket, data=None):
 
     if data is None:
 
-        data = {"Type": "chat",
-                "Command": "choice",
-                "Chat": "general"}
+        data = {"Type": "chat", "Command": "choice", "Chat": "general"}
 
     await websocket.send(json.dumps(data))
     print(f"R: {data}")
@@ -185,10 +173,12 @@ async def choice_close_chat(websocket, data=None):
 
     if data is None:
 
-        data = {"Type": "chat",
-                "Command": "choice",
-                "Chat": "secret general",
-                "Password": "secret"}
+        data = {
+            "Type": "chat",
+            "Command": "choice",
+            "Chat": "secret general",
+            "Password": "secret",
+        }
 
     await websocket.send(json.dumps(data))
     print(f"R: {data}")
@@ -204,7 +194,7 @@ async def send_message(websocket, message_data=None):
         message_data = {
             "Type": "chat",
             "Command": "message",
-            "Text": "Hey, there is somebody?"
+            "Text": "Hey, there is somebody?",
         }
 
     await websocket.send(json.dumps(message_data))
@@ -212,16 +202,41 @@ async def send_message(websocket, message_data=None):
 
     answer = await websocket.recv()
     print(f"A: {answer}")
-    json_answer = json.loads(answer)
-    #assert json_answer == message_data
+    # json_answer = json.loads(answer)
+    # assert json_answer == message_data
     print("There no assert")
+
+
+async def send_message_next_page(websocket):
+
+    message_data = {"Type": "chat", "Command": "earlier"}
+
+    await websocket.send(json.dumps(message_data))
+    print(f"R: {message_data}")
+
+    answer = await websocket.recv()
+    print(f"A: {answer}")
+    # json_answer = json.loads(answer)
+    # assert json_answer == message_data
+    print("There no assert")
+
+
+async def get_requests(websocket):
+
+    answer = await websocket.recv()
+    print(f"A: {answer}")
+
+
+async def send_custom_json(websocket, json_data):
+    await websocket.send(json.dumps(json_data))
+    print(f"R: {json_data}")
+
     answer = await websocket.recv()
     print(f"A: {answer}")
 
 
 async def test_success_registration():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
         await success_register(websocket)
 
 
@@ -230,13 +245,12 @@ async def test_exists_registration():
     Not used success_register, becouse
     asserts.
     """
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         correct_creds = {
-                "Type": "registration",
-                "Login": "user",
-                "Password": "password"
+            "Type": "registration",
+            "Login": "user",
+            "Password": "password",
         }
 
         await websocket.send(json.dumps(correct_creds))
@@ -252,35 +266,32 @@ async def test_exists_registration():
 
 
 async def test_success_sign_in():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
+        await get_requests(websocket)
 
 
 async def test_failture_sign_in_bad_password():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await failture_login(websocket)
 
 
 async def test_failture_sign_in_user_not_exist():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         uncorrect_creds = {
-                "Type": "login",
-                "Login": "user123",
-                "Password": "password123"
+            "Type": "login",
+            "Login": "user123",
+            "Password": "password123",
         }
 
         await failture_login(websocket, uncorrect_creds)
 
 
 async def test_succsses_logout():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
         await success_logout(websocket)
@@ -290,15 +301,13 @@ async def test_failture_logout():
     """
     User not sign in
     """
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_logout(websocket, failture=True)
 
 
 async def test_succsses_create_chat():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
         await success_create_chat(websocket)
@@ -308,35 +317,28 @@ async def test_failed_create_chat():
     """
     User not sign in
     """
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
-        chat_data = {
-            "Type": "chat",
-            "Command": "create",
-            "Chat": "boltaika",
-        }
+        chat_data = {"Type": "chat", "Command": "create", "Chat": "boltaika"}
 
         await success_create_chat(websocket, chat_data, reson=False)
 
 
 async def test_success_create_close_chat():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
         await success_create_close_chat(websocket)
 
 
 async def test_failed_create_non_auth():
-    async with websockets.connect(
-        host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_create_chat(websocket, reson=False)
 
+
 async def test_success_send_chat_list():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
 
@@ -344,58 +346,55 @@ async def test_success_send_chat_list():
 
 
 async def test_nonauth_get_chat_list():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await send_chat_list(websocket)
 
 
 async def test_success_choise_chat():
-
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
 
         await choice_chat(websocket)
 
+
 async def test_success_delete_chat():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
         await success_signin(websocket)
 
         chat_data = {
             "Type": "chat",
-           #"Command": "choice",
-           "Command": "create",
+            # "Command": "choice",
+            "Command": "create",
             "Chat": "temp",
         }
 
-        #await choice_chat(websocket, chat_data)
-        await success_create_chat(websocket,chat_data)
+        # await choice_chat(websocket, chat_data)
+        await success_create_chat(websocket, chat_data)
 
         await delete_chat(websocket)
 
+
 async def test_success_delete_close_chat():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
         await success_signin(websocket)
 
         chat_data = {
             "Type": "chat",
             "Command": "create",
             "Chat": "sec",
-            "Password": "sec"
+            "Password": "sec",
         }
 
-        #await choice_chat(websocket, chat_data)
-        await success_create_close_chat(websocket,chat_data)
+        # await choice_chat(websocket, chat_data)
+        await success_create_close_chat(websocket, chat_data)
 
         await delete_chat(websocket)
 
+
 async def test_success_enter_in_closed_chat():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
 
@@ -406,71 +405,107 @@ async def test_failed_enter_in_closed_chat():
     """
     Field `Password` not in json request
     """
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
 
-        data = {"Type": "chat",
-                "Command": "choice",
-                "Chat": "secret general"
-                }
+        data = {"Type": "chat", "Command": "choice", "Chat": "secret general"}
 
         await choice_close_chat(websocket, data)
 
 
 async def test_failed_enter_in_closed_chat_bad_pass():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
 
-        data = {"Type": "chat",
-                "Command": "choice",
-                "Chat": "secret general",
-                "Password": "terces"
-                }
+        data = {
+            "Type": "chat",
+            "Command": "choice",
+            "Chat": "secret general",
+            "Password": "terces",
+        }
 
         await choice_close_chat(websocket, data)
 
 
 async def test_success_send_message():
-    async with websockets.connect(
-            host) as websocket:
-
+    async with websockets.connect(host) as websocket:
         await success_signin(websocket)
         await choice_chat(websocket)
         await send_message(websocket)
 
 
+async def test_success_send_image():
+    async with websockets.connect(host) as websocket:
+        await success_signin(websocket)
+        await choice_chat(websocket)
+        with open('static/pica.png', 'rb') as image:
+            import base64
+            image = base64.encodebytes(image.read()).decode()
+            image = "data:image/png;base64," + image
+
+            message_data = {
+                "Type": "chat",
+                "Command": "message",
+                "Image": image,
+            }
+            await send_message(websocket, message_data)
+
+
+async def test_success_send_image_and_text():
+    async with websockets.connect(host) as websocket:
+        await success_signin(websocket)
+        await choice_chat(websocket)
+        with open('static/pica.png', 'rb') as image:
+            import base64
+            image = base64.encodebytes(image.read()).decode()
+            image = "data:image/png;base64," + image
+
+            message_data = {
+                "Type": "chat",
+                "Command": "message",
+                "Text": "Look! I find new memas",
+                "Image": image,
+            }
+            await send_message(websocket, message_data)
+
+
 async def test_success_send_message_to_closed_chat():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
         await choice_close_chat(websocket)
         await send_message(websocket)
 
-async def test_failed_send_message_chat_not_exist():
-    async with websockets.connect(
-            host) as websocket:
+
+async def test_success_send_message_next_page():
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
-        data = {"Type": "chat",
-                "Command": "choice",
-                "Chat": "qwerty"
-        }
+        await choice_chat(websocket)
+        await send_message_next_page(websocket)
+
+        await send_message_next_page(websocket)
+
+
+async def test_failed_send_message_chat_not_exist():
+    async with websockets.connect(host) as websocket:
+
+        await success_signin(websocket)
+
+        data = {"Type": "chat", "Command": "choice", "Chat": "qwerty"}
+
         await choice_chat(websocket, data)
         await send_message(websocket)
 
+
 async def test_reconnect():
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
 
-    async with websockets.connect(
-            host) as websocket:
+    async with websockets.connect(host) as websocket:
 
         await choice_chat(websocket)
         await send_message(websocket)
@@ -491,11 +526,7 @@ async def test_multupule_connection():
             "Password": "admin"
         }
 
-        signin_creds = {
-            "Type": "login",
-            "Login": "admin",
-            "Password": "admin"
-        }
+        signin_creds = {"Type": "login", "Login": "admin", "Password": "admin"}
 
         await success_signin(ws, signin_creds)
 
@@ -513,10 +544,20 @@ async def test_multupule_connection():
         message_data = {
             "Type": "chat",
             "Command": "message",
-            "Text": "ADMIN: Hey, there is somebody?"
+            "Text": "ADMIN: Hey, there is somebody?",
         }
 
         await send_message(ws, message_data)
+
+
+async def test_success_purge_messages():
+    async with websockets.connect(host) as websocket:
+        await success_signin(websocket)
+        await choice_chat(websocket)
+
+        json_data = {"Type": "chat", "Command": "purge"}
+
+        await send_custom_json(websocket, json_data)
 
 
 async def create_base_for_test():
@@ -540,11 +581,15 @@ loop.run_until_complete(
         # test_failed_create_chat(),
         # test_success_delete_chat(),
         # test_success_delete_close_chat(),
-        test_success_choise_chat(),
+        # test_success_choise_chat(),
         # test_success_send_chat_list(),
         # test_success_enter_in_closed_chat(),
         # test_success_send_message(),
+        # test_success_send_image(),
+        # test_success_send_image_and_text(),
         # test_success_send_message_to_closed_chat(),
+        # test_success_send_message_next_page(),
+        # test_success_purge_messages(),
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
         # test_nonauth_get_chat_list(),
@@ -554,4 +599,4 @@ loop.run_until_complete(
         # test_failed_create_chat(), # test after realise redirect for non auth
         # test_fault_logout(),# not need becouse, if logout, then logout
         # register test_multupule_connection(),
-        ))
+    ))

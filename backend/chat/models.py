@@ -1,5 +1,4 @@
 import peewee
-
 from accounts.models import User
 from tools.models import BaseModel
 
@@ -7,7 +6,7 @@ from tools.models import BaseModel
 class Chat(BaseModel):
     class Meta:
         db_table = "chats"
-        order_by = ("last_send",)
+        order_by = ("last_send", )
 
     # Maybe use `unique` is not true way, becouse
     # if two chats it is name user.
@@ -24,17 +23,28 @@ class Chat(BaseModel):
     @classmethod
     async def all_chats(cls, manager):
         chats = await manager.execute(cls.select())
-        return {"Type": "chat", "Command": "list", "Chats": [
-            {"Chat": chat.name, "Closed": chat.closed} for chat in chats]}
+
+        return {
+            "Type":
+            "chat",
+            "Command":
+            "list",
+            "Chats": [{
+                "Chat": chat.name,
+                "Closed": chat.closed
+            } for chat in chats],
+        }
 
 
 class Message(BaseModel):
     """ Base model for messages """
+
     class Meta:
         db_table = "messages"
-        order_by = ("date_send",)
+        order_by = ("date_send", )
 
-    user = peewee.ForeignKeyField(User, backref='messages')
-    chat = peewee.ForeignKeyField(Chat)  # add backref
-    text = peewee.TextField()
+    user = peewee.ForeignKeyField(User, backref="user_messages")
+    chat = peewee.ForeignKeyField(Chat, backref="messages")
+    text = peewee.TextField(null=True)
+    image = peewee.TextField(null=True)
     created_at = peewee.TimestampField()
