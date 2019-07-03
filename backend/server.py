@@ -22,8 +22,6 @@ from tools.store_users import StoreActiveChats
 
 # TODO:
 # check eof ws
-# send empty message and image
-# send images in chats
 # update after login/logout online users
 # update after login data_last_online
 # check one user by one login
@@ -78,7 +76,6 @@ async def websocket_handler(request):
                     # await ws.send_json(data)
 
             elif jdata["Type"] == "chat":
-                # TODO: CRUD chat
                 log.debug(
                     f"app.active_sockets = {app.active_sockets.all_chats()}")
 
@@ -93,20 +90,17 @@ async def websocket_handler(request):
                         await ws.send_json(data)
                         data = await ActionChat(request).send_list_chats()
                     elif jdata["Command"] == "list":
-                        # TODO: Non auth user can get all chats
-                        # data = await ActionChat(request).send_chats_users()
                         data = await ActionChat(request).send_list_chats()
                     elif jdata["Command"] == "delete":
                         data = await ActionChat(request).delete_chat()
                     elif jdata["Command"] == "earlier":
                         data = await ActionChat(request).earlier_messages()
 
-                    ## Temp functional
+                    # Temp functional
                     elif jdata["Command"] == "purge":
                         data = await ActionChat(request).purge_messages()
 
                 # crutch
-
                 if data is not None:
                     await ws.send_json(data)
             else:
