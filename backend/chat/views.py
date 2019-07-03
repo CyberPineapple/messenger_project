@@ -132,8 +132,8 @@ class ActionChat(web.View):
 
         if "Image" in jdata.keys():
             image = jdata["Image"]
-            flag, ext = await is_image(image)
-            if not flag:
+            ext = await is_image(image)
+            if not ext:
                 return {
                     "Type": "chat",
                     "Command": "message",
