@@ -24,7 +24,7 @@ class ChatItem extends React.Component {
     if (value.Closed === false) {
       chat = (
         <div
-          onClick={() => this.choiceChat(value.Chat)}
+          onClick={this.choiceChat}
           className={style.menu_chat_list_item}
         >
           <p>{value.Chat}</p>
@@ -66,17 +66,18 @@ class ChatItem extends React.Component {
     return <React.Fragment>{chat}</React.Fragment>;
   }
 
-  choiceChat = name => {
-    this.props.activeChat(name);
+  choiceChat = () => {
+    const chatName = this.props.value.Chat;
+    this.props.activeChat(chatName);
     let data = {
       Type: "chat",
       Command: "choice",
-      Chat: name
+      Chat: chatName
     };
     data = JSON.stringify(data);
-    socket.send(data);
     this.props.renderChatOutput(false);
     this.props.removeMessagesList();
+    socket.send(data);
   };
 
   onPressEnter = e => {

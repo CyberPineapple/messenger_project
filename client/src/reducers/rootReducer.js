@@ -37,7 +37,7 @@ export function rootReducer(state = initialState, action){
         case 'RENDER_CHAT_OUTPUT': return{...state, renderChatOutput: action.payload};
         case 'EARLIER_MESSAGES': return{...state, messagesList: [...action.payload, ...state.messagesList]};
         case 'ADD_IMAGE': return {...state, images: action.image};
-        case 'CLEAR_IMAGES': return {...state, images: []};
+        case 'CLEAR_IMAGES': return {...state, images: ''};
         default: return state;
     }
 }

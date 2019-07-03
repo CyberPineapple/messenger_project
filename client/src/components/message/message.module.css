@@ -4,9 +4,9 @@
   display: grid;
   grid-template-columns: 20% 60% 20%;
   margin-top: -2px;
-  grid-template-areas: 
+  grid-template-areas:
   'user text time'
-  'image image image';
+  'user image time';
 }
 
 .message_user{
@@ -19,19 +19,31 @@
 .message_text{
   text-align: center;
   word-wrap: break-word;
-  border-right: 2px solid #E6FB71;
   grid-area: text;
 }
 
 .message_time{
+  border-left: 2px solid #E6FB71;
   text-align: center;
   word-wrap: break-word;
   grid-area: time;
 }
 
 .message_image{
-  width: 100%;
+  width: 50%;
   margin: auto;
   grid-area: image;
   border: 2px solid #E6FB71;
+  transition: width .6s ease;
+  -webkit-transition: width .6s ease;
+  -moz-transition: width .6s ease;
+  -ms-transition: width .6s ease;
+  -o-transition: width .6s ease;
+}
+
+.message_image:hover{
+  width: 100%;
+  background-color: white;
+  left: 0;
+  position: absolute;
 }

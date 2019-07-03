@@ -6,12 +6,12 @@ import { Provider } from "react-redux";
 import { store } from './store/configureStore'
 import { socket } from './websockets/websocket'
 import { setPage, connect, setMessagesList, setChatList, renderChatOutput, earlierMessagesList, activeChat } from './actions/actions';
+import sound from './audio/new_message.mp3';
 
 socket.onopen = () =>{
   store.dispatch(setPage('authentification'));
   store.dispatch(connect(true));
 }
-
 
 socket.onclose = () =>{
   console.log('disconnect');
@@ -54,9 +54,14 @@ socket.onmessage = (response) =>{
         }
         if (data.Command === 'message'){
           store.dispatch(setMessagesList(data.Message));
+          const audio = new Audio();
+          audio.src = sound;
+          audio.play();
         }
         if (data.Command === 'earlier'){
-          store.dispatch(earlierMessagesList(data.Messages));
+          if (data.Messages.length !== 0){
+            store.dispatch(earlierMessagesList(data.Messages));
+          }
         }
         break;
       }

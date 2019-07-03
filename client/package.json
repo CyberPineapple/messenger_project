@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "compress.js": "^1.1.2",
+    "j-i-c": "^2.0.2",
     "react": "^16.8.6",
     "react-animated-css": "^1.0.5",
     "react-dom": "^16.8.6",

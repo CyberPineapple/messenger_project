@@ -36,6 +36,10 @@ export default class Clock extends React.Component {
   tick = () => {
     let date = new Date();
     let flash;
+    let minuts = date.getMinutes();
+    if (minuts < 10){
+      minuts = "0" + minuts;
+    }
     if (this.state.flash === ":") {
       flash = "\u205F";
     } else if (this.state.flash === "\u205F") {
@@ -43,7 +47,7 @@ export default class Clock extends React.Component {
     }
     this.setState({
       hour: date.getHours(),
-      minute: date.getMinutes(),
+      minute: minuts,
       flash: flash
     });
   };

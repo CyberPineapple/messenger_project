@@ -2,19 +2,29 @@ import React from "react";
 import { connect } from "react-redux";
 import style from "./chatbox.module.css";
 import { bindActionCreators } from "redux";
-import { setMessage, removeMessage, clearImages, addImage } from "../../actions/actions.js";
+import {
+  setMessage,
+  removeMessage,
+  clearImages,
+  addImage
+} from "../../actions/actions.js";
 import { socket } from "../../websockets/websocket";
 import ChatOutput from "../chatOutput/chatOutput";
+import Compress from "compress.js";
 
 class Chatbox extends React.Component {
   render() {
     let chat = null;
-    let pictures = <div className={style.image} style={{backgroundImage: `url(${this.props.images})`}}></div>;
+    let pictures = (
+      <div
+        className={style.image}
+        style={{ backgroundImage: `url(${this.props.images})` }}
+      />
+    );
     if (this.props.renderChatOutput) {
       chat = <ChatOutput />;
-    } else {
-      chat = null;
     }
+
     return (
       <div className={style.block}>
         <div className={style.chat}>{chat}</div>
@@ -24,14 +34,12 @@ class Chatbox extends React.Component {
               <input
                 type="file"
                 accept="image/jpeg,image/png"
-                style={{display: 'none'}}
-                id='file'
-                onChange={(e) => this.loadImage(e)}
+                style={{ display: "none" }}
+                id="file"
+                onChange={e => this.loadImage(e)}
               />
             </label>
-            <div className={style.pictures}>
-              {pictures}
-            </div>
+            <div className={style.pictures}>{pictures}</div>
           </div>
           <textarea
             onChange={event => this.onChangeMessage(event.target.value)}
@@ -47,17 +55,19 @@ class Chatbox extends React.Component {
   }
 
   sendMessage = () => {
-    if (this.props.activeChat !== "" && (this.props.message !== '' || this.props.images !== '')) {
-
+    if (
+      this.props.activeChat !== "" &&
+      (this.props.message !== "" || this.props.images !== "")
+    ) {
       let data = {
         Type: "chat",
-        Command: "message",
+        Command: "message"
       };
-      if (this.props.message !== ''){
+      if (this.props.message !== "") {
         data.Text = this.props.message;
       }
-      if (this.props.images !== ''){
-        data.Image = this.props.images
+      if (this.props.images !== "") {
+        data.Image = this.props.images;
       }
       data = JSON.stringify(data);
       console.log(data);
@@ -77,14 +87,28 @@ class Chatbox extends React.Component {
     if (value !== "\n") this.props.setMessage(value);
   };
 
-  loadImage = (e) =>{
-    let reader = new FileReader();
-    let file = e.target.files[0];
-    reader.onload = () =>{
-      this.props.addImage(reader.result);
-    }
-    reader.readAsDataURL(file);
-  }
+  loadImage = e => {
+    // let reader = new FileReader();
+    let file = [...e.target.files];
+    console.log(file[0].size);
+    const compress = new Compress();
+
+    compress.compress(file, {
+      quality: 0.75,
+      maxWidth: 1920,
+      maxHeight: 1920
+    }).then((data) => {
+      console.log(data[0]);
+      this.props.addImage(data[0].prefix + data[0].data);
+    });
+    // reader.onload = () => {
+    //   const image = reader.result;
+    //   let compress = jic.compress(image, 80, "jpeg").src;
+    //   console.log(compress);
+    //   this.props.addImage(image);
+    // };
+    // reader.readAsDataURL(file);
+  };
 }
 
 const mapStateToProps = store => {
@@ -99,7 +123,12 @@ const mapStateToProps = store => {
 
 const mapDispatchToProps = dispatch => {
   return bindActionCreators(
-    { setMessage: setMessage, removeMessage: removeMessage, clearImages: clearImages, addImage: addImage },
+    {
+      setMessage: setMessage,
+      removeMessage: removeMessage,
+      clearImages: clearImages,
+      addImage: addImage
+    },
     dispatch
   );
 };

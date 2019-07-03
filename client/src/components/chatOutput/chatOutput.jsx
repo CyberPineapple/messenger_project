@@ -5,6 +5,7 @@ import { socket } from "../../websockets/websocket";
 import Message from "../message/message";
 
 class ChatOutput extends React.Component {
+
   render() {
     const { messagesList } = this.props;
     let messages = [];
@@ -15,7 +16,10 @@ class ChatOutput extends React.Component {
     }
     return (
       <div className={style.output}>
-        <div className={style.nameChat}>{this.props.activeChat}</div>
+        <div className={style.nameChat}>
+          {this.props.activeChat}
+          <div className={style.deleteButton} onClick={this.deleteChat}>Очистить чат</div>
+        </div>
         <div className={style.messagesList} onScroll={e => this.scrollChat(e)}>
           {messages}
         </div>
@@ -26,6 +30,9 @@ class ChatOutput extends React.Component {
   componentDidMount() {
     let el = document.querySelector("." + style.messagesList);
     el.scrollTop = el.scrollHeight;
+    this.setState({
+      muteSound: false
+    })
   }
 
   scrollChat = value => {
@@ -38,6 +45,14 @@ class ChatOutput extends React.Component {
       value.target.scrollTop = 10;
     }
   };
+
+  deleteChat = () =>{
+    const data ={
+      Type: 'chat',
+      Command: 'purge'
+    }
+    socket.send(JSON.stringify(data));
+  }
 }
 
 const mapStateToProps = store => {

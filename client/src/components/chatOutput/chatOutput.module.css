@@ -1,6 +1,7 @@
 .output{
     height: 100%;
     width: 100%;
+    overflow: hidden;
 }
 
 .nameChat{
@@ -10,11 +11,34 @@
     padding: 10px;
     margin-bottom: 10px;
     font-weight: bold;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .messagesList{
+    position: relative;
     height: 90%;
     width: 100%;
-    overflow-y: scroll;
     padding: 10px;
+    overflow-y: scroll;
+}
+
+.deleteButton{
+    font-size: 14px;
+    position: absolute;
+    padding: 10px;
+    right: 0;
+    opacity: 0.5;
+    transition: opacity .4s;
+    -webkit-transition: opacity .4s;
+    -moz-transition: opacity .4s;
+    -ms-transition: opacity .4s;
+    -o-transition: opacity .4s;
+    cursor: pointer;
+}
+
+.deleteButton:hover {
+    opacity: 1;
 }
