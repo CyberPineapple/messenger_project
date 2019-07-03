@@ -164,8 +164,8 @@ async def choice_chat(websocket, data=None):
     await websocket.send(json.dumps(data))
     print(f"R: {data}")
 
-    answer = await websocket.recv()
-    print(f"A: {answer}")
+    messages = await websocket.recv()
+    print(f"A: {messages}")
     print("There no assert")
 
 
@@ -221,6 +221,22 @@ async def send_message_next_page(websocket):
     print("There no assert")
 
 
+async def send_image(websocket, message_data=None):
+    with open('static/pica.png', 'rb') as image:
+        import base64
+        image = base64.encodebytes(image.read()).decode()
+        image = "data:image/png;base64," + image
+
+    if message_data is None:
+        message_data = {
+            "Type": "chat",
+            "Command": "message",
+        }
+
+        message_data["Image"] = image
+    await send_message(websocket, message_data)
+
+
 async def get_requests(websocket):
 
     answer = await websocket.recv()
@@ -269,7 +285,8 @@ async def test_success_sign_in():
     async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
-        await get_requests(websocket)
+
+        # await get_requests(websocket)
 
 
 async def test_failture_sign_in_bad_password():
@@ -370,7 +387,7 @@ async def test_success_delete_chat():
             "Chat": "temp",
         }
 
-        # await choice_chat(websocket, chat_data)
+        await choice_chat(websocket, chat_data)
         await success_create_chat(websocket, chat_data)
 
         await delete_chat(websocket)
@@ -382,6 +399,7 @@ async def test_success_delete_close_chat():
 
         chat_data = {
             "Type": "chat",
+            #"Command": "choice",
             "Command": "create",
             "Chat": "sec",
             "Password": "sec",
@@ -397,8 +415,13 @@ async def test_success_enter_in_closed_chat():
     async with websockets.connect(host) as websocket:
 
         await success_signin(websocket)
-
-        await choice_chat(websocket)
+        data = {
+            "Type": "chat",
+            "Command": "choice",
+            "Chat": "secret general",
+            "Password": "secret"
+        }
+        await choice_chat(websocket, data=data)
 
 
 async def test_failed_enter_in_closed_chat():
@@ -440,35 +463,19 @@ async def test_success_send_image():
     async with websockets.connect(host) as websocket:
         await success_signin(websocket)
         await choice_chat(websocket)
-        with open('static/pica.png', 'rb') as image:
-            import base64
-            image = base64.encodebytes(image.read()).decode()
-            image = "data:image/png;base64," + image
-
-            message_data = {
-                "Type": "chat",
-                "Command": "message",
-                "Image": image,
-            }
-            await send_message(websocket, message_data)
+        await send_image(websocket)
 
 
 async def test_success_send_image_and_text():
     async with websockets.connect(host) as websocket:
         await success_signin(websocket)
         await choice_chat(websocket)
-        with open('static/pica.png', 'rb') as image:
-            import base64
-            image = base64.encodebytes(image.read()).decode()
-            image = "data:image/png;base64," + image
-
-            message_data = {
-                "Type": "chat",
-                "Command": "message",
-                "Text": "Look! I find new memas",
-                "Image": image,
-            }
-            await send_message(websocket, message_data)
+        message_data = {
+            "Type": "chat",
+            "Command": "message",
+            "Text": "Look! I find new memas",
+        }
+        await send_image(websocket, message_data=message_data)
 
 
 async def test_success_send_message_to_closed_chat():
@@ -485,7 +492,6 @@ async def test_success_send_message_next_page():
         await success_signin(websocket)
         await choice_chat(websocket)
         await send_message_next_page(websocket)
-
         await send_message_next_page(websocket)
 
 
@@ -585,10 +591,10 @@ loop.run_until_complete(
         # test_success_send_chat_list(),
         # test_success_enter_in_closed_chat(),
         # test_success_send_message(),
-        # test_success_send_image(),
-        # test_success_send_image_and_text(),
         # test_success_send_message_to_closed_chat(),
         # test_success_send_message_next_page(),
+        # test_success_send_image(),
+        # test_success_send_image_and_text(),
         # test_success_purge_messages(),
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
