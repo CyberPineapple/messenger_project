@@ -506,6 +506,16 @@ async def test_failed_send_message_chat_not_exist():
         await send_message(websocket)
 
 
+async def test_list_online_users():
+    async with websockets.connect(host) as websocket:
+
+        await success_signin(websocket)
+        await choice_chat(websocket)
+
+        json_data = {"Type": "chat", "Command": "connected"}
+        await send_custom_json(websocket, json_data)
+
+
 async def test_reconnect():
     async with websockets.connect(host) as websocket:
 
@@ -602,6 +612,7 @@ loop.run_until_complete(
         # test_failed_create_non_auth(),
         # test_failed_send_message_chat_not_exist(),
         # test_reconnect(), only for browser
+        test_list_online_users(),
         # test_failed_create_chat(), # test after realise redirect for non auth
         # test_fault_logout(),# not need becouse, if logout, then logout
         # register test_multupule_connection(),

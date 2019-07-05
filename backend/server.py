@@ -95,6 +95,9 @@ async def websocket_handler(request):
                         data = await ActionChat(request).delete_chat()
                     elif jdata["Command"] == "earlier":
                         data = await ActionChat(request).earlier_messages()
+                    elif jdata["Command"] == "connected":
+                        data = await ActionChat(request
+                                                ).send_list_online_users()
 
                     # Temp functional
                     elif jdata["Command"] == "purge":

@@ -197,6 +197,11 @@ class ActionChat(web.View):
                                               manager,
                                               command="earlier")
 
+    async def send_list_online_users(self):
+        chat = self.request.session.get("chat")
+        users = self.request.app.active_sockets.get_chat(chat).all_users()
+        return {"Type": "chat", "Command": "connected", "Online": users}
+
     # temp functionality
     @login_required
     async def purge_messages(self):
