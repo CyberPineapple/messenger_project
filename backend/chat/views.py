@@ -14,7 +14,7 @@ class ActionChat(web.View):
     async def send_messages(instance, manager, chat=None, command="choice"):
         data = {"Type": "chat", "Command": command}
         if chat is not None:
-            data["Chat"]
+            data["Chat"] = chat
         messages = []
         data_message = {}
 
@@ -106,7 +106,7 @@ class ActionChat(web.View):
             self.request.chat.messages.order_by(-Message.created_at).paginate(
                 page, self.limiter))
 
-        return await ActionChat.send_messages(chat_messages, manager, chat)
+        return await ActionChat.send_messages(chat_messages, manager, jchat)
 
     @login_required
     async def send_message(self, **jdata):
