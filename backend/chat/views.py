@@ -11,7 +11,10 @@ class ActionChat(web.View):
     limiter = 30
 
     @staticmethod
-    async def send_messages(instance, manager, command="choice"):
+    async def send_messages(instance, manager, chat=None, command="choice"):
+        data = {"Type": "chat", "Command": command}
+        if chat is not None:
+            data["Chat"]
         messages = []
         data_message = {}
 
@@ -33,7 +36,8 @@ class ActionChat(web.View):
                 messages.append(data_message.copy())
                 data_message.clear()
 
-        return {"Type": "chat", "Command": command, "Messages": messages[::-1]}
+        data["Messages"] = messages[::-1]
+        return data
 
     @login_required
     async def create_chat(self, **jdata):
@@ -102,7 +106,7 @@ class ActionChat(web.View):
             self.request.chat.messages.order_by(-Message.created_at).paginate(
                 page, self.limiter))
 
-        return await ActionChat.send_messages(chat_messages, manager)
+        return await ActionChat.send_messages(chat_messages, manager, chat)
 
     @login_required
     async def send_message(self, **jdata):
