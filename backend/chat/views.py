@@ -201,6 +201,7 @@ class ActionChat(web.View):
                                               manager,
                                               command="earlier")
 
+    @login_required
     async def send_list_online_users(self):
         chat = self.request.session.get("chat")
         users = self.request.app.active_sockets.get_chat(chat).all_users()
