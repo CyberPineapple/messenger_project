@@ -1,13 +1,9 @@
 import React from "react";
 import { connect } from "react-redux";
-import style from "./chatItem.module.css";
+import style from "./ChatItem.module.css";
 import { bindActionCreators } from "redux";
-import {
-  removeMessagesList,
-  activeChat,
-  renderChatOutput
-} from "../../actions/actions";
-import { socket } from "../../websockets/websocket";
+import { removeMessagesList, renderChatOutput } from "../../actions/actions";
+import sendMessage from "../../websockets/websocket";
 
 class ChatItem extends React.Component {
   constructor() {
@@ -23,10 +19,7 @@ class ChatItem extends React.Component {
     const { value } = this.props;
     if (value.Closed === false) {
       chat = (
-        <div
-          onClick={this.choiceChat}
-          className={style.menu_chat_list_item}
-        >
+        <div onClick={this.choiceChat} className={style.menu_chat_list_item}>
           <p>{value.Chat}</p>
         </div>
       );
@@ -68,7 +61,6 @@ class ChatItem extends React.Component {
 
   choiceChat = () => {
     const chatName = this.props.value.Chat;
-    this.props.activeChat(chatName);
     let data = {
       Type: "chat",
       Command: "choice",
@@ -77,7 +69,13 @@ class ChatItem extends React.Component {
     data = JSON.stringify(data);
     this.props.renderChatOutput(false);
     this.props.removeMessagesList();
-    socket.send(data);
+    sendMessage(data);
+    data = {
+      Type: 'chat',
+      Command: 'connected'
+    }
+    data = JSON.stringify(data);
+    sendMessage(data);
   };
 
   onPressEnter = e => {
@@ -87,7 +85,6 @@ class ChatItem extends React.Component {
   };
 
   choiceSecretChat = name => {
-    this.props.activeChat(name);
     let data = {
       Type: "chat",
       Command: "choice",
@@ -95,7 +92,7 @@ class ChatItem extends React.Component {
       Password: this.state.chatPassword
     };
     data = JSON.stringify(data);
-    socket.send(data);
+    sendMessage(data);
     this.props.renderChatOutput(false);
     this.props.removeMessagesList();
     this.setState({
@@ -115,7 +112,6 @@ const mapDispatchToProps = dispatch => {
   return bindActionCreators(
     {
       removeMessagesList: removeMessagesList,
-      activeChat: activeChat,
       renderChatOutput: renderChatOutput
     },
     dispatch

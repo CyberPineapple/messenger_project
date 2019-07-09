@@ -1,8 +1,8 @@
 import React from 'react'
-import style from './loadingPage.module.css'
+import style from './LoadingPage.module.css'
 
 const LoadingPage = () => {
-    return (
+        return (
         <div className={style.block}>
             <p className={style.text}>Connecting to server</p>
             <div className={style.line1}></div>

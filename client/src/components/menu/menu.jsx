@@ -1,11 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
-import style from "./menu.module.css";
+import style from "./Menu.module.css";
 import { socket } from "../../websockets/websocket";
 import { bindActionCreators } from "redux";
 import { addChatName, removeChatName, activeChat, removeMessagesList, addChatPassword, removeChatPassword } from "../../actions/actions";
-import ChatItem from '../chatItem/chatItem';
-import Clock from '../clock/clock';
+import ChatItem from '../ChatItem/ChatItem';
+import Clock from '../Clock/Clock';
 
 class Menu extends React.Component {
   constructor() {

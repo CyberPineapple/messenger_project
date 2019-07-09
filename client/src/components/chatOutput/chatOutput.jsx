@@ -1,8 +1,8 @@
 import React from "react";
 import { connect } from "react-redux";
-import style from "./chatOutput.module.css";
+import style from "./ChatOutput.module.css";
 import { socket } from "../../websockets/websocket";
-import Message from "../message/message";
+import Message from "../Message/Message";
 
 class ChatOutput extends React.Component {
 
@@ -20,7 +20,7 @@ class ChatOutput extends React.Component {
           {this.props.activeChat}
           <div className={style.deleteButton} onClick={this.deleteChat}>Очистить чат</div>
         </div>
-        <div className={style.messagesList} onScroll={e => this.scrollChat(e)}>
+        <div className={style.messagesList} onScroll={this.scrollChat}>
           {messages}
         </div>
       </div>
@@ -30,9 +30,6 @@ class ChatOutput extends React.Component {
   componentDidMount() {
     let el = document.querySelector("." + style.messagesList);
     el.scrollTop = el.scrollHeight;
-    this.setState({
-      muteSound: false
-    })
   }
 
   scrollChat = value => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import style from "./chatbox.module.css";
+import style from "./Chatbox.module.css";
 import { bindActionCreators } from "redux";
 import {
   setMessage,
@@ -8,8 +8,8 @@ import {
   clearImages,
   addImage
 } from "../../actions/actions.js";
-import { socket } from "../../websockets/websocket";
-import ChatOutput from "../chatOutput/chatOutput";
+import sendMessage from "../../websockets/websocket";
+import ChatOutput from "../ChatOutput/ChatOutput";
 import Compress from "compress.js";
 
 class Chatbox extends React.Component {
@@ -71,7 +71,7 @@ class Chatbox extends React.Component {
       }
       data = JSON.stringify(data);
       console.log(data);
-      socket.send(data);
+      sendMessage(data);
       this.props.removeMessage();
       this.props.clearImages();
     }
@@ -88,7 +88,6 @@ class Chatbox extends React.Component {
   };
 
   loadImage = e => {
-    // let reader = new FileReader();
     let file = [...e.target.files];
     console.log(file[0].size);
     const compress = new Compress();
@@ -101,13 +100,6 @@ class Chatbox extends React.Component {
       console.log(data[0]);
       this.props.addImage(data[0].prefix + data[0].data);
     });
-    // reader.onload = () => {
-    //   const image = reader.result;
-    //   let compress = jic.compress(image, 80, "jpeg").src;
-    //   console.log(compress);
-    //   this.props.addImage(image);
-    // };
-    // reader.readAsDataURL(file);
   };
 }
 

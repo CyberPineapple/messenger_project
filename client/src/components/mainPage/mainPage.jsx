@@ -1,8 +1,8 @@
 import React from "react";
-import style from "./mainPage.module.css";
+import style from "./MainPage.module.css";
 import { Animated } from "react-animated-css";
-import Chatbox from "../chatbox/chatbox";
-import Menu from "../menu/menu";
+import Chatbox from "../Chatbox/Chatbox"
+import Menu from "../Menu/Menu";
 
 export default class MainPage extends React.Component{
 

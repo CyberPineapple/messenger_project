@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import AuthentificationPage from './components/authentificationPage/authentificationPage';
-import MainPage from './components/mainPage/mainPage'
+import AuthentificationPage from './components/AuthentificationPage/AuthentificationPage.jsx';
+import MainPage from './components/MainPage/MainPage'
 import { connect } from 'react-redux';
-import LoadingPage from './components/loadingPage/loadingPage';
+import LoadingPage from './components/LoadingPage/LoadingPage';
 
 class App extends Component {
 
