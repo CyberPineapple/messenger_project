@@ -2,6 +2,7 @@
   "name": "messenger-project",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://cyberpineapple.github.io/messenger_project/",
   "dependencies": {
     "compress.js": "^1.1.2",
     "gh-pages": "^2.0.1",

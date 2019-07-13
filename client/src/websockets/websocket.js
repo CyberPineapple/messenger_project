@@ -33,16 +33,16 @@ socket.onmessage = response => {
         if (data.Status === "success") {
           store.dispatch(setPage("main"));
           let data = {
-            Type: 'chat',
-            Command: 'choice',
-            Chat: 'general'
+            Type: "chat",
+            Command: "choice",
+            Chat: "general"
           };
           data = JSON.stringify(data);
           sendMessage(data);
           data = {
-            Type: 'chat',
-            Command: 'connected'
-          }
+            Type: "chat",
+            Command: "connected"
+          };
           data = JSON.stringify(data);
           sendMessage(data);
           store.dispatch(renderChatOutput(false));
@@ -65,10 +65,12 @@ socket.onmessage = response => {
           store.dispatch(renderChatOutput(true));
         }
         if (data.Command === "message") {
+          if (data.Message.user !== store.getState().login) {
+            const audio = new Audio();
+            audio.src = sound;
+            audio.play();
+          }
           store.dispatch(setMessagesList(data.Message));
-          const audio = new Audio();
-          audio.src = sound;
-          audio.play();
         }
         if (data.Command === "earlier") {
           if (data.Messages.length !== 0) {
@@ -89,8 +91,8 @@ socket.onerror = error => {
   console.log("error: ", error);
 };
 
-const sendMessage = (data) => {
+const sendMessage = data => {
   socket.send(data);
-}
+};
 
 export default sendMessage;
