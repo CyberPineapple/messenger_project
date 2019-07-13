@@ -34,8 +34,15 @@ socket.onmessage = response => {
           store.dispatch(setPage("main"));
           let data = {
             Type: 'chat',
-            Command: 'connected'
+            Command: 'choice',
+            Chat: 'general'
           };
+          data = JSON.stringify(data);
+          sendMessage(data);
+          data = {
+            Type: 'chat',
+            Command: 'connected'
+          }
           data = JSON.stringify(data);
           sendMessage(data);
           store.dispatch(renderChatOutput(false));

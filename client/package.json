@@ -5,13 +5,13 @@
   "dependencies": {
     "compress.js": "^1.1.2",
     "gh-pages": "^2.0.1",
+    "moment": "^2.24.0",
     "react": "^16.8.6",
-    "react-addons-css-transition-group": "^15.6.2",
     "react-animated-css": "^1.0.5",
     "react-dom": "^16.8.6",
     "react-redux": "^7.0.2",
     "react-scripts": "2.1.8",
-    "react-transition-group": "^1.2.1",
+    "react-transition-group": "^4.2.1",
     "redux": "^4.0.1"
   },
   "scripts": {

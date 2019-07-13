@@ -1,8 +1,10 @@
 import React from "react";
 import style from "./AuthentificationPage.module.css";
-import { Animated } from "react-animated-css";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import transitions from "./transition.module.css";
+import './transition.css';
 import {
   setPage,
   setLogin,
@@ -14,43 +16,43 @@ import sendMessage from "../../websockets/websocket";
 
 class AuthentificationPage extends React.Component {
   render() {
+    console.log(transitions);
     return (
-      <Animated
-        animationIn="fadeIn"
-        animationOut={"fadeInLeft"}
-        animationInDuration={1000}
-        isVisible={true}
-      >
-        <div className={style.page}>
-          <div className={style.layout}>
-            <p className={style.title}>Добро пожаловать</p>
-            <p>Логин</p>
-            <input
-              type="text"
-              className={style.input}
-              onChange={event => this.props.setLogin(event.target.value)}
-              onClick={removeLogin}
-              value={this.props.login}
-              maxLength={20}
-            />
-            <p>Пароль</p>
-            <input
-              type="password"
-              className={style.input}
-              onChange={event => this.props.setPassword(event.target.value)}
-              value={this.props.password}
-              onClick={() => this.props.removePassword()}
-              maxLength={30}
-            />
-            <div className={style.button} onClick={() => this.goToPage()}>
-              Войти
-            </div>
-            <div className={style.button} onClick={() => this.registration()}>
-              Регистрация
+      <TransitionGroup>
+        <CSSTransition in={true} classNames={{...transitions}} timeout={3000}>
+          <div className={style.page}>
+            <div className={style.layout}>
+              <p className={style.title}>Добро пожаловать</p>
+              <p>Логин</p>
+              <input
+                type="text"
+                className={style.input}
+                onChange={event => this.props.setLogin(event.target.value)}
+                onClick={removeLogin}
+                value={this.props.login}
+                maxLength={20}
+                placeholder="Введите логин"
+              />
+              <p>Пароль</p>
+              <input
+                placeholder="Введите пароль"
+                type="password"
+                className={style.input}
+                onChange={event => this.props.setPassword(event.target.value)}
+                value={this.props.password}
+                onClick={() => this.props.removePassword()}
+                maxLength={30}
+              />
+              <div className={style.button} onClick={() => this.goToPage()}>
+                Войти
+              </div>
+              <div className={style.button} onClick={() => this.registration()}>
+                Регистрация
+              </div>
             </div>
           </div>
-        </div>
-      </Animated>
+        </CSSTransition>
+      </TransitionGroup>
     );
   }
 
