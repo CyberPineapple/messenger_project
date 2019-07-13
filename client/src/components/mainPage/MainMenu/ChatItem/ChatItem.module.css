@@ -1,0 +1,19 @@
+.menu_chat_list_item{
+    padding: 5px;
+    display: block;
+    transition-duration: 1s;
+    width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+    margin-top: -2px;
+    cursor: pointer;
+}
+
+.menu_chat_list_item:hover{
+    transition: background;
+    background-color: rgb(230, 251, 113);
+    border-top: 2px solid #77207D;
+    border-bottom: 2px solid #77207D;
+}
