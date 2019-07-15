@@ -1,7 +1,7 @@
 export const initialState = {
   page: "loading",
-  login: "login",
-  password: "password",
+  login: "",
+  password: "",
   authentification: false,
   connect: false,
   message: "",
