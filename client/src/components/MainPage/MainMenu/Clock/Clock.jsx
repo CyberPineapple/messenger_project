@@ -6,7 +6,7 @@ export default class Clock extends React.PureComponent {
   constructor() {
     super();
     this.state = {
-      time: moment().locale('ru').format('LLL')
+      time: moment().format('lll')
     };
   }
 
@@ -15,7 +15,6 @@ export default class Clock extends React.PureComponent {
   }
 
   render() {
-    console.log(moment().format('LT'));
     const { time } = this.state;
 
     return (
@@ -33,7 +32,7 @@ export default class Clock extends React.PureComponent {
 
   tick = () => {
     this.setState({
-      time: moment().locale('ru').format('LLL')
+      time: moment().format('lll')
     });
   };
 }

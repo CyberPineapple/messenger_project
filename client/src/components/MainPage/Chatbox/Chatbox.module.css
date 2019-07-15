@@ -1,12 +1,9 @@
 .block{
-    position: relative;
-    left: 200px;
-    top: 0;
-    height: 100%;
-    width: calc(100% - 200px);
+    flex: 1 1 auto;
     padding-top: 20px;
     box-sizing: border-box;
     background-image: url(../../../images/free_hexagon_pattern_02_by_black_light_studio-d65g32i.png);
+    cursor: default;
 }
 
 .input{
@@ -35,6 +32,7 @@
     align-items: center;
     justify-content: center;
     transition: background .2s linear;
+    cursor: pointer;
 }
 
 .button:hover{
@@ -58,6 +56,7 @@
     background-position: center;
     height: 50%;
     width: 100%;
+    cursor: pointer;
 }
 
 .imagesBlock{
