@@ -2,21 +2,21 @@
 export const setPage = value => {
     return{
         type: 'SET_PAGE',
-        page: value
+        payload: value
     }
 }
 
 export const setLogin = value => {
     return{
         type: 'SET_LOGIN',
-        login: value
+        payload: value
     }
 }
 
 export const setPassword = value => {
     return{
         type: 'SET_PASSWORD',
-        password: value
+        payload: value
     }
 }
 
@@ -35,7 +35,7 @@ export const removePassword = () => {
 export const authentification = value => {
     return {
         type: 'AUTHENTIFICATION',
-        authentification: value
+        payload: value
     }
 }
 
@@ -43,21 +43,21 @@ export const authentification = value => {
 export const connect = value => {
     return {
         type: 'CONNECT',
-        connect: value
+        payload: value
     }
 }
 
 export const setMessage = value => {
     return{
         type: 'SET_MESSAGE',
-        message: value
+        payload: value
     }
 }
 
 export const setMessagesList = value => {
     return{
         type: 'SET_MESSAGES_LIST',
-        messagesList: value
+        payload: value
     }
 }
 
@@ -76,14 +76,14 @@ export const removeMessage = () => {
 export const setChatList = value => {
     return{
         type: 'SET_CHAT_LIST',
-        chatList: value
+        payload: value
     }
 }
 
 export const addChatName = value => {
     return{
         type: 'ADD_CHAT_NAME',
-        chatName: value
+        payload: value
     }
 }
 
@@ -96,7 +96,7 @@ export const removeChatName = () => {
 export const addChatPassword = value => {
     return{
         type: 'ADD_CHAT_PASSWORD',
-        chatPassword: value
+        payload: value
     }
 }
 
@@ -109,7 +109,7 @@ export const removeChatPassword = () => {
 export const activeChat = value => {
     return {
         type: 'ACTIVE_CHAT',
-        chat: value
+        payload: value
     }
 }
 
