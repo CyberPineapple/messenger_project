@@ -1,125 +1,123 @@
-.block{
-    width: 200px;
-    height: 100%;
-    border-right: 2px solid #77207D;
-    position: relative;
-    z-index: 2;
-    transition: width 1s ease;
-    position: relative;
-    white-space: nowrap;
+.block {
+  width: 200px;
+  height: 100%;
+  border-right: 2px solid #77207d;
+  position: relative;
+  z-index: 2;
+  transition: width 1s ease;
+  position: relative;
+  white-space: nowrap;
 }
 
 .menu {
-    height: 100%;
-    overflow: hidden;
+  height: 100%;
+  overflow: hidden;
 }
 
 .blockView {
-    width: 200px;
-    composes: block;
+  width: 200px;
+  composes: block;
 }
 
 .blockHide {
-    composes: block;
-    width: 0;
+  composes: block;
+  width: 0;
 }
 
 .button {
-    position: absolute;
-    top: 10px;
-    right: -40px;
-    width: 30px;
-    height: 30px;
-
+  position: absolute;
+  top: 10px;
+  right: -40px;
+  width: 30px;
+  height: 30px;
 }
 
 .burger {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .line {
-    transition: transform 1s ease;
-    background-color: #77207D;
-    width: 100%;
-    height: 6px;
-    border-radius: 5px;
+  transition: transform 1s ease;
+  background-color: #77207d;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
 }
 
 .line1 {
-    composes: line;
-    transform: rotate(0);
-    transform-origin: right;
+  composes: line;
+  transform: rotate(0);
+  transform-origin: right;
 }
 .line2 {
-    composes: line;
+  composes: line;
 }
 .line3 {
-    composes: line;
-    transform-origin: right;
+  composes: line;
+  transform-origin: right;
 }
 
 .line1Active {
-    composes: line;
-    transform: rotate(-25deg);
-    transform-origin: right;
+  composes: line;
+  transform: rotate(-25deg);
+  transform-origin: right;
 }
 .line2Active {
-    composes: line;
-    transform: scale(0)
+  composes: line;
+  transform: scale(0);
 }
 .line3Active {
-    composes: line;
-    transform: rotate(25deg);
-    transform-origin: right;
+  composes: line;
+  transform: rotate(25deg);
+  transform-origin: right;
 }
 
-.menu_image{
-    background-image: url(../../../images/anonymous_mask1600.png);
-    width: 100%;
-    height: 200px;
-    background-size: cover;
-    border-bottom: 2px solid #77207D;
+.menu_image {
+  background-image: url(../../../images/anonymous_mask1600.png);
+  width: 100%;
+  height: 200px;
+  background-size: cover;
+  border-bottom: 2px solid #77207d;
 }
 
-
-.menu_login{
-    padding: 10px;
-    border-bottom: 2px solid #77207D;
-    text-align: center;
-    font-weight: bold;
-    font-size: 20px;
-    letter-spacing: 1px;
+.menu_login {
+  padding: 10px;
+  border-bottom: 2px solid #77207d;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+  letter-spacing: 1px;
 }
 
-.menu_chat{
-    padding: 10px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 20px;
-    letter-spacing: 1px;
+.menu_chat {
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+  letter-spacing: 1px;
 }
 
-.menu_chat_list{
-    padding-top: 10px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 20px;
-    letter-spacing: 1px;
-    height: 500px;
-    overflow-y: scroll;
-    overflow-x: hidden;
+.menu_chat_list {
+  padding-top: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+  letter-spacing: 1px;
+  height: 500px;
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 
-.input{
-    display: block;
-    width: 100%;
-    height: 30px;
-    outline: none;
-    border-top: 2px solid #77207D;
-    border-bottom: 2px solid #77207D;
-    text-align: center;
+.input {
+  display: block;
+  width: 100%;
+  height: 30px;
+  outline: none;
+  border-top: 2px solid #77207d;
+  border-bottom: 2px solid #77207d;
+  text-align: center;
 }

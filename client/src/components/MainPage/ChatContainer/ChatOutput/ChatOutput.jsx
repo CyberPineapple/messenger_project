@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import style from "./ChatOutput.module.css";
-import { socket } from "../../../../websockets/websocket";
+import sendMessage from "../../../../websockets/websocket";
 import Message from "./Message/Message";
 
 class ChatOutput extends React.Component {
@@ -22,8 +22,8 @@ class ChatOutput extends React.Component {
       );
     }
     return (
-      <div className={style.output}>
-        <div className={style.nameChat}>
+      <div className={style.block}>
+        <div className={style.chatName}>
           {this.props.activeChat}
           <div className={style.deleteButton} onClick={this.deleteChat}>
             Очистить чат
@@ -52,7 +52,7 @@ class ChatOutput extends React.Component {
         Type: "chat",
         Command: "earlier"
       };
-      socket.send(JSON.stringify(data));
+      sendMessage(JSON.stringify(data));
       value.target.scrollTop = 10;
     }
   };
@@ -62,18 +62,12 @@ class ChatOutput extends React.Component {
       Type: "chat",
       Command: "purge"
     };
-    socket.send(JSON.stringify(data));
+    sendMessage(JSON.stringify(data));
   };
 }
 
-const mapStateToProps = store => {
-  return {
-    messagesList: store.messagesList,
-    activeChat: store.activeChat
-  };
-};
-
-export default connect(
-  mapStateToProps,
-  null
+export default connect( state => ({
+  messagesList: state.messagesList,
+  activeChat: state.activeChat
+})
 )(ChatOutput);

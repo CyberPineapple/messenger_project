@@ -11,5 +11,5 @@ export const initialState = {
   chatPassword: "",
   activeChat: "",
   renderChatOutput: true,
-  images: ""
+  image: ""
 };

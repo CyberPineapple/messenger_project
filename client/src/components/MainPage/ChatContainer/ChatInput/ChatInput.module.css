@@ -1,0 +1,55 @@
+.block {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.inputText {
+  flex: 1 1 auto;
+  padding: 10px;
+  width: 70%;
+  outline: none;
+  resize: none;
+  border: 2px solid #77207d;
+  border-right: none;
+}
+
+.button {
+  width: 100px;
+  border: 2px solid #77207d;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s linear;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #e6fb71;
+}
+
+.inputFile {
+  display: block;
+  background-image: url(../../../../images/55382.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100%;
+  width: 50px;
+  cursor: pointer;
+  margin: auto;
+}
+
+.imagesBlock {
+  width: 150px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.image {
+  max-height: 100%;
+  max-width: 80px
+}

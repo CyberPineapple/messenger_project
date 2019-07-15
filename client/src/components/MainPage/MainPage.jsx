@@ -1,6 +1,6 @@
 import React from "react";
 import style from "./MainPage.module.css";
-import Chatbox from "./Chatbox/Chatbox";
+import ChatContainer from "./ChatContainer/ChatContainer";
 import MainMenu from "./MainMenu";
 
 export default class MainPage extends React.Component {
@@ -8,7 +8,7 @@ export default class MainPage extends React.Component {
     return (
       <div className={style.layout}>
         <MainMenu />
-        <Chatbox />
+        <ChatContainer />
       </div>
     );
   }

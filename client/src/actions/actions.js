@@ -127,15 +127,9 @@ export const earlierMessagesList = (value) =>{
     }
 }
 
-export const addImage = value => {
+export const setImage = value => {
     return {
-        type: 'ADD_IMAGE',
-        image: value
-    }
-}
-
-export const clearImages = () => {
-    return {
-        type: 'CLEAR_IMAGES'
+        type: 'SET_IMAGE',
+        payload: value
     }
 }

@@ -1,15 +1,17 @@
-.output{
-    height: 100%;
-    width: 100%;
+.block{
+    flex: 1 1 auto;
+    border: 2px solid #77207D;
     overflow: hidden;
+    background-color: #FFEED9;
+    display: grid;
+    grid-template-rows: 60px 1fr;
 }
 
-.nameChat{
+.chatName{
     border-bottom: 2px solid #77207D;
     text-align: center;
     font-size: 20px;
     padding: 10px;
-    margin-bottom: 10px;
     font-weight: bold;
     position: relative;
     display: flex;
@@ -19,9 +21,6 @@
 
 .messagesList{
     position: relative;
-    height: 90%;
-    width: 100%;
-    padding: 10px;
     overflow-y: scroll;
 }
 

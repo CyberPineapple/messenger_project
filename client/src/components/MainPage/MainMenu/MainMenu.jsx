@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Fragment, PureComponent} from "react";
 import { connect } from "react-redux";
 import styles from "./MainMenu.module.css";
 import { socket } from "../../../websockets/websocket";
@@ -14,7 +14,7 @@ import {
 import ChatItem from "./ChatItem/ChatItem";
 import Clock from "./Clock/Clock";
 
-class MainMenu extends React.Component {
+class MainMenu extends PureComponent{
   state = {
     isView: false,
     viewChatInput: false
@@ -45,7 +45,7 @@ class MainMenu extends React.Component {
       );
     } else if (this.state.viewChatInput === true) {
       chatInput = (
-        <React.Fragment>
+        <Fragment>
           <p
             className={styles.menu_chat}
             onClick={() =>
@@ -74,12 +74,12 @@ class MainMenu extends React.Component {
             onClick={() => this.props.removeChatPassword()}
             maxLength={30}
           />
-        </React.Fragment>
+        </Fragment>
       );
     }
 
     return (
-      <React.Fragment>
+      <Fragment>
         <div className={isView ? styles.blockView : styles.blockHide}>
           <button className={styles.button} onClick={this.clickButton}>
             <div className={styles.burger}>
@@ -97,7 +97,7 @@ class MainMenu extends React.Component {
             <Clock />
           </div>
         </div>
-      </React.Fragment>
+      </Fragment>
     );
   }
 
