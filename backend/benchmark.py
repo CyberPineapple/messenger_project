@@ -3,7 +3,7 @@ from random import choice, randint
 from string import ascii_letters
 
 import websockets
-from ws_client import (choice_chat, get_requests, host, send_message,
+from ws_client import (choice_chat, host, send_message,
                        success_signin)
 
 
@@ -35,3 +35,8 @@ loop.run_until_complete(bench_send_message(1000))
 #   max 75mes/1sec
 #   avg 65mes/1sec
 #   22-25sec/2000mes
+#
+# remote:
+#   max 77 mes/1sec
+#   avg 67mes/1sec
+#   30sec/2000mes
