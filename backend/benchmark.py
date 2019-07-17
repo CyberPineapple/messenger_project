@@ -18,7 +18,7 @@ async def genBoolShit():
 async def bench_send_message(N):
     async with websockets.connect(host) as websocket:
         await success_signin(websocket)
-        await get_requests(websocket)
+        await choice_chat(websocket)
 
         for i in range(N):
             text = await genBoolShit()
@@ -30,3 +30,8 @@ async def bench_send_message(N):
 loop = asyncio.get_event_loop()
 
 loop.run_until_complete(bench_send_message(1000))
+# After refractor conditional
+# localhost:
+#   max 75mes/1sec
+#   avg 65mes/1sec
+#   22-25sec/2000mes
