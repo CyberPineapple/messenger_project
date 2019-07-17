@@ -169,6 +169,8 @@ class ActionChat(web.View):
         Assert chat is choised!
         """
         # TODO kick users from deleted chat
+        # TODO check exits chat ->
+        # AttributeError 'NoneType' object has no attribute 'owner'
         with self.request.app.manager.allow_sync():
             if self.request.user != self.request.chat.owner:
                 return {"Type": "chat", "Command": "delete", "Status": "error"}
