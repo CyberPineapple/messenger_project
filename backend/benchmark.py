@@ -30,7 +30,13 @@ async def bench_send_message(N):
 loop = asyncio.get_event_loop()
 
 loop.run_until_complete(bench_send_message(1000))
-# After refractor conditional
+# Before refactor conditional
+# remote:
+#    max 78mes/1sec
+#    avg 75mes/1sec
+#    29sec/2000mes
+
+# After refactor conditional
 # localhost:
 #   max 75mes/1sec
 #   avg 65mes/1sec
