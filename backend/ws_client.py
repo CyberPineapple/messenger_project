@@ -12,7 +12,8 @@ async def success_register(websocket, register_creds=None):
     if register_creds is None:
 
         register_creds = {
-            "Type": "registration",
+            "Type": "account",
+            "Command": "registration",
             "Login": "user",
             "Password": "password",
         }
@@ -30,7 +31,8 @@ async def success_signin(websocket, signin_creds=None):
     if signin_creds is None:
 
         signin_creds = {
-            "Type": "login",
+            "Type": "account",
+            "Command": "login",
             "Login": "user",
             "Password": "password"
         }
@@ -40,7 +42,11 @@ async def success_signin(websocket, signin_creds=None):
 
     answer = await websocket.recv()
     print(f"A: {answer}")
-    assert json.loads(answer) == {"Type": "login", "Status": "success"}
+    assert json.loads(answer) == {
+        "Type": "account",
+        "Command": "login",
+        "Status": "success"
+    }
 
     chat_list = await websocket.recv()
     print(f"2A: {chat_list}")
@@ -49,7 +55,7 @@ async def success_signin(websocket, signin_creds=None):
 
 async def success_logout(websocket, failture=False):
 
-    logout_data = {"Type": "logout", "Login": "user"}
+    logout_data = {"Type": "account", "Command": "logout"}
 
     await websocket.send(json.dumps(logout_data))
     print(f"R: {logout_data}")
@@ -58,11 +64,19 @@ async def success_logout(websocket, failture=False):
         answer = await websocket.recv()
         print(f"A: {answer}")
 
-        assert json.loads(answer) == {"Type": "login", "Status": "error"}
+        assert json.loads(answer) == {
+            "Type": "account",
+            "Command": "logout",
+            "Status": "error"
+        }
     else:
         answer = await websocket.recv()
         print(f"A: {answer}")
-        assert json.loads(answer) == {"Type": "logout", "Status": "success"}
+        assert json.loads(answer) == {
+            "Type": "account",
+            "Command": "logout",
+            "Status": "success"
+        }
 
 
 async def failture_login(websocket, uncorrect_creds=None):
@@ -74,7 +88,8 @@ async def failture_login(websocket, uncorrect_creds=None):
 
     if uncorrect_creds is None:
         uncorrect_creds = {
-            "Type": "login",
+            "Type": "account",
+            "Command": "login",
             "Login": "user",
             "Password": "password123"
         }
@@ -84,7 +99,11 @@ async def failture_login(websocket, uncorrect_creds=None):
 
     answer = await websocket.recv()
     print(f"A: {answer}")
-    assert json.loads(answer) == {"Type": "login", "Status": "error"}
+    assert json.loads(answer) == {
+        "Type": "account",
+        "Command": "login",
+        "Status": "error"
+    }
 
 
 async def success_create_chat(websocket, chat_data=None, reson=True):
@@ -264,7 +283,8 @@ async def test_exists_registration():
     async with websockets.connect(host) as websocket:
 
         correct_creds = {
-            "Type": "registration",
+            "Type": "account",
+            "Command": "registration",
             "Login": "user",
             "Password": "password",
         }
@@ -276,7 +296,8 @@ async def test_exists_registration():
         print(f"A: {answer}")
 
         assert json.loads(answer) == {
-            "Type": "registration",
+            "Type": "account",
+            "Command": "registration",
             "Status": "user exist"
         }
 
@@ -299,7 +320,8 @@ async def test_failture_sign_in_user_not_exist():
     async with websockets.connect(host) as websocket:
 
         uncorrect_creds = {
-            "Type": "login",
+            "Type": "account",
+            "Command": "login",
             "Login": "user123",
             "Password": "password123",
         }
@@ -387,7 +409,7 @@ async def test_success_delete_chat():
             "Chat": "temp",
         }
 
-        await choice_chat(websocket, chat_data)
+        # await choice_chat(websocket, chat_data)
         await success_create_chat(websocket, chat_data)
 
         await delete_chat(websocket)
@@ -399,7 +421,7 @@ async def test_success_delete_close_chat():
 
         chat_data = {
             "Type": "chat",
-            #"Command": "choice",
+            # "Command": "choice",
             "Command": "create",
             "Chat": "sec",
             "Password": "sec",
@@ -537,12 +559,18 @@ async def test_multupule_connection():
     async with websockets.connect(host) as ws:
 
         register_creds = {
-            "Type": "registration",
+            "Type": "account",
+            "Command": "registration",
             "Login": "admin",
             "Password": "admin"
         }
 
-        signin_creds = {"Type": "login", "Login": "admin", "Password": "admin"}
+        signin_creds = {
+            "Type": "account",
+            "Command": "login",
+            "Login": "admin",
+            "Password": "admin"
+        }
 
         await success_signin(ws, signin_creds)
 
@@ -595,9 +623,9 @@ loop.run_until_complete(
         # test_succsses_logout(),
         # test_failture_logout(),
         # test_failed_create_chat(),
+        # test_success_choise_chat(),
         # test_success_delete_chat(),
         # test_success_delete_close_chat(),
-        # test_success_choise_chat(),
         # test_success_send_chat_list(),
         # test_success_enter_in_closed_chat(),
         # test_success_send_message(),
@@ -612,8 +640,8 @@ loop.run_until_complete(
         # test_failed_create_non_auth(),
         # test_failed_send_message_chat_not_exist(),
         # test_reconnect(), only for browser
-        test_list_online_users(),
-        # test_failed_create_chat(), # test after realise redirect for non auth
+        # test_list_online_users(),
+        # test_failed_create_chat(),  # test after realise redirect for non auth
         # test_fault_logout(),# not need becouse, if logout, then logout
         # register test_multupule_connection(),
     ))
