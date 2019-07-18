@@ -82,17 +82,16 @@ class ActionChat(web.View):
     async def broadcast_message(self, chatname=None):
         # get all chats where exists users
         # if chat not None get ws and send
-        if chatname is not None:
-            chat = self.request.app.active_sockets.get_chat(chatname)
-            ws = chat.all_ws()
-            print(ws)
+        if chatname:
+            chats = self.request.app.active_sockets.all_chats()
+            all_websockets = []
+            for c in chats:
+                all_websockets.extend(c.all_ws())
+            return all_websockets
 
-        chats = self.request.app.active_sockets.all_chats()
-        all_websockets = []
-        for c in chats:
-            all_websockets.extend(c.all_ws())
-
-        print("->>", all_websockets)
+        chat = self.request.app.active_sockets.get_chat(chatname)
+        ws = chat.all_ws()
+        return ws
 
     @login_required
     async def send_messages_from_chat(self, **jdata):
@@ -110,6 +109,13 @@ class ActionChat(web.View):
                     chat.password, jdata["Password"], algorithm="sha256"):
 
                 return {"Type": "chat", "Status": "access denied"}
+        # If chat is None?
+        # TODO: Send list connected users if user leave
+        if not jchat:
+            previos_chat = self.request.session["chat"]
+            previos_ws = self.broadcast_message(previos_chat)
+            for ws in previos_ws:
+                ws.send_json(self.send_list_online_users(chat=previos_chat))
 
         self.request.session["chat"] = jchat
         await create_instance(self.request)
@@ -121,8 +127,6 @@ class ActionChat(web.View):
         chat_messages = await manager.execute(
             self.request.chat.messages.order_by(-Message.created_at).paginate(
                 page, self.limiter))
-
-        # TODO: Send list connected users if user leave
 
         return await ActionChat.send_messages(chat_messages, manager, jchat)
 
@@ -222,8 +226,9 @@ class ActionChat(web.View):
                                               command="earlier")
 
     @login_required
-    async def send_list_online_users(self):
-        chat = self.request.session.get("chat")
+    async def send_list_online_users(self, chat=None):
+        if chat:
+            chat = self.request.session.get("chat")
         users = self.request.app.active_sockets.get_chat(chat).all_users()
         return {"Type": "chat", "Command": "connected", "Online": users}
 
