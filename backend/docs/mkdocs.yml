@@ -1,0 +1,10 @@
+site_name: messenger_project
+theme: readthedocs
+nav:
+    - Главная: home.md
+    - Авторизация: autorisation.md
+    - Чат: chat.md
+    - Сообщения: messages.md
+    - Прочее: other.md
+    - О нас: about.md
+
