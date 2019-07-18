@@ -28,7 +28,6 @@ class MainMenu extends PureComponent{
   };
   render() {
     const { isView } = this.state;
-    console.log(isView);
     let chats = this.props.chatList;
     chats = chats.map((value, id) => <ChatItem value={value} key={id} />);
     let chatInput = "";
