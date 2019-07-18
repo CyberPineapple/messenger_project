@@ -79,6 +79,22 @@ class ActionChat(web.View):
         return {"Type": "chat", "Chats": chats}
 
     @login_required
+    async def broadcast_message(self, chatname=None):
+        # get all chats where exists users
+        # if chat not None get ws and send
+        if chatname is not None:
+            chat = self.request.app.active_sockets.get_chat(chatname)
+            ws = chat.all_ws()
+            print(ws)
+
+        chats = self.request.app.active_sockets.all_chats()
+        all_websockets = []
+        for c in chats:
+            all_websockets.extend(c.all_ws())
+
+        print("->>", all_websockets)
+
+    @login_required
     async def send_messages_from_chat(self, **jdata):
         jchat = jdata.get("Chat", None)
         manager = self.request.app.manager
@@ -105,6 +121,8 @@ class ActionChat(web.View):
         chat_messages = await manager.execute(
             self.request.chat.messages.order_by(-Message.created_at).paginate(
                 page, self.limiter))
+
+        # TODO: Send list connected users if user leave
 
         return await ActionChat.send_messages(chat_messages, manager, jchat)
 
