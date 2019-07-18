@@ -50,7 +50,6 @@ class ChatInput extends Component {
         Type: "chat",
         Command: "message"
       };
-      console.log(text, image);
       if (text) {
         data.Text = text;
       }

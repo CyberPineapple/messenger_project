@@ -51,7 +51,8 @@ class AuthentificationPage extends React.Component {
   goToPage = () => {
     if (this.props.login !== "" && this.props.password !== "") {
       let data = {
-        Type: "login",
+        Type: "account",
+        Command: 'login',
         Login: this.props.login,
         Password: this.props.password
       };
@@ -63,7 +64,8 @@ class AuthentificationPage extends React.Component {
   registration = () => {
     if (this.props.login !== "" && this.props.password !== "") {
       let data = {
-        Type: "registration",
+        Type: "account",
+        Command: 'registration',
         Login: this.props.login,
         Password: this.props.password
       };

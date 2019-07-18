@@ -29,7 +29,7 @@ socket.onmessage = response => {
   console.log(data);
   if (data !== null) {
     switch (data.Type) {
-      case "login": {
+      case "account": {
         if (data.Status === "success") {
           store.dispatch(setPage("main"));
           let data = {
