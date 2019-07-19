@@ -122,7 +122,7 @@ class MainMenu extends PureComponent{
 
 const mapStateToProps = store => {
   return {
-    login: store.login,
+    login: store.user.login,
     chatList: store.chatList,
     chatName: store.chatName,
     chatPassword: store.chatPassword

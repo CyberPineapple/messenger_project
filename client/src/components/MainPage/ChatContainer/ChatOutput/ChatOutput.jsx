@@ -25,9 +25,6 @@ class ChatOutput extends React.Component {
       <div className={style.block}>
         <div className={style.chatName}>
           {this.props.activeChat}
-          <div className={style.deleteButton} onClick={this.deleteChat}>
-            Очистить чат
-          </div>
         </div>
         <div className={style.messagesList} onScroll={this.scrollChat}>
           {messages}
@@ -56,18 +53,9 @@ class ChatOutput extends React.Component {
       value.target.scrollTop = 10;
     }
   };
-
-  deleteChat = () => {
-    const data = {
-      Type: "chat",
-      Command: "purge"
-    };
-    sendMessage(JSON.stringify(data));
-  };
 }
 
-export default connect( state => ({
+export default connect(state => ({
   messagesList: state.messagesList,
   activeChat: state.activeChat
-})
-)(ChatOutput);
+}))(ChatOutput);

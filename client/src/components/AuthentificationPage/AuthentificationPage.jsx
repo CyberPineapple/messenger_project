@@ -1,59 +1,32 @@
-import React from "react";
+import React, { PureComponent } from "react";
 import style from "./AuthentificationPage.module.css";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
-import {
-  setPage,
-  setLogin,
-  setPassword,
-  removeLogin,
-  removePassword
-} from "../../actions/actions.js";
 import sendMessage from "../../websockets/websocket";
 
-class AuthentificationPage extends React.Component {
-  render() {
-    return (
-        <div className={style.page}>
-          <div className={style.layout}>
-            <p className={style.title}>Добро пожаловать</p>
-            <p>Логин</p>
-            <input
-              type="text"
-              className={style.input}
-              onChange={event => this.props.setLogin(event.target.value)}
-              onClick={removeLogin}
-              value={this.props.login}
-              maxLength={20}
-              placeholder="Введите логин"
-            />
-            <p>Пароль</p>
-            <input
-              placeholder="Введите пароль"
-              type="password"
-              className={style.input}
-              onChange={event => this.props.setPassword(event.target.value)}
-              value={this.props.password}
-              onClick={() => this.props.removePassword()}
-              maxLength={30}
-            />
-            <div className={style.button} onClick={() => this.goToPage()}>
-              Войти
-            </div>
-            <div className={style.button} onClick={() => this.registration()}>
-              Регистрация
-            </div>
-          </div>
-        </div>
-    );
-  }
+export default class AuthentificationPage extends PureComponent {
+  handleChangeLoginField = e => {
+    this.props.setLogin(e.target.value);
+  };
 
-  goToPage = () => {
-    if (this.props.login !== "" && this.props.password !== "") {
+  handleClickLoginField = () => {
+    this.props.setLogin("");
+  };
+
+  handleCLickPasswordField = () => {
+    this.props.setPassword("");
+  };
+
+  handleChangePasswordField = e => {
+    this.props.setPassword(e.target.value);
+  };
+
+  authorization = () => {
+    const { login, password } = this.props;
+    if (login !== "" && password !== "") {
       let data = {
-        Type: "login",
-        Login: this.props.login,
-        Password: this.props.password
+        Type: "account",
+        Command: "login",
+        Login: login,
+        Password: password
       };
       data = JSON.stringify(data);
       sendMessage(data);
@@ -61,39 +34,58 @@ class AuthentificationPage extends React.Component {
   };
 
   registration = () => {
-    if (this.props.login !== "" && this.props.password !== "") {
+    const { login, password } = this.props;
+    if (login !== "" && password !== "") {
       let data = {
-        Type: "registration",
-        Login: this.props.login,
-        Password: this.props.password
+        Type: "account",
+        Command: "registration",
+        Login: login,
+        Password: password
       };
       data = JSON.stringify(data);
       sendMessage(data);
     }
   };
+
+  render() {
+    const { login, password } = this.props;
+
+    return (
+      <div className={style.page}>
+        <div className={style.layout}>
+          <p className={style.title}>Добро пожаловать</p>
+          <p>Логин</p>
+          <input
+            type="text"
+            name="login"
+            autoComplete="on"
+            className={style.input}
+            onChange={this.handleChangeLoginField}
+            onClick={this.handleClickLoginField}
+            value={login}
+            maxLength={20}
+            placeholder="Введите логин"
+          />
+          <p>Пароль</p>
+          <input
+            placeholder="Введите пароль"
+            type="password"
+            name="password"
+            autoComplete="on"
+            className={style.input}
+            onChange={this.handleChangePasswordField}
+            value={password}
+            onClick={this.handleCLickPasswordField}
+            maxLength={30}
+          />
+          <button className={style.button} onClick={this.authorization}>
+            Войти
+          </button>
+          <button className={style.button} onClick={this.registration}>
+            Регистрация
+          </button>
+        </div>
+      </div>
+    );
+  }
 }
-
-const mapStateToProps = store => {
-  return {
-    login: store.login,
-    password: store.password
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return bindActionCreators(
-    {
-      setPage: setPage,
-      setLogin: setLogin,
-      setPassword: setPassword,
-      removeLogin: removeLogin,
-      removePassword: removePassword
-    },
-    dispatch
-  );
-};
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AuthentificationPage);

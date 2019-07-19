@@ -38,6 +38,11 @@
     transition: transform .1s linear;
 }
 
+.button:focus{
+    transform: scale(1.05);
+    transition: transform .1s linear;
+}
+
 .input{
     height: 30px;
     width: 200px;

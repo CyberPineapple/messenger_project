@@ -1,9 +1,10 @@
 export const initialState = {
+  user: {
+    login: "",
+    password: "",
+  },
+  usersOnline: [],
   page: "loading",
-  login: "",
-  password: "",
-  authentification: false,
-  connect: false,
   message: "",
   messagesList: [],
   chatList: [],

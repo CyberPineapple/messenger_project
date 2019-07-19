@@ -1,7 +1,7 @@
 .block {
   width: 200px;
   height: 100%;
-  border-right: 2px solid #77207d;
+  border-left: 2px solid #77207d;
   position: relative;
   z-index: 2;
   transition: width 1s ease;
@@ -28,7 +28,7 @@
 .button {
   position: absolute;
   top: 10px;
-  right: -40px;
+  left: -40px;
   width: 30px;
   height: 30px;
 }
@@ -52,20 +52,20 @@
 .line1 {
   composes: line;
   transform: rotate(0);
-  transform-origin: right;
+  transform-origin: left;
 }
 .line2 {
   composes: line;
 }
 .line3 {
   composes: line;
-  transform-origin: right;
+  transform-origin: left;
 }
 
 .line1Active {
   composes: line;
-  transform: rotate(-25deg);
-  transform-origin: right;
+  transform: rotate(25deg);
+  transform-origin: left;
 }
 .line2Active {
   composes: line;
@@ -73,53 +73,49 @@
 }
 .line3Active {
   composes: line;
-  transform: rotate(25deg);
-  transform-origin: right;
+  transform: rotate(-25deg);
+  transform-origin: left;
 }
 
-.menu_image {
-  background-image: url(../../../images/anonymous_mask1600.png);
+.buttonMenu{
+  margin-top: 10px;
+  font-size: 18px;
   width: 100%;
-  height: 200px;
-  background-size: cover;
+  opacity: 0.5;
+  transition: opacity .4s;
+  -webkit-transition: opacity .4s;
+  -moz-transition: opacity .4s;
+  -ms-transition: opacity .4s;
+  -o-transition: opacity .4s;
+  cursor: pointer;
+}
+
+.buttonMenu:hover {
+  background-color: #77207d2a;
+  opacity: 1;
+}
+
+.usersList{
+  margin: auto;
+  width: 90%;
+  border-left: 2px solid #77207d;
+  border-right: 2px solid #77207d;
+  text-align: center;
+  max-height: 80%;
+  cursor: default;
+}
+
+.title {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 19px;
+  font-weight: 550;
+  margin-bottom: 10px;
+}
+
+.user {
+  list-style: none;
+  margin: auto;
+  width: 90%;
   border-bottom: 2px solid #77207d;
-}
-
-.menu_login {
-  padding: 10px;
-  border-bottom: 2px solid #77207d;
-  text-align: center;
-  font-weight: bold;
-  font-size: 20px;
-  letter-spacing: 1px;
-
-}
-
-.menu_chat {
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 20px;
-  letter-spacing: 1px;
-}
-
-.menu_chat_list {
-  padding-top: 10px;
-  text-align: center;
-  font-weight: bold;
-  font-size: 20px;
-  letter-spacing: 1px;
-  height: 500px;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
-.input {
-  display: block;
-  width: 100%;
-  height: 30px;
-  outline: none;
-  border-top: 2px solid #77207d;
-  border-bottom: 2px solid #77207d;
-  text-align: center;
 }

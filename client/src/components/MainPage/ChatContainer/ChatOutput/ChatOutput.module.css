@@ -24,24 +24,6 @@
     overflow-y: scroll;
 }
 
-.deleteButton{
-    font-size: 14px;
-    position: absolute;
-    padding: 10px;
-    right: 0;
-    opacity: 0.5;
-    transition: opacity .4s;
-    -webkit-transition: opacity .4s;
-    -moz-transition: opacity .4s;
-    -ms-transition: opacity .4s;
-    -o-transition: opacity .4s;
-    cursor: pointer;
-}
-
-.deleteButton:hover {
-    opacity: 1;
-}
-
 .loading {
     width: 100%;
     height: 100%;

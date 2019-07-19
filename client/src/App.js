@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import AuthentificationPage from "./components/AuthentificationPage/AuthentificationPage.jsx";
+import AuthentificationPageContainer from "./containers/AuthentificationPageContainer";
 import MainPage from "./components/MainPage/MainPage";
 import { connect } from "react-redux";
 import LoadingPage from "./components/LoadingPage/LoadingPage";
@@ -11,7 +11,7 @@ class App extends Component {
     return (
       <div className="App">
         {page === "loading" && <LoadingPage />}
-        {page === "authentification" && <AuthentificationPage />}
+        {page === "authentification" && <AuthentificationPageContainer />}
         {page === "main" && <MainPage />}
       </div>
     );

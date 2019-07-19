@@ -1,12 +1,12 @@
 import { store } from "../store/configureStore";
 import {
   setPage,
-  connect,
   setMessagesList,
   setChatList,
   renderChatOutput,
   earlierMessagesList,
-  activeChat
+  activeChat,
+  setOnlineUsers
 } from "../actions/actions";
 import sound from "../audio/new_message.mp3";
 
@@ -16,7 +16,6 @@ export const socket = new WebSocket(
 
 socket.onopen = () => {
   store.dispatch(setPage("authentification"));
-  store.dispatch(connect(true));
 };
 
 socket.onclose = () => {
@@ -65,7 +64,7 @@ socket.onmessage = response => {
           store.dispatch(renderChatOutput(true));
         }
         if (data.Command === "message") {
-          if (data.Message.user !== store.getState().login) {
+          if (data.Message.user !== store.getState().user.login) {
             const audio = new Audio();
             audio.src = sound;
             audio.play();
@@ -76,6 +75,9 @@ socket.onmessage = response => {
           if (data.Messages.length !== 0) {
             store.dispatch(earlierMessagesList(data.Messages));
           }
+        }
+        if (data.Command === 'connected'){
+          store.dispatch(setOnlineUsers(data.Online))
         }
         break;
       }
@@ -92,6 +94,7 @@ socket.onerror = error => {
 };
 
 const sendMessage = data => {
+  console.log(data)
   socket.send(data);
 };
 
