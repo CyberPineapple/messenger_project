@@ -79,10 +79,10 @@ class ActionChat(web.View):
         return {"Type": "chat", "Chats": chats}
 
     @login_required
-    async def broadcast_message(self, chatname=None):
+    async def get_ws(self, chatname=None):
         # get all chats where exists users
         # if chat not None get ws and send
-        if chatname:
+        if not chatname:
             chats = self.request.app.active_sockets.all_chats()
             all_websockets = []
             for c in chats:
@@ -109,13 +109,13 @@ class ActionChat(web.View):
                     chat.password, jdata["Password"], algorithm="sha256"):
 
                 return {"Type": "chat", "Status": "access denied"}
-        # If chat is None?
-        # TODO: Send list connected users if user leave
-        if not jchat:
-            previos_chat = self.request.session["chat"]
-            previos_ws = self.broadcast_message(previos_chat)
+        # Send list connected users in previos chat if user leave
+        previos_chat = self.request.session.get("chat")
+        if previos_chat:
+            previos_ws = await self.get_ws(previos_chat)
             for ws in previos_ws:
-                ws.send_json(self.send_list_online_users(chat=previos_chat))
+                json_msg = await self.send_list_online_users(chat=previos_chat)
+                await ws.send_json(json_msg)
 
         self.request.session["chat"] = jchat
         await create_instance(self.request)
