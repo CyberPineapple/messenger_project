@@ -16,19 +16,19 @@ self.__precacheManifest = [
     "url": "/messenger_project/static/js/runtime~main.9519198f.js"
   },
   {
-    "revision": "fc27490d2b16c69131f8",
-    "url": "/messenger_project/static/js/main.90e3bcd0.chunk.js"
+    "revision": "6f82bba41dded10f4291",
+    "url": "/messenger_project/static/js/main.7a00aa82.chunk.js"
   },
   {
-    "revision": "6f335d054e5f35f62780",
-    "url": "/messenger_project/static/js/2.ba4b29fe.chunk.js"
+    "revision": "61ead4f3d58c6c112dbf",
+    "url": "/messenger_project/static/js/2.45f2894a.chunk.js"
   },
   {
-    "revision": "fc27490d2b16c69131f8",
-    "url": "/messenger_project/static/css/main.b8758f08.chunk.css"
+    "revision": "6f82bba41dded10f4291",
+    "url": "/messenger_project/static/css/main.1995e454.chunk.css"
   },
   {
-    "revision": "c9409c09e6bdc6a3045dbe090e35b1bb",
+    "revision": "7a1534869e72fc96d530700551342cc4",
     "url": "/messenger_project/index.html"
   }
 ];
