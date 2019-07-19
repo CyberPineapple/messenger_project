@@ -1,4 +1,5 @@
 from aiohttp import web
+import copy
 from tools.image_validator import is_image, store_image
 from tools.passwords import hash_password, verify_password
 from tools.sessions import add_active_sockets, create_instance, login_required
@@ -22,6 +23,7 @@ class ActionChat(web.View):
             # The option allow_sync becouse message.user
             # it is foreign key from User db, if del,
             # can use list comphehension.
+
             with manager.allow_sync():
 
                 data_message["user"] = str(message.user)
@@ -33,7 +35,21 @@ class ActionChat(web.View):
                 if message.image is not None:
                     data_message["image"] = message.image
 
-                messages.append(data_message.copy())
+                if message.reply_id is not None:
+                    reply = await manager.get(Message,
+                                              Message.id == message.reply_id)
+
+                    reply_ans = {
+                        "user": reply.user_id
+                    }  # "date": reply.created_at}
+                    if reply.text is not None:
+                        reply_ans["text"] = reply.text
+
+                    if reply.image is not None:
+                        reply_ans["image"] = reply.image
+                    data_message["reply"] = reply_ans
+
+                messages.append(copy.deepcopy(data_message))
                 data_message.clear()
 
         data["Messages"] = messages[::-1]
@@ -143,6 +159,7 @@ class ActionChat(web.View):
         user = self.request.session.get("user")
         path_to_image = None
         text = None
+        reply_id = None
 
         if not (chat and user):
             return {
@@ -158,6 +175,18 @@ class ActionChat(web.View):
                 "user": user
             }
         }
+
+        if "Reply" in jdata.keys():
+            reply_user = jdata["Reply"]["user"]
+            reply_message = jdata["Reply"]["text"]
+            # Can add time and be unique message
+            select_replated_message = await self.request.app.manager.execute(
+                Message.select().where((Message.user_id == reply_user)
+                                       & (Message.text == reply_message)))
+            replated_messages = [i.id for i in select_replated_message]
+            if replated_messages != []:
+                reply_id = replated_messages[-1]
+                answer["Reply"] = jdata["Reply"]
 
         if "Text" in jdata.keys():
             text = jdata["Text"]
@@ -183,6 +212,7 @@ class ActionChat(web.View):
                                               user=user,
                                               chat=chat,
                                               image=path_to_image,
+                                              reply_id=reply_id,
                                               text=text)
 
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():

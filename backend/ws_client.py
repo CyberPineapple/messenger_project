@@ -488,6 +488,25 @@ async def test_success_send_image():
         await send_image(websocket)
 
 
+async def test_success_reply_message():
+    async with websockets.connect(host) as websocket:
+        await success_signin(websocket)
+        await choice_chat(websocket)
+
+        message_data = {
+            "Type": "chat",
+            "Command": "message",
+            "Text": "Test reply message",
+            "Reply": {
+                "user": "user",
+                "text": "Test reply message"
+            }
+        }
+
+        await send_message(websocket, message_data)
+        await get_requests(websocket)
+
+
 async def test_success_send_image_and_text():
     async with websockets.connect(host) as websocket:
         await success_signin(websocket)
@@ -633,6 +652,7 @@ loop.run_until_complete(
         # test_success_send_message_next_page(),
         # test_success_send_image(),
         # test_success_send_image_and_text(),
+        # test_success_reply_message(),
         # test_success_purge_messages(),
         # test_failed_enter_in_closed_chat(),
         # test_failed_enter_in_closed_chat_bad_pass(),
