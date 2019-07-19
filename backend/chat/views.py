@@ -97,6 +97,8 @@ class ActionChat(web.View):
     async def send_messages_from_chat(self, **jdata):
         jchat = jdata.get("Chat", None)
         manager = self.request.app.manager
+        previos_chat = self.request.session.get("chat")
+
         try:
             chat = await manager.get(Chat, name=jchat)
         except Chat.DoesNotExist:
@@ -110,12 +112,6 @@ class ActionChat(web.View):
 
                 return {"Type": "chat", "Status": "access denied"}
         # Send list connected users in previos chat if user leave
-        previos_chat = self.request.session.get("chat")
-        if previos_chat:
-            previos_ws = await self.get_ws(previos_chat)
-            for ws in previos_ws:
-                json_msg = await self.send_list_online_users(chat=previos_chat)
-                await ws.send_json(json_msg)
 
         self.request.session["chat"] = jchat
         await create_instance(self.request)
@@ -127,6 +123,12 @@ class ActionChat(web.View):
         chat_messages = await manager.execute(
             self.request.chat.messages.order_by(-Message.created_at).paginate(
                 page, self.limiter))
+
+        if previos_chat:
+            previos_ws = await self.get_ws(previos_chat)
+            for ws in previos_ws:
+                json_msg = await self.send_list_online_users(chat=previos_chat)
+                await ws.send_json(json_msg)
 
         return await ActionChat.send_messages(chat_messages, manager, jchat)
 
