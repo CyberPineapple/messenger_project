@@ -111,11 +111,15 @@ class ActionChat(web.View):
                     chat.password, jdata["Password"], algorithm="sha256"):
 
                 return {"Type": "chat", "Status": "access denied"}
-        # Send list connected users in previos chat if user leave
 
         self.request.session["chat"] = jchat
         await create_instance(self.request)
         await add_active_sockets(self.request)
+
+        current_ws = await self.get_ws(jchat)
+        for ws in current_ws:
+            json_msg = await self.send_list_online_users(chat=jchat)
+            await ws.send_json(json_msg)
 
         self.request.session["page"] = 1
         page = self.request.session.get("page")
@@ -124,6 +128,7 @@ class ActionChat(web.View):
             self.request.chat.messages.order_by(-Message.created_at).paginate(
                 page, self.limiter))
 
+        # Send list connected users in previos chat if user leave
         if previos_chat:
             previos_ws = await self.get_ws(previos_chat)
             for ws in previos_ws:
