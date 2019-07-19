@@ -229,7 +229,7 @@ class ActionChat(web.View):
 
     @login_required
     async def send_list_online_users(self, chat=None):
-        if chat:
+        if not chat:
             chat = self.request.session.get("chat")
         users = self.request.app.active_sockets.get_chat(chat).all_users()
         return {"Type": "chat", "Command": "connected", "Online": users}
