@@ -26,6 +26,7 @@ class ActionChat(web.View):
 
             with manager.allow_sync():
 
+                data_message["id"] = str(id)
                 data_message["user"] = str(message.user)
                 data_message["date"] = str(message.created_at)
 
@@ -208,13 +209,13 @@ class ActionChat(web.View):
             )
 
             answer["Message"]["image"] = path_to_image
-        await self.request.app.manager.create(Message,
-                                              user=user,
-                                              chat=chat,
-                                              image=path_to_image,
-                                              reply_id=reply_id,
-                                              text=text)
-
+        id = await self.request.app.manager.create(Message,
+                                                   user=user,
+                                                   chat=chat,
+                                                   image=path_to_image,
+                                                   reply_id=reply_id,
+                                                   text=text)
+        answer["id"] = str(id)
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():
             await ws.send_json(answer)
 
