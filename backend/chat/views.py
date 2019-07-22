@@ -26,7 +26,7 @@ class ActionChat(web.View):
 
             with manager.allow_sync():
 
-                data_message["id"] = str(id)
+                data_message["id"] = str(message.id)
                 data_message["user"] = str(message.user)
                 data_message["date"] = str(message.created_at)
 
