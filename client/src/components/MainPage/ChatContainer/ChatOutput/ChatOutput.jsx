@@ -1,32 +1,39 @@
-import React from "react";
-import { connect } from "react-redux";
-import style from "./ChatOutput.module.css";
+import React, { Component } from "react";
+import styles from "./ChatOutput.module.css";
 import sendMessage from "../../../../websockets/websocket";
 import Message from "./Message/Message";
 
-class ChatOutput extends React.Component {
+export default class ChatOutput extends Component {
   render() {
-    const { messagesList } = this.props;
+    const { messagesList, reply, replyMessage } = this.props;
     let messages = [];
     if (messagesList.length !== 0) {
       messages = messagesList.map((value, id) => (
-        <Message data={value} key={id} />
+        <Message
+          text={value.text}
+          image={value.image}
+          user={value.user}
+          date={value.date}
+          id={value.id}
+          key={id}
+          reply={reply}
+          replyMessage={value.reply}
+          isChecked={replyMessage.id === value.id}
+        />
       ));
     } else {
       messages = (
-        <div className={style.loading}>
-          <div className={style.line1} />
-          <div className={style.line2} />
-          <div className={style.line3} />
+        <div className={styles.loading}>
+          <div className={styles.line1} />
+          <div className={styles.line2} />
+          <div className={styles.line3} />
         </div>
       );
     }
     return (
-      <div className={style.block}>
-        <div className={style.chatName}>
-          {this.props.activeChat}
-        </div>
-        <div className={style.messagesList} onScroll={this.scrollChat}>
+      <div className={styles.block}>
+        <div className={styles.chatName}>{this.props.activeChat}</div>
+        <div className={styles.messagesList} onScroll={this.scrollChat}>
           {messages}
         </div>
       </div>
@@ -34,12 +41,12 @@ class ChatOutput extends React.Component {
   }
 
   componentDidUpdate() {
-    let el = document.querySelector("." + style.messagesList);
+    let el = document.querySelector("." + styles.messagesList);
     el.scrollTop = el.scrollHeight;
   }
 
   componentDidMount() {
-    let el = document.querySelector("." + style.messagesList);
+    let el = document.querySelector("." + styles.messagesList);
     el.scrollTop = el.scrollHeight;
   }
 
@@ -55,7 +62,4 @@ class ChatOutput extends React.Component {
   };
 }
 
-export default connect(state => ({
-  messagesList: state.messagesList,
-  activeChat: state.activeChat
-}))(ChatOutput);
+

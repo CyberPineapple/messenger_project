@@ -99,7 +99,7 @@ export const earlierMessagesList = value => {
   };
 };
 
-export const setImage = value => {
+export const setImageAction = value => {
   return {
     type: "SET_IMAGE",
     payload: value
@@ -112,3 +112,8 @@ export const setOnlineUsers = value => {
     payload: value
   };
 };
+
+export const replyAction = value => ({
+  type: 'REPLY_MESSAGE',
+  payload: value
+})

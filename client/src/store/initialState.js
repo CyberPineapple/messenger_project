@@ -12,5 +12,6 @@ export const initialState = {
   chatPassword: "",
   activeChat: "",
   renderChatOutput: true,
-  image: ""
+  image: "",
+  replyMessage: ''
 };

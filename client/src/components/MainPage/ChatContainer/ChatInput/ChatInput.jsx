@@ -1,11 +1,9 @@
-import React, { Component } from "react";
+import React, { PureComponent } from "react";
 import styles from "./ChatInput.module.css";
-import { connect } from "react-redux";
 import Compress from "compress.js";
-import { setImage } from "../../../../actions/actions";
 import sendMessage from "../../../../websockets/websocket";
 
-class ChatInput extends Component {
+export default class ChatInput extends PureComponent {
   state = {
     text: ""
   };
@@ -14,7 +12,7 @@ class ChatInput extends Component {
     const { setImage } = this.props;
     let file = [...e.target.files];
     const compress = new Compress();
-    if (!file.length){
+    if (!file.length) {
       return null;
     }
     compress
@@ -44,7 +42,7 @@ class ChatInput extends Component {
 
   send = () => {
     const { text } = this.state;
-    const { image, setImage } = this.props;
+    const { image, setImage, replyMessage, reply } = this.props;
     if ((text !== "" && text[text.length - 1] !== " ") || image !== "") {
       let data = {
         Type: "chat",
@@ -56,8 +54,12 @@ class ChatInput extends Component {
       if (image) {
         data.Image = image;
       }
+      if (replyMessage) {
+        data.Reply = { user: replyMessage.user, text: replyMessage.text };
+      }
       sendMessage(JSON.stringify(data));
       setImage("");
+      reply('');
       this.setState({
         text: ""
       });
@@ -96,10 +98,3 @@ class ChatInput extends Component {
     );
   }
 }
-
-export default connect(
-  state => ({
-    image: state.image
-  }),
-  { setImage }
-)(ChatInput);
