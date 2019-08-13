@@ -78,6 +78,8 @@
         
             <li><a class="toctree-l3" href="#_4">Отправка изображения</a></li>
         
+            <li><a class="toctree-l3" href="#_6">Ответ на сообщение</a></li>
+        
         </ul>
     
 
@@ -155,6 +157,7 @@
     &quot;Type&quot;: &quot;chat&quot;,
     &quot;Command&quot;: &quot;message&quot;,
     &quot;Message&quot;: {
+        &quot;id&quot; : &quot;338&quot;,
         &quot;user&quot;: &quot;user&quot;,
         &quot;text&quot;: &quot;Hey, there is somebody?&quot;,
     }
@@ -194,6 +197,7 @@
     &quot;Type&quot;: &quot;chat&quot;,
     &quot;Command&quot;: &quot;message&quot;,
     &quot;Message&quot;: {
+        &quot;id&quot; : &quot;339&quot;,
         &quot;user&quot;: &quot;user&quot;,
         &quot;image&quot;: &quot;/images/{chat}/{md5}.{extentsion}&quot;,
     }
@@ -215,6 +219,7 @@
     &quot;Type&quot;: &quot;chat&quot;,
     &quot;Command&quot;: &quot;message&quot;,
     &quot;Message&quot;: {
+        &quot;id&quot;: &quot;340&quot;,
         &quot;user&quot;: &quot;user&quot;,
         &quot;image&quot;: &quot;/images/{chat}/{md5}.{extentsion}&quot;,
         &quot;text&quot;: &quot;LOL&quot;
@@ -228,6 +233,46 @@
     &quot;Command&quot;: &quot;message&quot;,
     &quot;Status&quot;: &quot;failed to attach image&quot;
 
+}
+</code></pre>
+
+<h2 id="_6">Ответ на сообщение</h2>
+<p>Ответ на сообщение мало чем отличается от ответа на сообщение</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Text&quot;: &quot;I not understand this message&quot;,
+    &quot;Reply&quot;: {
+        &quot;id&quot;: &quot;359&quot;,
+     }
+}
+</code></pre>
+
+<p>В валидном случае сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Message&quot;: {
+        &quot;Text&quot;: &quot;I not understand this message&quot;,
+        &quot;id&quot;: &quot;360&quot;,
+        &quot;Reply&quot;: {
+            &quot;id&quot;: &quot;359&quot;,
+            &quot;user&quot;: &quot;user&quot;, 
+            &quot;date&quot;: &quot;2019-07-19 10:51:16&quot;, 
+            &quot;text&quot;: &quot;Test reply message&quot;
+         }
+    }
+
+}
+</code></pre>
+
+<h3 id="_7">Ошибочный ответ</h3>
+<p>В случае не найденного в базе сообщения сервер ответит</p>
+<pre><code class="json">
+{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Status&quot;: &quot;message does not exist&quot;
 }
 </code></pre>
               

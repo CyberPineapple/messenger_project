@@ -35,6 +35,7 @@
 	"Type": "chat",
 	"Command": "message",
 	"Message": {
+		"id" : "338",
 		"user": "user",
 		"text": "Hey, there is somebody?",
 	}
@@ -85,6 +86,7 @@
 	"Type": "chat",
 	"Command": "message",
 	"Message": {
+		"id" : "339",
 		"user": "user",
 		"image": "/images/{chat}/{md5}.{extentsion}",
 	}
@@ -110,6 +112,7 @@
 	"Type": "chat",
 	"Command": "message",
 	"Message": {
+		"id": "340",
 		"user": "user",
 		"image": "/images/{chat}/{md5}.{extentsion}",
 		"text": "LOL"
@@ -127,3 +130,54 @@
 
 }
 ```
+## Ответ на сообщение
+
+Ответ на сообщение мало чем отличается от ответа на сообщение
+
+```json
+{
+	"Type": "chat",
+	"Command": "message",
+	"Text": "I not understand this message",
+	"Reply": {
+    	"id": "359",
+     }
+}
+```
+
+В валидном случае сервер ответит
+
+
+```json
+{
+	"Type": "chat",
+	"Command": "message",
+	"Message": {
+		"Text": "I not understand this message",
+		"id": "360",
+		"Reply": {
+	    	"id": "359",
+	    	"user": "user", 
+	    	"date": "2019-07-19 10:51:16", 
+	    	"text": "Test reply message"
+	     }
+	}
+	
+}
+```
+
+### Ошибочный ответ
+
+В случае не найденного в базе сообщения сервер ответит
+
+```json
+
+{
+	"Type": "chat",
+	"Command": "message",
+	"Status": "message does not exist"
+}
+```
+
+
+
