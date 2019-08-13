@@ -187,7 +187,8 @@ class ActionChat(web.View):
             replated_messages = [i.id for i in select_replated_message]
             if replated_messages != []:
                 reply_id = replated_messages[-1]
-                answer["Reply"] = jdata["Reply"]
+                # answer["Reply"] = jdata["Reply"]
+                answer["Message"]["reply"] = jdata["Reply"]
 
         if "Text" in jdata.keys():
             text = jdata["Text"]
@@ -215,7 +216,9 @@ class ActionChat(web.View):
                                                    image=path_to_image,
                                                    reply_id=reply_id,
                                                    text=text)
-        answer["id"] = str(id)
+        # answer["Message"]["id"] = str(id)
+        answer["Message"]["id"] = str(id)
+
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():
             await ws.send_json(answer)
 
