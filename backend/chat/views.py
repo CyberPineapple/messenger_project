@@ -179,7 +179,11 @@ class ActionChat(web.View):
 
         if "Reply" in jdata.keys():
             reply_user = jdata["Reply"]["user"]
-            reply_message = jdata["Reply"]["text"]
+            if "text" in jdata["Reply"].keys():
+                reply_message = jdata["Reply"]["text"]
+
+            if "image" in jdata["Reply"].keys():
+                reply_message = jdata["Reply"]["image"]
             # Can add time and be unique message
             select_replated_message = await self.request.app.manager.execute(
                 Message.select().where((Message.user_id == reply_user)
