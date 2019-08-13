@@ -498,8 +498,7 @@ async def test_success_reply_message():
             "Command": "message",
             "Text": "Test reply message",
             "Reply": {
-                "user": "user",
-                "text": "Test reply message"
+                "id": "1",
             }
         }
 
