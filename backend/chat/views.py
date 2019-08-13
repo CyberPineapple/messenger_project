@@ -41,8 +41,10 @@ class ActionChat(web.View):
                                               Message.id == message.reply_id)
 
                     reply_ans = {
-                        "user": reply.user_id
-                    }  # "date": reply.created_at}
+                        "id": str(reply),
+                        "user": reply.user_id,
+                        "date": str(reply.created_at)
+                    }
                     if reply.text is not None:
                         reply_ans["text"] = reply.text
 
@@ -177,22 +179,34 @@ class ActionChat(web.View):
             }
         }
 
-        if "Reply" in jdata.keys():
-            reply_user = jdata["Reply"]["user"]
-            if "text" in jdata["Reply"].keys():
-                reply_message = jdata["Reply"]["text"]
+        if "Reply" in jdata.keys() and "id" in jdata["Reply"]:
+            reply_id = jdata["Reply"]["id"]
+            last_message_id = await self.request.app.manager.count(
+                Message.select())
+            if last_message_id <= int(reply_id):
+                return {
+                    "Type": "chat",
+                    "Command": "message",
+                    "Status": "message does not exist",
+                }
 
-            if "image" in jdata["Reply"].keys():
-                reply_message = jdata["Reply"]["image"]
-            # Can add time and be unique message
-            select_replated_message = await self.request.app.manager.execute(
-                Message.select().where((Message.user_id == reply_user)
-                                       & (Message.text == reply_message)))
-            replated_messages = [i.id for i in select_replated_message]
-            if replated_messages != []:
-                reply_id = replated_messages[-1]
-                # answer["Reply"] = jdata["Reply"]
-                answer["Message"]["reply"] = jdata["Reply"]
+            reply_message = await self.request.app.manager.get(Message,
+                                                               id=reply_id)
+
+            with self.request.app.manager.allow_sync():
+                reply = {
+                    "id": str(reply_message),
+                    "user": str(reply_message.user),
+                    "date": str(reply_message.created_at)
+                }
+
+                if reply_message.text is not None:
+                    reply["text"] = reply_message.text
+
+                if reply_message.image is not None:
+                    reply["image"] = reply_message.image
+
+            answer["Message"]["reply"] = reply
 
         if "Text" in jdata.keys():
             text = jdata["Text"]
@@ -220,7 +234,6 @@ class ActionChat(web.View):
                                                    image=path_to_image,
                                                    reply_id=reply_id,
                                                    text=text)
-        # answer["Message"]["id"] = str(id)
         answer["Message"]["id"] = str(id)
 
         for ws in self.request.app.active_sockets.get_chat(chat).all_ws():

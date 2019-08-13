@@ -72,7 +72,9 @@ class JSONAccount(BaseClass):
 
 class JSONChat(BaseClass):
     async def message(self, **jdata):
-        await ActionChat(self.request).send_message(**jdata)
+        error = await ActionChat(self.request).send_message(**jdata)
+        if error is not None:
+            return error
 
     async def choice(self, **jdata):
         return await ActionChat(self.request).send_messages_from_chat(**jdata)
