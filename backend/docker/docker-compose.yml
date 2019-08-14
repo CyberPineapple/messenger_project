@@ -1,9 +1,11 @@
 version: '3'
 
 services:
+
   postgres:
     container_name: postgres_container
     image: postgres
+    hostname: postgres
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: sl+@lM!93nd3_===
@@ -13,28 +15,26 @@ services:
        - ./postgres:/data/postgres
     expose:
        - "5432"
-    # ports:
-    #     - "5432:5432"
     restart: unless-stopped
 
   redis:
-    container_name: redisc_container
+    container_name: redis_container
     image: redis
     hostname: redis
     expose:
        - "6379"
-    # ports:
-    #   - "6379:6379"
     restart: unless-stopped
 
   app:
-    container_name: server_contaner
+    container_name: server_container
     build:
       context: ../
       dockerfile: ./docker/app/Dockerfile
-
-    image: python:3-alpine
-    hostname: python
+    depends_on:
+      - postgres
+      - redis
     ports:
         - "8080:8080"
-    restart: always
+    restart: unless-stopped
+
+
