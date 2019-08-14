@@ -36,7 +36,7 @@ class LogIn(web.View):
                     "Command": "login",
                     "Status": "success"
                 }
-                raise User.DoesNotExist
+
         except User.DoesNotExist:
             return {"Type": "account", "Command": "login", "Status": "error"}
 
@@ -73,9 +73,8 @@ class LogOut(web.View):
             user = self.request.session.get("user")
             chat = self.request.session.get("chat")
             active_sockets = self.request.app.active_sockets
-            # print(user,chat)
             active_sockets.get_chat(chat).del_user(user)
-            # await active_sockets.get(self.request.chat).pop(self.request.user)
+
             self.request.session.pop("user")
             self.request.user = None
             self.request.chat = None

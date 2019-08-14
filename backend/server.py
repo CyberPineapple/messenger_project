@@ -46,8 +46,8 @@ class BaseClass:
         try:
             func = getattr(self, self._command)
             return await func(**kwarg)
-        except AttributeError as ae:
-            print("AttributeError", ae)
+        except AttributeError:
+            await self.ws.send_json({"Status": "error in json file"})
 
 
 class JSONAccount(BaseClass):
@@ -105,7 +105,6 @@ public_types = {"account": JSONAccount, "chat": JSONChat}
 
 async def websocket_handler(request):
 
-    # app = request.app
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
@@ -113,20 +112,12 @@ async def websocket_handler(request):
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
 
             request.app.websocket = ws
-            # log.debug(msg.data)
             jdata = loads(msg.data)
             router = public_types.get(jdata["Type"])(jdata["Command"], ws,
                                                      request)
             responce = await router.commandy(**jdata)
             if responce is not None:
                 await ws.send_json(responce)
-
-            # log.debug(
-            #     f"""app.active_sockets = {app.active_sockets.all_chats()}""")
-
-            # else is comment becouse
-            # else:
-            #    await ws.send_json({"Status": "error in json file"})
 
         elif msg.type == web.WSMsgType.ERROR:
             print("Connection closed with exception %s" % ws.exception())
