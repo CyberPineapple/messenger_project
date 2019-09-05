@@ -18,7 +18,7 @@ export default class ChatOutput extends Component {
           key={id}
           reply={reply}
           replyMessage={value.reply}
-          isChecked={replyMessage.id === value.id}
+          isChecked={replyMessage === value.id}
         />
       ));
     } else {
@@ -61,5 +61,3 @@ export default class ChatOutput extends Component {
     }
   };
 }
-
-

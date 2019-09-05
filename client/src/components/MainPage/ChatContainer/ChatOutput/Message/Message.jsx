@@ -3,12 +3,8 @@ import style from "./Message.module.css";
 
 export default class Message extends PureComponent {
   handleClick = () => {
-    const { reply, id, user, text } = this.props;
-    reply({
-      id: id,
-      user: user,
-      text: text
-    });
+    const { reply, id } = this.props;
+    reply(id);
   };
 
   render() {

@@ -55,11 +55,11 @@ export default class ChatInput extends PureComponent {
         data.Image = image;
       }
       if (replyMessage) {
-        data.Reply = { user: replyMessage.user, text: replyMessage.text };
+        data.Reply = { id: replyMessage };
       }
       sendMessage(JSON.stringify(data));
       setImage("");
-      reply('');
+      reply("");
       this.setState({
         text: ""
       });
