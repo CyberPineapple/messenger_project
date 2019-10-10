@@ -43,6 +43,13 @@ class BaseClass:
         self.request = request
 
     async def commandy(self, **kwarg):
+
+        # command = self._command
+        # if not hasattr(self, command):
+        #     return {"Status": "error in json file"}
+        # func = getattr(self, command)
+        # return await func(**kwarg)
+
         try:
             func = getattr(self, self._command)
             return await func(**kwarg)
