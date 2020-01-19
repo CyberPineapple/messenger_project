@@ -25,6 +25,19 @@ services:
        - "6379"
     restart: unless-stopped
 
+  nginx:
+    container_name: nginx_container
+    image: nginx:alpine
+    hostname: nginx
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+      - ./images:/data/images
+    ports: 
+      - "80:80"
+    restart: unless-stopped
+
+
+
   app:
     container_name: server_container
     build:
@@ -33,8 +46,7 @@ services:
     depends_on:
       - postgres
       - redis
-    ports:
-        - "8080:8080"
+      - nginx
+    expose:
+        - "8080"
     restart: unless-stopped
-
-
