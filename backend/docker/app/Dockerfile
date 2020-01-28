@@ -4,5 +4,4 @@ COPY ./requirements.txt /
 RUN apk add --virtual .build-deps gcc musl-dev postgresql-dev libpq py3-gunicorn
 RUN pip install -r /requirements.txt
 COPY ./ /app
-EXPOSE 8000
 CMD ["python", "server.py"]
