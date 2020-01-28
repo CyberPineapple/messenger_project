@@ -3,10 +3,10 @@ import json
 
 import websockets
 
-host = "ws://localhost:8080"
+host = "ws://localhost:80"
 
 
-# host = "wss://host-94-103-84-32.hosted-by-vdsina.ru:443"
+# host = "ws://messenger.servehttp.com:80/"
 async def success_register(websocket, register_creds=None):
 
     if register_creds is None:
