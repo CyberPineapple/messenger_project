@@ -118,6 +118,8 @@ async def websocket_handler(request):
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
 
+            log.debug(msg)
+
             request.app.websocket = ws
             jdata = loads(msg.data)
             router = public_types.get(jdata["Type"])(jdata["Command"], ws,
@@ -133,7 +135,7 @@ async def websocket_handler(request):
 
 
 async def init():
-    redis = await create_pool("redis://localhost")
+    redis = await create_pool("redis://redis")
     storage = RedisStorage(redis)
     middleware = [
         session_middleware(RedisStorage(redis)), request_user_middleware
@@ -145,9 +147,9 @@ async def init():
     app.active_sockets = StoreActiveChats()
     DATABASE = {
         "database": "messenger",
-        # "password": "sl+@lM!93nd3_===",
+        "password": "sl+@lM!93nd3_===",
         "user": "user",
-        "host": "localhost",
+        "host": "postgres",
     }
 
     database.init(**DATABASE)
@@ -161,6 +163,8 @@ async def init():
         Message.create_table(True)
 
     log.basicConfig(
+        filename="app.log",
+        filemode="w",
         level=log.DEBUG,
         format="%(levelname)s %(asctime)s %(message)s",
         datefmt="%m/%d/%Y %I:%M:%S %p",

@@ -48,5 +48,5 @@ services:
       - redis
       - nginx
     expose:
-        - "8080"
+        - "8000"
     restart: unless-stopped
