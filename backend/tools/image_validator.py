@@ -23,7 +23,7 @@ async def is_image(str_base64):
 
 
 async def store_image(str_base64, extension, chat):
-    local_path = f'./../../public/images/{chat}/'
+    local_path = f'/srv/data/images/{chat}/'
 
     if not os.path.isdir(local_path):
         os.mkdir(local_path, mode=755)

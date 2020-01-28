@@ -133,7 +133,7 @@ async def websocket_handler(request):
 
 
 async def init():
-    redis = await create_pool("redis://redis")
+    redis = await create_pool("redis://localhost")
     storage = RedisStorage(redis)
     middleware = [
         session_middleware(RedisStorage(redis)), request_user_middleware
@@ -145,9 +145,9 @@ async def init():
     app.active_sockets = StoreActiveChats()
     DATABASE = {
         "database": "messenger",
-        "password": "sl+@lM!93nd3_===",
+        # "password": "sl+@lM!93nd3_===",
         "user": "user",
-        "host": "postgres",
+        "host": "localhost",
     }
 
     database.init(**DATABASE)
@@ -174,4 +174,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    web.run_app(init())
+    web.run_app(init(), port=8000)
