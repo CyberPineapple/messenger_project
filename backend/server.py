@@ -118,6 +118,8 @@ async def websocket_handler(request):
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
 
+            log.debug(msg)
+
             request.app.websocket = ws
             jdata = loads(msg.data)
             router = public_types.get(jdata["Type"])(jdata["Command"], ws,
@@ -161,6 +163,8 @@ async def init():
         Message.create_table(True)
 
     log.basicConfig(
+        filename="app.log",
+        filemode="w",
         level=log.DEBUG,
         format="%(levelname)s %(asctime)s %(message)s",
         datefmt="%m/%d/%Y %I:%M:%S %p",
