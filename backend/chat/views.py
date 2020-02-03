@@ -183,12 +183,12 @@ class ActionChat(web.View):
             reply_id = jdata["Reply"]["id"]
             last_message_id = await self.request.app.manager.count(
                 Message.select())
-            if last_message_id <= int(reply_id):
-                return {
-                    "Type": "chat",
-                    "Command": "message",
-                    "Status": "message does not exist",
-                }
+            # if last_message_id <= int(reply_id):
+            #     return {
+            #         "Type": "chat",
+            #         "Command": "message",
+            #         "Status": "message does not exist",
+            #     }
 
             reply_message = await self.request.app.manager.get(Message,
                                                                id=reply_id)
