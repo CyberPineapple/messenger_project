@@ -4,6 +4,7 @@
 #
 
 import logging as log
+import os
 
 from accounts.models import User
 from accounts.views import LogIn, LogOut, Register
@@ -43,12 +44,6 @@ class BaseClass:
         self.request = request
 
     async def commandy(self, **kwarg):
-
-        # command = self._command
-        # if not hasattr(self, command):
-        #     return {"Status": "error in json file"}
-        # func = getattr(self, command)
-        # return await func(**kwarg)
 
         try:
             func = getattr(self, self._command)
@@ -117,7 +112,6 @@ async def websocket_handler(request):
 
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
-
             log.debug(msg)
 
             request.app.websocket = ws
@@ -135,7 +129,10 @@ async def websocket_handler(request):
 
 
 async def init():
-    redis = await create_pool("redis://redis")
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    redis = await create_pool(f"redis://{os.getenv('REDIS_ADDRESS')}")
     storage = RedisStorage(redis)
     middleware = [
         session_middleware(RedisStorage(redis)), request_user_middleware
@@ -147,9 +144,9 @@ async def init():
     app.active_sockets = StoreActiveChats()
     DATABASE = {
         "database": "messenger",
-        "password": "sl+@lM!93nd3_===",
+        # "password": "password"
         "user": "user",
-        "host": "postgres",
+        "host": os.getenv('POSTGRES_ADDRESS'),
     }
 
     database.init(**DATABASE)
