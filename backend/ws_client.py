@@ -3,7 +3,7 @@ import json
 
 import websockets
 
-# host = "ws://localhost:80"
+host = "ws://localhost:8000"
 
 
 host = "ws://messenger.servehttp.com:80/"
