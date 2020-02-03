@@ -13,5 +13,6 @@ peewee==3.13.1
 peewee-async==0.6.0a0
 psycopg2==2.8.4
 psycopg2-binary==2.8.4
+python-dotenv==0.10.5
 websockets==8.1
 yarl==1.4.2
