@@ -50,3 +50,6 @@ services:
     expose:
         - "8000"
     restart: unless-stopped
+    environment:
+        POSTGRES_ADDRESS: postgres
+        REDIS_ADDRESS: redis
