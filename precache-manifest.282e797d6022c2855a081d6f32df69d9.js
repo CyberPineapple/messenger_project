@@ -1,11 +1,11 @@
 self.__precacheManifest = [
   {
-    "revision": "7ea92a5e96fedf40e977",
-    "url": "/messenger_project/static/css/main.2197496a.chunk.css"
+    "revision": "93f1ab51d639c8d2e4a1",
+    "url": "/messenger_project/static/css/main.f6224b97.chunk.css"
   },
   {
-    "revision": "7ea92a5e96fedf40e977",
-    "url": "/messenger_project/static/js/main.b662843f.chunk.js"
+    "revision": "93f1ab51d639c8d2e4a1",
+    "url": "/messenger_project/static/js/main.6eeac114.chunk.js"
   },
   {
     "revision": "d67f5490d63829394129",
@@ -28,7 +28,7 @@ self.__precacheManifest = [
     "url": "/messenger_project/static/media/free_hexagon_pattern_02_by_black_light_studio-d65g32i.bd29e7e9.png"
   },
   {
-    "revision": "5370477e7df9d767c53527f8ec0e1f9e",
+    "revision": "d319ab5450b1761ce0ce32b312f4af8f",
     "url": "/messenger_project/index.html"
   }
 ];
