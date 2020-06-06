@@ -19,7 +19,7 @@ export default class ChatInput extends PureComponent {
       .compress(file, {
         quality: 0.75,
         maxWidth: 1920,
-        maxHeight: 1920
+        maxHeight: 1080
       })
       .then(data => {
         setImage(data[0].prefix + data[0].data);
