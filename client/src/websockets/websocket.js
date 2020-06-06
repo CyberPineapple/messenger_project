@@ -10,9 +10,7 @@ import {
 } from "../actions/actions";
 import sound from "../audio/new_message.mp3";
 
-export const socket = new WebSocket(
-  "wss://host-94-103-84-32.hosted-by-vdsina.ru:443/"
-);
+export const socket = new WebSocket('ws://messenger.servehttp.com:80/');
 
 socket.onopen = () => {
   store.dispatch(setPage("authentification"));
