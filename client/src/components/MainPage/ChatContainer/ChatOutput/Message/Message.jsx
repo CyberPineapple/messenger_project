@@ -20,7 +20,7 @@ export default class Message extends PureComponent {
         <div className={style.message_time}>{date}</div>
         {image && (
           <img
-            src={"https://host-94-103-84-32.hosted-by-vdsina.ru" + image}
+            src={"http://messenger.servehttp.com" + image}
             className={style.message_image}
             alt="images"
           />
