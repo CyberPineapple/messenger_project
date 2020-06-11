@@ -1,4 +1,5 @@
 *.db
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -11,6 +12,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+docker/postgres/
 develop-eggs/
 dist/
 downloads/
@@ -24,6 +26,7 @@ var/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
+.vim/
 *.egg-info/
 .installed.cfg
 *.egg

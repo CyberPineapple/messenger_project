@@ -31,10 +31,14 @@ class LogIn(web.View):
                 await add_active_sockets(self.request)
                 await create_instance(self.request)
 
-                return {"Type": "login", "Status": "success"}
-            raise User.DoesNotExist
+                return {
+                    "Type": "account",
+                    "Command": "login",
+                    "Status": "success"
+                }
+
         except User.DoesNotExist:
-            return {"Type": "login", "Status": "error"}
+            return {"Type": "account", "Command": "login", "Status": "error"}
 
 
 class Register(LogIn):
@@ -69,14 +73,16 @@ class LogOut(web.View):
             user = self.request.session.get("user")
             chat = self.request.session.get("chat")
             active_sockets = self.request.app.active_sockets
-            # print(user,chat)
             active_sockets.get_chat(chat).del_user(user)
-            # await self.request.app.active_sockets.get(
-            #    self.request.chat).pop(self.request.user)
+
             self.request.session.pop("user")
             self.request.user = None
             self.request.chat = None
 
-            return {"Type": "logout", "Status": "success"}
+            return {
+                "Type": "account",
+                "Command": "logout",
+                "Status": "success"
+            }
         except KeyError:
-            return {"Type": "logout", "Status": "error"}
+            return {"Type": "account", "Command": "logout", "Status": "error"}

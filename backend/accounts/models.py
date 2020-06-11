@@ -10,7 +10,7 @@ class User(models.BaseModel):
         order_by = "date_register"
 
     username = peewee.CharField(max_length=20, unique=True, primary_key=True)
-    # password = sha-1(salt + password)
+    # password it's sha-1(password + salt)
     password = peewee.CharField(max_length=192)
     online = peewee.BooleanField(default=True)
 

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Сообщения - messenger_project</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u044f";
+    var mkdocs_page_input_path = "messages.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> messenger_project</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../home/">Главная</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../autorisation/">Авторизация</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../chat/">Чат</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Сообщения</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#_1">Сообщения</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#_2">Отправка сообщения</a></li>
+        
+            <li><a class="toctree-l3" href="#_3">Ошибки при отправке сообщения</a></li>
+        
+            <li><a class="toctree-l3" href="#_4">Отправка изображения</a></li>
+        
+            <li><a class="toctree-l3" href="#_6">Ответ на сообщение</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../other/">Прочее</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../about/">О нас</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">messenger_project</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Сообщения</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="_1">Сообщения</h1>
+<p>Перед отправкой сообщения пользователь должен быть:</p>
+<ul>
+<li>авторизован;</li>
+<li>чат должен существовать.</li>
+</ul>
+<p>Прежде чем отправить сообщение пользователь должен выбрать чат.</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Chat&quot;: &quot;general&quot;,
+    &quot;Command&quot;: &quot;choice&quot;
+}
+</code></pre>
+
+<p>Только после, пользователь может приступать к отправке сообщения.</p>
+<h2 id="_2">Отправка сообщения</h2>
+<p>Для отправки сообщения в чат клиент должен отправить сообщение</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Text&quot;: &quot;Hey, there is somebody?&quot;
+}
+</code></pre>
+
+<p>На что сервер ответит, точно таким же сообщением каждому подключенному пользователю</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Message&quot;: {
+        &quot;id&quot; : &quot;338&quot;,
+        &quot;user&quot;: &quot;user&quot;,
+        &quot;text&quot;: &quot;Hey, there is somebody?&quot;,
+    }
+}
+</code></pre>
+
+<p><strong>Почему так?</strong> Это происходит потому что, все общение идет через сервер. А значит мы должны отправлять только те сообщения которые гарантированно дошли до сервера и сохранены в базе.</p>
+<h2 id="_3">Ошибки при отправке сообщения</h2>
+<p>Если пользователь попрообует отправить сообщение не авторизованныем или не выбрав чат, сервер ответит</p>
+<pre><code class="json">
+{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Status&quot;: &quot;error in chat or user&quot;
+}
+</code></pre>
+
+<p><strong>(?)</strong> Обработать сообщение "Status": "error", например когда база недоступна или память кончилась, или сервер упал.</p>
+<p>Если авторизованный пользователь попробует отправить в несуществующий чат сервер ему ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Status&quot;: &quot;error&quot;
+}
+</code></pre>
+
+<h2 id="_4">Отправка изображения</h2>
+<p>Для отправки изображения клиент должен перевести изображение в base64</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;:&quot;message&quot;,
+    &quot;Image&quot;: &quot;WW91IGEgcGlkb3IK&quot;
+}
+</code></pre>
+
+<p>В случае успеха сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Message&quot;: {
+        &quot;id&quot; : &quot;339&quot;,
+        &quot;user&quot;: &quot;user&quot;,
+        &quot;image&quot;: &quot;/images/{chat}/{md5}.{extentsion}&quot;,
+    }
+}
+</code></pre>
+
+<h3 id="_5">Отправка изображения с сообщением</h3>
+<p>Все так же как и с отправкой изображения, для отправки изображения клиент должен перевести изображение в base64</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;:&quot;message&quot;,
+    &quot;Image&quot;: &quot;WW91IGEgcGlkb3IK&quot;,
+    &quot;Text&quot;: &quot;LOL&quot;
+}
+</code></pre>
+
+<p>В случае успеха сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Message&quot;: {
+        &quot;id&quot;: &quot;340&quot;,
+        &quot;user&quot;: &quot;user&quot;,
+        &quot;image&quot;: &quot;/images/{chat}/{md5}.{extentsion}&quot;,
+        &quot;text&quot;: &quot;LOL&quot;
+    }
+}
+</code></pre>
+
+<p>Если кто-то захочет загрузить, что-то помимо изображения, сервер ответит так</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Status&quot;: &quot;failed to attach image&quot;
+
+}
+</code></pre>
+
+<h2 id="_6">Ответ на сообщение</h2>
+<p>Ответ на сообщение мало чем отличается от ответа на сообщение</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Text&quot;: &quot;I not understand this message&quot;,
+    &quot;Reply&quot;: {
+        &quot;id&quot;: &quot;359&quot;,
+     }
+}
+</code></pre>
+
+<p>В валидном случае сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Message&quot;: {
+        &quot;Text&quot;: &quot;I not understand this message&quot;,
+        &quot;id&quot;: &quot;360&quot;,
+        &quot;Reply&quot;: {
+            &quot;id&quot;: &quot;359&quot;,
+            &quot;user&quot;: &quot;user&quot;, 
+            &quot;date&quot;: &quot;2019-07-19 10:51:16&quot;, 
+            &quot;text&quot;: &quot;Test reply message&quot;
+         }
+    }
+
+}
+</code></pre>
+
+<h3 id="_7">Ошибочный ответ</h3>
+<p>В случае не найденного в базе сообщения сервер ответит</p>
+<pre><code class="json">
+{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;message&quot;,
+    &quot;Status&quot;: &quot;message does not exist&quot;
+}
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../other/" class="btn btn-neutral float-right" title="Прочее">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../chat/" class="btn btn-neutral" title="Чат"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../chat/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../other/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

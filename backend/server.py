@@ -4,6 +4,7 @@
 #
 
 import logging as log
+import os
 
 from accounts.models import User
 from accounts.views import LogIn, LogOut, Register
@@ -18,7 +19,6 @@ from tools.json_validator import is_json, loads
 from tools.models import database
 from tools.sessions import request_user_middleware
 from tools.store_users import StoreActiveChats
-
 
 # TODO:
 # check eof ws
@@ -35,76 +35,92 @@ from tools.store_users import StoreActiveChats
 # # user -- object from db
 # # chat -- current chat when "Command: Choise"
 # # active_sockets -- store for websockets
+
+
+class BaseClass:
+    def __init__(self, command, ws, request):
+        self._command = command
+        self.ws = ws
+        self.request = request
+
+    async def commandy(self, **kwarg):
+
+        try:
+            func = getattr(self, self._command)
+            return await func(**kwarg)
+        except AttributeError:
+            await self.ws.send_json({"Status": "error in json file"})
+
+
+class JSONAccount(BaseClass):
+    async def login(self, **jdata):
+        data = await LogIn(self.request).loginning(**jdata)
+        await self.ws.send_json(data)
+
+        if data["Status"] == "success":
+            data = await Chat.all_chats(self.request.app.manager)
+            return data
+
+    async def logout(self, **jdata):
+        # TODO: may be bug ws close before send data
+        data = await LogOut(self.request).logout()
+        if not self.ws.closed:
+            await self.ws.close()
+        return data
+
+    async def registration(self, **jdata):
+        return await Register(self.request).create_user(**jdata)
+
+
+class JSONChat(BaseClass):
+    async def message(self, **jdata):
+        error = await ActionChat(self.request).send_message(**jdata)
+        if error is not None:
+            return error
+
+    async def choice(self, **jdata):
+        return await ActionChat(self.request).send_messages_from_chat(**jdata)
+
+    async def create(self, **jdata):
+        data = await ActionChat(self.request).create_chat(**jdata)
+        await self.ws.send_json(data)
+        return await self.list()
+
+    async def list(self, **jdata):
+        return await ActionChat(self.request).send_list_chats()
+
+    async def delete(self, **jdata):
+        return await ActionChat(self.request).delete_chat()
+
+    async def earlier(self, **jdata):
+        return await ActionChat(self.request).earlier_messages()
+
+    async def connected(self, **jdata):
+        return await ActionChat(self.request).send_list_online_users()
+
+    async def purge(self, **jdata):
+        return await ActionChat(self.request).purge_messages()
+
+
+public_types = {"account": JSONAccount, "chat": JSONChat}
+
+
 async def websocket_handler(request):
 
-    app = request.app
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
     async for msg in ws:
         if msg.type == web.WSMsgType.TEXT and await is_json(msg.data):
+            log.debug(msg)
 
             request.app.websocket = ws
-            # log.debug(msg.data)
             jdata = loads(msg.data)
-
-            if jdata["Type"] == "close":
-                await ws.send_json({"Status": "close"})
-                await ws.close()
-                log.debug(app.active_sockets)
-
-            elif jdata["Type"] == "logout":
-                data = await LogOut(request).logout()
-                await ws.send_json(data)
-                await ws.close()
-                log.debug(app.active_sockets)
-
-            elif jdata["Type"] == "registration":
-                data = await Register(request).create_user(**jdata)
-                await ws.send_json(data)
-
-            elif jdata["Type"] == "login":
-                # two send_json, compare in one json
-                data = await LogIn(request).loginning(**jdata)
-                await ws.send_json(data)
-
-                if data["Status"] == "success":
-                    data = await Chat.all_chats(request.app.manager)
-                    await ws.send_json(data)
-                    # data = await ActionChat(
-                    #         request).send_messages_from_chat(**{})
-                    # await ws.send_json(data)
-
-            elif jdata["Type"] == "chat":
-                log.debug(
-                    f"app.active_sockets = {app.active_sockets.all_chats()}")
-
-                if "Command" in jdata.keys():
-                    if jdata["Command"] == "message":
-                        data = await ActionChat(request).send_message(**jdata)
-                    elif jdata["Command"] == "choice":
-                        data = await ActionChat(
-                            request).send_messages_from_chat(**jdata)
-                    elif jdata["Command"] == "create":
-                        data = await ActionChat(request).create_chat(**jdata)
-                        await ws.send_json(data)
-                        data = await ActionChat(request).send_list_chats()
-                    elif jdata["Command"] == "list":
-                        data = await ActionChat(request).send_list_chats()
-                    elif jdata["Command"] == "delete":
-                        data = await ActionChat(request).delete_chat()
-                    elif jdata["Command"] == "earlier":
-                        data = await ActionChat(request).earlier_messages()
-
-                    # Temp functional
-                    elif jdata["Command"] == "purge":
-                        data = await ActionChat(request).purge_messages()
-
-                # crutch
-                if data is not None:
-                    await ws.send_json(data)
-            else:
-                await ws.send_json({"Status": "error in json file"})
+            router = public_types.get(jdata["Type"])(jdata["Command"], ws,
+                                                     request)
+            responce = await router.commandy(**jdata)
+            if responce is not None:
+                await ws.send_json(responce)
 
         elif msg.type == web.WSMsgType.ERROR:
             print("Connection closed with exception %s" % ws.exception())
@@ -113,7 +129,10 @@ async def websocket_handler(request):
 
 
 async def init():
-    redis = await create_pool("redis://localhost")
+    from dotenv import load_dotenv
+    load_dotenv()
+
+    redis = await create_pool(f"redis://{os.getenv('REDIS_ADDRESS')}")
     storage = RedisStorage(redis)
     middleware = [
         session_middleware(RedisStorage(redis)), request_user_middleware
@@ -125,9 +144,9 @@ async def init():
     app.active_sockets = StoreActiveChats()
     DATABASE = {
         "database": "messenger",
-        "password": "sl+@lM!93nd3_===",
+        # "password": "password"
         "user": "user",
-        "host": "localhost",
+        "host": os.getenv('POSTGRES_ADDRESS'),
     }
 
     database.init(**DATABASE)
@@ -141,6 +160,8 @@ async def init():
         Message.create_table(True)
 
     log.basicConfig(
+        filename="app.log",
+        filemode="w",
         level=log.DEBUG,
         format="%(levelname)s %(asctime)s %(message)s",
         datefmt="%m/%d/%Y %I:%M:%S %p",
@@ -154,4 +175,4 @@ async def main():
 
 
 if __name__ == "__main__":
-    web.run_app(init())
+    web.run_app(init(), port=8000)

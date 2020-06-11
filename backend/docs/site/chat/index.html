@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Чат - messenger_project</title>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="../css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" type="text/css" />
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "\u0427\u0430\u0442";
+    var mkdocs_page_input_path = "chat.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> messenger_project</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+	<ul class="current">
+	  
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../home/">Главная</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../autorisation/">Авторизация</a>
+	    </li>
+          
+            <li class="toctree-l1 current">
+		
+    <a class="current" href="./">Чат</a>
+    <ul class="subnav">
+            
+    <li class="toctree-l2"><a href="#_1">Чат</a></li>
+    
+        <ul>
+        
+            <li><a class="toctree-l3" href="#_2">Создание</a></li>
+        
+            <li><a class="toctree-l3" href="#_4">Удаление чата</a></li>
+        
+            <li><a class="toctree-l3" href="#_5">Получить список чатов</a></li>
+        
+            <li><a class="toctree-l3" href="#_6">Вход в чат без пароля</a></li>
+        
+            <li><a class="toctree-l3" href="#_8">Получить предыдущие сообщения</a></li>
+        
+        </ul>
+    
+
+    </ul>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../messages/">Сообщения</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../other/">Прочее</a>
+	    </li>
+          
+            <li class="toctree-l1">
+		
+    <a class="" href="../about/">О нас</a>
+	    </li>
+          
+        </ul>
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">messenger_project</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Чат</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="_1">Чат</h1>
+<p>При создании чата перед пользователем предъявляются следующие требования:</p>
+<ul>
+<li>длина имени чата не должна превышать 32 символов;</li>
+<li>пользователь должен быть авторизован в системе.</li>
+</ul>
+<h2 id="_2">Создание</h2>
+<p>Для создания чата клиент должен отправить json-запрос с следущим содержанием</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;create&quot;,
+    &quot;Chat&quot;: &quot;general&quot;
+}
+</code></pre>
+
+<p>При успешном создании чата сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Status&quot;: &quot;success&quot;
+}
+</code></pre>
+
+<p>Если не авторизованный пользователь попробует создать чат, сервер ответит ему так</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;login&quot;,
+    &quot;Status&quot;: &quot;error&quot;
+}
+</code></pre>
+
+<h3 id="_3">Создание чата с паролем</h3>
+<p>Для создания чата с паролем необходимо добавить еще одно поле Password, для установки пароля.</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;create&quot;,
+    &quot;Chat&quot;: &quot;general secret&quot;,
+    &quot;Password&quot;: &quot;secret&quot;
+}
+</code></pre>
+
+<p>При успешном создании чата с паролем сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Status&quot;: &quot;success&quot;
+
+}
+</code></pre>
+
+<p>Если пользователь попытается создат чат с уже имеющимся названием в базе, сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Status&quot;: &quot;chat exist&quot;
+}
+</code></pre>
+
+<h2 id="_4">Удаление чата</h2>
+<p>Для удаления чата необходимы следующие условия условие</p>
+<ul>
+<li>пользователь должнен быть создателем чата</li>
+<li>пользователь должен выбрать чат <em>("Command": "choice")</em></li>
+</ul>
+<p>Удаление чата <strong>с паролем</strong> и <strong>без</strong> приходит <strong>без изменений</strong></p>
+<p>Для удаления пользователь должен отправить следующий json запрос</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;delete&quot;
+}
+</code></pre>
+
+<p>При успешном запросе сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;delete&quot;,
+    &quot;Status&quot;: &quot;success&quot;
+}
+</code></pre>
+
+<p>Важно, что после удаления чата, все пользователи удаленного чата будут перенапралены в чат <strong>general</strong></p>
+<p>Если пользователь не имеющий право(условия описаны выше) удалять, попытается удалить, сервер ответит так</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;delete&quot;,
+    &quot;Status&quot;: &quot;error&quot;
+}
+</code></pre>
+
+<h2 id="_5">Получить список чатов</h2>
+<p>Для получения всех чатов клиент должен отправить</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;list&quot;
+}
+</code></pre>
+
+<p>Сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Chats&quot;: [
+    {
+        &quot;Chat&quot;: &quot;general&quot;,
+        &quot;Closed&quot;: false
+    },
+    {
+        &quot;Chat&quot;: &quot;secret general&quot;,
+        &quot;Closed&quot;: true
+    }
+ ]
+}
+</code></pre>
+
+<p>В поле Chats <strong>все</strong> чаты системы. В поле Chat находится имя чата, поле Closed - признак чата под паролем чата. True - пароль есть.</p>
+<p>Если не авторизованный пользователь попытается получить чаты, то сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;login&quot;,
+    &quot;Status&quot;: &quot;error&quot;
+}
+</code></pre>
+
+<h2 id="_6">Вход в чат без пароля</h2>
+<p>По умолчанию, после авторизации пользователь оказывется в чате general, для входа в чат клиенту нужно отправить</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Chat&quot;: &quot;general&quot;,
+    &quot;Command&quot;: &quot;choice&quot;
+}
+</code></pre>
+
+<p>Сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;choice&quot;,
+    &quot;Messages&quot;: [
+    {
+        &quot;user&quot;: &quot;user&quot;,
+        &quot;text&quot;: &quot;Hello from past&quot;,
+        &quot;date&quot;: &quot;1970-01-03 03:59:00&quot;
+    },
+    {
+        &quot;user&quot;: &quot;user&quot;,
+        &quot;text&quot;: &quot;Hey, there is somebody?&quot;,
+        &quot;date&quot;: &quot;2019-05-04 20:00:00&quot;
+    }
+ ]
+}
+</code></pre>
+
+<p>Где <strong>Messages</strong> это массив с json объектам.</p>
+<h3 id="_7">Вход в чат под паролем</h3>
+<p>По умолчанию, после авторизации пользователь оказывется в чате general, для входа в чат с паролем клиенту нужно отправить серверу</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;choice&quot;,
+    &quot;Chat&quot;: &quot;secret general&quot;,
+    &quot;Password&quot;: &quot;secret&quot;
+}
+</code></pre>
+
+<p>При вверно введеном пароле сервер ответит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Messages&quot;: [
+    {
+        &quot;user&quot;: &quot;user&quot;,
+        &quot;text&quot;: &quot;Встретимся на остановке&quot;,
+        &quot;date&quot;: &quot;2019-01-01 03:59:00&quot;
+    }
+ ]
+}
+</code></pre>
+
+<p>Где <strong>Messages</strong> это массив с json объектам.</p>
+<p>Если пользователь захочет посмотреть одим глазком в закрытый чат, не имея пароля</p>
+<pre><code class="json">{
+    &quot;Type&quot;:&quot;chat&quot;,
+    &quot;Command&quot;:&quot;choice&quot;,
+    &quot;Chat&quot;:&quot;secret general&quot;
+}
+</code></pre>
+
+<p>Сервер лишь помахает пальцем</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Status&quot;: &quot;access denied&quot;
+}
+</code></pre>
+
+<p>Или пользователь забыл пароль</p>
+<pre><code class="json">{
+    &quot;Type&quot;:&quot;chat&quot;,
+    &quot;Command&quot;:&quot;choice&quot;,
+    &quot;Chat&quot;:&quot;secret general&quot;,
+    &quot;Password&quot;: &quot;terces&quot;
+}
+</code></pre>
+
+<p>Сервер ответит аналогично</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Status&quot;: &quot;access denied&quot;
+}
+</code></pre>
+
+<h2 id="_8">Получить предыдущие сообщения</h2>
+<p>По умолчанию сервер отдает последние 30 сообщений, чтобы избежать нагрузки на сервер.</p>
+<p>Если клиенту нужно получить раннее отправленные сообщения, то нужно отправить</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;earlier&quot;
+}
+</code></pre>
+
+<p>На что сервер ответит массивом из 15 или меньше сообщений.</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;earlier&quot;,
+    &quot;Messages&quot;: [
+    {
+        &quot;user&quot;: &quot;login&quot;,
+        &quot;text&quot;: &quot;Hello from past&quot;,
+        &quot;date&quot;: &quot;1970-01-03 03:59:00&quot;
+    },
+    {
+        &quot;user&quot;: &quot;user&quot;,
+        &quot;text&quot;: &quot;Hey, there is somebody?&quot;,
+        &quot;date&quot;: &quot;2019-05-04 20:00:00&quot;
+    }
+ ]
+}
+</code></pre>
+
+<p>Если клиент достиг начала переписки, сервер отправит</p>
+<pre><code class="json">{
+    &quot;Type&quot;: &quot;chat&quot;,
+    &quot;Command&quot;: &quot;earlier&quot;,
+    &quot;Messages&quot;: []
+}
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../messages/" class="btn btn-neutral float-right" title="Сообщения">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../autorisation/" class="btn btn-neutral" title="Авторизация"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="http://www.mkdocs.org">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" style="cursor: pointer">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+      
+        <span><a href="../autorisation/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../messages/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+
+</body>
+</html>

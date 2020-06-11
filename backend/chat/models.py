@@ -47,4 +47,5 @@ class Message(BaseModel):
     chat = peewee.ForeignKeyField(Chat, backref="messages")
     text = peewee.TextField(null=True)
     image = peewee.TextField(null=True)
+    reply = peewee.ForeignKeyField('self', null=True)
     created_at = peewee.TimestampField()
